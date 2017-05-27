@@ -15,13 +15,16 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
   predicate = NULL,
   map_df = function(self, df, i = NULL) {
     if (is.null(df) || nrow(df) == 0 || ncol(df) == 0) return()
+    if (length(self$aesthetics) > 1) stop("I don't know how to handle more than two aesthetics", self$aesthetics)
 
     gdf <- dplyr::group_by(df, group)
-    x <- dplyr::transmute(gdf, result = !! self$predicate)
-    list(
-      colour = dplyr::if_else(x$result, "red", "grey"),
-      alpha  = dplyr::if_else(x$result, 1, 0.5)
+    gdf <- dplyr::mutate(gdf, result = !! self$predicate)
+    mapped <- list(
+      result = dplyr::if_else(gdf$result, "red", "grey"),
+      alpha  = dplyr::if_else(gdf$result, 1, 0.5)
     )
+    names(mapped)[1] <- self$aesthetics
+    mapped
   }
 )
 
