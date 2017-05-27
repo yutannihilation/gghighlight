@@ -51,9 +51,6 @@ library(gghighlight)
 ggplot(d) +
   geom_line(aes(x, y, group = type, colour = type)) +
   scale_highlight_colour(max(y) > 20)
-#> Adding missing grouping variables: `group`
-#> Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Blues is 9
-#> Returning the palette you asked for with that many colors
 ```
 
 ![](README-gghighlight-1.png)

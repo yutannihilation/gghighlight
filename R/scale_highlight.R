@@ -23,6 +23,8 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
     gdf <- dplyr::group_by(df, !! rlang::sym(self$aesthetics))
     sdf <- dplyr::summarise(gdf, result = !! self$predicate)
     self$highlight <- rlang::set_names(sdf$result, sdf[[self$aesthetics]])
+
+    ggplot2::ggproto_parent(ggplot2::ScaleDiscrete, self)$train_df(df)
   },
   map = function(self, x, limits = self$get_limits()) {
     # TODO: use palette
@@ -36,6 +38,9 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
     } else {
       pal_match
     }
+  },
+  make_title = function(self, title) {
+    sprintf('%s\n(highlight: %s)', title, rlang::quo_text(self$predicate))
   }
 )
 
