@@ -9,6 +9,7 @@ License: MIT
 Encoding: UTF-8
 Imports:
   ggplot2,
-  rlang
+  rlang,
+  dplyr
 LazyData: true
 RoxygenNote: 6.0.1.9000

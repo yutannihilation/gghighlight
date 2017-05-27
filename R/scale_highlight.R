@@ -14,7 +14,14 @@ scale_highlight_colour <- function(.predicate, ..., type = "seq", palette = 1, d
 ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
   predicate = NULL,
   map_df = function(self, df, i = NULL) {
-    ggplot2::ggproto_parent(ggplot2::ScaleDiscrete, self)$map_df(df, i)
+    if (is.null(df) || nrow(df) == 0 || ncol(df) == 0) return()
+
+    gdf <- dplyr::group_by(df, group)
+    x <- dplyr::transmute(gdf, result = !! self$predicate)
+    list(
+      colour = dplyr::if_else(x$result, "red", "grey"),
+      alpha  = dplyr::if_else(x$result, 1, 0.5)
+    )
   }
 )
 
