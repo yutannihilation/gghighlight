@@ -4,8 +4,12 @@
 \alias{scale_highlight_colour}
 \title{Highlight With Predicates}
 \usage{
-scale_highlight_colour(.predicate, ..., type = "seq", palette = 1,
-  direction = 1)
+scale_highlight_colour(.predicate, ...)
+}
+\arguments{
+\item{.predicate}{an expression to be used as a predicate for highlight}
+
+\item{...}{other argument passed to \code{highlight_scale()}}
 }
 \description{
 Highlight With Predicates

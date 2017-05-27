@@ -1,8 +1,10 @@
 #' Highlight With Predicates
 #'
+#' @param .predicate an expression to be used as a predicate for highlight
+#' @param ... other argument passed to `highlight_scale()`
 #' @export
-scale_highlight_colour <- function(.predicate, ..., type = "seq", palette = 1, direction = 1) {
-  highlight_scale("colour", "brewer", scales::brewer_pal(type, palette, direction), predicate = rlang::enquo(.predicate), ...)
+scale_highlight_colour <- function(.predicate, ...) {
+  highlight_scale("colour", "brewer", predicate = rlang::enquo(.predicate), ...)
 }
 
 #' ggproto for Highlight
@@ -44,34 +46,20 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
   }
 )
 
-# TODO: do not copy and paste codes
-highlight_scale <- function(aesthetics, scale_name, palette, name = ggplot2::waiver(),
-  breaks = ggplot2::waiver(), labels = ggplot2::waiver(), limits = NULL, expand = ggplot2::waiver(),
-  na.translate = TRUE, na.value = NA, drop = TRUE,
-  guide = "legend", position = "left", super = ScaleHighlight,
-  predicate = NULL) {
+highlight_scale <- function(aesthetics,
+                            scale_name,
+                            guide = "legend",
+                            position = "left",
+                            predicate = NULL) {
 
   position <- match.arg(position, c("left", "right", "top", "bottom"))
+  scale_obj <- ggplot2::discrete_scale(aesthetics,
+                                       scale_name,
+                                       scales::identity_pal(),   # TODO: use palette
+                                       guide = "legend",
+                                       position = "left",
+                                       super = ScaleHighlight)
 
-  ggproto(NULL, super,
-          call = match.call(),
-
-          aesthetics = aesthetics,
-          scale_name = scale_name,
-          palette = palette,
-
-          range = ggplot2:::discrete_range(),
-          limits = limits,
-          na.value = na.value,
-          na.translate = na.translate,
-          expand = expand,
-
-          name = name,
-          breaks = breaks,
-          labels = labels,
-          drop = drop,
-          guide = guide,
-          position = position,
-          predicate = predicate
-  )
+  scale_obj$predicate <- predicate
+  scale_obj
 }
