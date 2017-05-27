@@ -1,11 +1,13 @@
 Package: gghighlight
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Highlight Points And Lines In 'ggplot2'
+Version: 0.0.1
+Author: Hiroaki Yutani
+Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
+Description: Make it easier to explore data with highlights.
+License: MIT
 Encoding: UTF-8
+Impports:
+  ggplot2
 LazyData: true
+RoxygenNote: 6.0.1.9000
