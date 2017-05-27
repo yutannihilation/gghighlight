@@ -7,7 +7,8 @@ Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
 Description: Make it easier to explore data with highlights.
 License: MIT
 Encoding: UTF-8
-Impports:
-  ggplot2
+Imports:
+  ggplot2,
+  rlang
 LazyData: true
 RoxygenNote: 6.0.1.9000
