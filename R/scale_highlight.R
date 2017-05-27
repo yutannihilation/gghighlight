@@ -12,19 +12,30 @@ scale_highlight_colour <- function(.predicate, ..., type = "seq", palette = 1, d
 #' @usage NULL
 #' @export
 ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
+  # a quosure predicate
   predicate = NULL,
-  map_df = function(self, df, i = NULL) {
+  # a named logical vector whether to highlight the key
+  highlight = NULL,
+  train_df = function(self, df) {
     if (is.null(df) || nrow(df) == 0 || ncol(df) == 0) return()
     if (length(self$aesthetics) > 1) stop("I don't know how to handle more than two aesthetics", self$aesthetics)
 
-    gdf <- dplyr::group_by(df, group)
-    gdf <- dplyr::mutate(gdf, result = !! self$predicate)
-    mapped <- list(
-      result = dplyr::if_else(gdf$result, "red", "grey"),
-      alpha  = dplyr::if_else(gdf$result, 1, 0.5)
-    )
-    names(mapped)[1] <- self$aesthetics
-    mapped
+    gdf <- dplyr::group_by(df, !! rlang::sym(self$aesthetics))
+    sdf <- dplyr::summarise(gdf, result = !! self$predicate)
+    self$highlight <- rlang::set_names(sdf$result, sdf[[self$aesthetics]])
+  },
+  map = function(self, x, limits = self$get_limits()) {
+    # TODO: use palette
+    pal_match <- dplyr::if_else(self$highlight[x],
+                                ggplot2::alpha("red", 1),
+                                ggplot2::alpha("grey", 0.5))
+
+    # TODO: handle NAs
+    if (self$na.translate) {
+      ifelse(is.na(x) | is.na(pal_match), self$na.value, pal_match)
+    } else {
+      pal_match
+    }
   }
 )
 
