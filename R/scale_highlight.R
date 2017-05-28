@@ -1,10 +1,28 @@
 #' Highlight With Predicates
 #'
+#' @name scale_highlight
 #' @param .predicate an expression to be used as a predicate for highlight
 #' @param ... other argument passed to `highlight_scale()`
+#' @param .default_colour colour for unhighlighted elements
 #' @export
-scale_highlight_colour <- function(.predicate, ...) {
-  highlight_scale("colour", "brewer", predicate = rlang::enquo(.predicate), ...)
+scale_highlight_colour <- function(.predicate, ..., .default_colour = NULL) {
+  highlight_scale("colour", "brewer",
+                  predicate = rlang::enquo(.predicate),
+                  .default_colour = .default_colour,
+                  ...)
+}
+
+#' @name scale_highlight
+#' @export
+scale_highlight_color <- scale_highlight_colour
+
+#' @name scale_highlight
+#' @export
+scale_highlight_fill <- function(.predicate, ..., .default_colour = NULL) {
+  highlight_scale("fill", "brewer",
+                  predicate = rlang::enquo(.predicate),
+                  .default_colour = .default_colour,
+                  ...)
 }
 
 #' ggproto for Highlight
@@ -18,6 +36,9 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
   predicate = NULL,
   # a named logical vector whether to highlight the key
   highlight = NULL,
+
+  .default_colour = ggplot2::alpha("grey", 0.2),
+
   train_df = function(self, df) {
     # dirty hack
     index_lapply <- rlang::caller_env(5)$i
@@ -37,12 +58,31 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
     ggplot2::ggproto_parent(ggplot2::ScaleDiscrete, self)$train_df(df)
   },
   map = function(self, x, limits = self$get_limits()) {
-    # TODO: use palette
-    pal_match <- dplyr::if_else(self$highlight[x],
-                                ggplot2::alpha("red", 1),
-                                ggplot2::alpha("grey", 0.5))
+    # something is wrong if this doesn't match
+    if (length(limits) != length(self$highlight)) stop('limits and highlights has different length')
 
-    # TODO: handle NAs
+    n <- sum(!is.na(limits))
+    if (!is.null(self$n.breaks.cache) && self$n.breaks.cache == n) {
+      pal <- self$palette.cache
+    } else {
+      if (!is.null(self$n.breaks.cache)) warning("Cached palette does not match requested", call. = FALSE)
+      # default value for non-highlited elements
+      pal <- rep(self$.default_colour, length(limits))
+      names(pal) <- limits
+      # assign colour if it should be highlighted
+      pal[self$highlight[limits]] <- self$palette(sum(self$highlight))
+
+      self$palette.cache <- pal
+      self$n.breaks.cache <- n
+    }
+
+    if (is.null(names(pal))) {
+      pal_match <- pal[match(as.character(x), limits)]
+    } else {
+      pal_match <- pal[match(as.character(x), names(pal))]
+      pal_match <- unname(pal_match)
+    }
+
     if (self$na.translate) {
       ifelse(is.na(x) | is.na(pal_match), self$na.value, pal_match)
     } else {
@@ -58,16 +98,18 @@ highlight_scale <- function(aesthetics,
                             scale_name,
                             guide = "legend",
                             position = "left",
-                            predicate = NULL) {
+                            predicate = NULL,
+                            .default_colour = NULL) {
 
   position <- match.arg(position, c("left", "right", "top", "bottom"))
   scale_obj <- ggplot2::discrete_scale(aesthetics,
                                        scale_name,
-                                       scales::identity_pal(),   # TODO: use palette
+                                       viridis::viridis_pal(option = "inferno", end = 0.7),
                                        guide = "legend",
                                        position = "left",
                                        super = ScaleHighlight)
 
   scale_obj$predicate <- predicate
+  if (!is.null(.default_colour)) scale_obj$.default_colour <- .default_colour
   scale_obj
 }

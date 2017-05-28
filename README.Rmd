@@ -52,10 +52,17 @@ ggplot(d) +
 
 So we are motivated to highlight only important series, like this:
 
-```{r gghighlight}
+```{r gghighlight-line}
 library(gghighlight)
 
 ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
   scale_highlight_colour(max(value) > 20)
+```
+
+
+```{r gghighlight-density}
+ggplot(d) +
+  geom_density(aes(value, fill = type)) +
+  scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.1))
 ```

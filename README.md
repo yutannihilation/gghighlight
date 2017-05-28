@@ -53,4 +53,12 @@ ggplot(d) +
   scale_highlight_colour(max(value) > 20)
 ```
 
-![](README-gghighlight-1.png)
+![](README-gghighlight-line-1.png)
+
+``` r
+ggplot(d) +
+  geom_density(aes(value, fill = type)) +
+  scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.1))
+```
+
+![](README-gghighlight-density-1.png)
