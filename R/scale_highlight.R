@@ -104,7 +104,7 @@ highlight_scale <- function(aesthetics,
   position <- match.arg(position, c("left", "right", "top", "bottom"))
   scale_obj <- ggplot2::discrete_scale(aesthetics,
                                        scale_name,
-                                       viridis::viridis_pal(option = "inferno", end = 0.7),
+                                       viridis::viridis_pal(alpha = 0.9, end = 0.7, option = "inferno"),
                                        guide = "legend",
                                        position = "left",
                                        super = ScaleHighlight)

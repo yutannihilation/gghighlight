@@ -58,7 +58,7 @@ ggplot(d) +
 ``` r
 ggplot(d) +
   geom_density(aes(value, fill = type)) +
-  scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.1))
+  scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.05))
 ```
 
 ![](README-gghighlight-density-1.png)
