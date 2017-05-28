@@ -59,7 +59,7 @@ ggplot(d) +
 ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
   scale_highlight_colour(max(value) > 20) +
-  annotate_highlights(max(value) > 20, aes(idx, value, label = type))
+  annotate_highlights(max(value) > 20, aes(idx, value, label = type, colour = type))
 ```
 
 ![](images/gghighlight-line2-1.png)
