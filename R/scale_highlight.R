@@ -19,12 +19,20 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
   # a named logical vector whether to highlight the key
   highlight = NULL,
   train_df = function(self, df) {
+    # dirty hack
+    index_lapply <- rlang::caller_env(5)$i
+    df_raw <- rlang::caller_env(6)$layer_data[[index_lapply]]
+    mapping <- unclass(rlang::caller_env(6)$layers[[index_lapply]]$mapping)
+
     if (is.null(df) || nrow(df) == 0 || ncol(df) == 0) return()
     if (length(self$aesthetics) > 1) stop("I don't know how to handle more than two aesthetics", self$aesthetics)
 
-    gdf <- dplyr::group_by(df, !! rlang::sym(self$aesthetics))
+    aes_name <- mapping[[self$aesthetics]]
+    aes_chr <- as.character(aes_name)
+
+    gdf <- dplyr::group_by(df_raw, !! aes_name)
     sdf <- dplyr::summarise(gdf, result = !! self$predicate)
-    self$highlight <- rlang::set_names(sdf$result, sdf[[self$aesthetics]])
+    self$highlight <- rlang::set_names(sdf$result, sdf[[aes_chr]])
 
     ggplot2::ggproto_parent(ggplot2::ScaleDiscrete, self)$train_df(df)
   },

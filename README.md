@@ -25,12 +25,12 @@ library(tidyverse)
 
 set.seed(1)
 d <- tibble(
-  x = 1:10000,
-  y = runif(x, -1, 1),
-  type = sample(letters, size = length(x), replace = TRUE)
+  idx = 1:10000,
+  value = runif(idx, -1, 1),
+  type = sample(letters, size = length(idx), replace = TRUE)
 ) %>%
   group_by(type) %>%
-  mutate(y = cumsum(y)) %>%
+  mutate(value = cumsum(value)) %>%
   ungroup()
 ```
 
@@ -38,7 +38,7 @@ It is difficult to distinguish them by colour.
 
 ``` r
 ggplot(d) +
-  geom_line(aes(x, y, group = type, colour = type))
+  geom_line(aes(idx, value, colour = type))
 ```
 
 ![](README-ggplot-too-many-1.png)
@@ -49,8 +49,8 @@ So we are motivated to highlight only important series, like this:
 library(gghighlight)
 
 ggplot(d) +
-  geom_line(aes(x, y, group = type, colour = type)) +
-  scale_highlight_colour(max(y) > 20)
+  geom_line(aes(idx, value, colour = type)) +
+  scale_highlight_colour(max(value) > 20)
 ```
 
 ![](README-gghighlight-1.png)
