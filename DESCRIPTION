@@ -8,9 +8,10 @@ Description: Make it easier to explore data with highlights.
 License: MIT
 Encoding: UTF-8
 Imports:
-  ggplot2,
-  rlang,
   dplyr (> 0.5.0),
+  ggplot2,
+  ggrepel,
+  rlang,
   viridis
 LazyData: true
 Roxygen: list(markdown = TRUE)

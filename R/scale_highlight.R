@@ -51,15 +51,21 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
     aes_name <- mapping[[self$aesthetics]]
     aes_chr <- as.character(aes_name)
 
-    gdf <- dplyr::group_by(df_raw, !! aes_name)
-    sdf <- dplyr::summarise(gdf, result = !! self$predicate)
-    self$highlight <- rlang::set_names(sdf$result, sdf[[aes_chr]])
+    if (!is.null(aes_name) && is.null(self$highlight)) {
+      gdf <- dplyr::group_by(df_raw, !! aes_name)
+      sdf <- dplyr::summarise(gdf, result = !! self$predicate)
+      self$highlight <- rlang::set_names(sdf$result, sdf[[aes_chr]])
+    }
 
     ggplot2::ggproto_parent(ggplot2::ScaleDiscrete, self)$train_df(df)
   },
   map = function(self, x, limits = self$get_limits()) {
     # something is wrong if this doesn't match
-    if (length(limits) != length(self$highlight)) stop('limits and highlights has different length')
+    if (!is.null(self$highlight) && length(limits) != length(self$highlight)) {
+      stop('limits and highlights has different length\n',
+           sprintf('limits: %s\n', limits),
+           sprintf('highlight: %s\n', self$highlight))
+    }
 
     n <- sum(!is.na(limits))
     if (!is.null(self$n.breaks.cache) && self$n.breaks.cache == n) {
@@ -70,7 +76,9 @@ ScaleHighlight <- ggplot2::ggproto("Scale", ggplot2::ScaleDiscrete,
       pal <- rep(self$.default_colour, length(limits))
       names(pal) <- limits
       # assign colour if it should be highlighted
-      pal[self$highlight[limits]] <- self$palette(sum(self$highlight))
+      if(!is.null(self$highlight)) {
+        pal[self$highlight[limits]] <- self$palette(sum(self$highlight))
+      }
 
       self$palette.cache <- pal
       self$n.breaks.cache <- n

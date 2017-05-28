@@ -41,7 +41,7 @@ ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
 
-![](README-ggplot-too-many-1.png)
+![](images/ggplot-too-many-1.png)
 
 So we are motivated to highlight only important series, like this:
 
@@ -53,7 +53,16 @@ ggplot(d) +
   scale_highlight_colour(max(value) > 20)
 ```
 
-![](README-gghighlight-line-1.png)
+![](images/gghighlight-line-1.png)
+
+``` r
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  scale_highlight_colour(max(value) > 20) +
+  annotate_highlights(max(value) > 20, aes(idx, value, label = type))
+```
+
+![](images/gghighlight-line2-1.png)
 
 ``` r
 ggplot(d) +
@@ -61,4 +70,4 @@ ggplot(d) +
   scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.05))
 ```
 
-![](README-gghighlight-density-1.png)
+![](images/gghighlight-density-1.png)

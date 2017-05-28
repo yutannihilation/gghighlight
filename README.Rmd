@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "images/"
 )
 ```
 
@@ -58,6 +58,14 @@ library(gghighlight)
 ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
   scale_highlight_colour(max(value) > 20)
+```
+
+
+```{r gghighlight-line2}
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  scale_highlight_colour(max(value) > 20) +
+  annotate_highlights(max(value) > 20, aes(idx, value, label = type))
 ```
 
 
