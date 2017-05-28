@@ -71,3 +71,11 @@ ggplot(d) +
 ```
 
 ![](images/gghighlight-density-1.png)
+
+``` r
+ggplot(d) +
+  geom_point(aes(idx, value), colour = alpha("blue", 0.1)) +
+  annotate_highlights(idx %% 200 == 0, aes(idx, value, label = type), grouped = FALSE)
+```
+
+![](images/gghighlight-ungrouped-1.png)
