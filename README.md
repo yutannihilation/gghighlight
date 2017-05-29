@@ -49,33 +49,7 @@ So we are motivated to highlight only important series, like this:
 library(gghighlight)
 
 ggplot(d) +
-  geom_line(aes(idx, value, colour = type)) +
-  scale_highlight_colour(max(value) > 20)
+  geom_highlighted_line(max(value) > 20, aes(idx, value, colour = type))
 ```
 
 ![](images/gghighlight-line-1.png)
-
-``` r
-ggplot(d) +
-  geom_line(aes(idx, value, colour = type)) +
-  scale_highlight_colour(max(value) > 20) +
-  annotate_highlights(max(value) > 20, aes(idx, value, label = type, colour = type))
-```
-
-![](images/gghighlight-line2-1.png)
-
-``` r
-ggplot(d) +
-  geom_density(aes(value, fill = type)) +
-  scale_highlight_fill(max(value) > 20, .default_colour = ggplot2::alpha("blue", 0.05))
-```
-
-![](images/gghighlight-density-1.png)
-
-``` r
-ggplot(d) +
-  geom_point(aes(idx, value), colour = alpha("blue", 0.1)) +
-  annotate_highlights(idx %% 200 == 0, aes(idx, value, label = type), grouped = FALSE)
-```
-
-![](images/gghighlight-ungrouped-1.png)

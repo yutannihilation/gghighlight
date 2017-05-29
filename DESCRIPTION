@@ -11,6 +11,8 @@ Imports:
   dplyr (> 0.5.0),
   ggplot2,
   ggrepel,
+  magrittr,
+  purrr,
   rlang,
   viridis
 LazyData: true

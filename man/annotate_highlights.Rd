@@ -4,7 +4,7 @@
 \alias{annotate_highlights}
 \title{Annotate Highlightes With Predicates}
 \usage{
-annotate_highlights(.predicate, label, grouped = TRUE, ...)
+annotate_highlights(.predicate, mapping, grouped = TRUE, ...)
 }
 \description{
 Annotate Highlightes With Predicates
