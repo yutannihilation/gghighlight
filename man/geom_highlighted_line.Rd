@@ -4,7 +4,8 @@
 \alias{geom_highlighted_line}
 \title{Highlight Lines With Predicate}
 \usage{
-geom_highlighted_line(.predicate, mapping, ...)
+geom_highlighted_line(.predicate, mapping = NULL,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.3), ...)
 }
 \description{
 Highlight Lines With Predicate

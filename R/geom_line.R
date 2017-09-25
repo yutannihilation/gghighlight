@@ -1,7 +1,8 @@
 #' Highlight Lines With Predicate
 #'
 #' @export
-geom_highlighted_line <- function(.predicate, mapping, ...) {
+geom_highlighted_line <- function(.predicate, mapping = NULL,
+                                  unhighlighted_colour = ggplot2::alpha("grey", 0.3), ...) {
   predicate <- rlang::enquo(.predicate)
   key <- mapping$colour
 
@@ -9,10 +10,11 @@ geom_highlighted_line <- function(.predicate, mapping, ...) {
 
   filter_func <- build_grouped_filter_func(predicate, key)
 
-  # overwrite aesthetic mappings
-  if(!is.null(mapping$group)) warning('group aesthetics is overwritten.')
-  mapping$group  <- rlang::sym('.group')
-  mapping$alpha  <- rlang::sym('.alpha')
+  mapping_orig <- mapping
+  mapping$group <- mapping$group %||% mapping$colour
 
-  geom_line(data = filter_func, mapping, ...)
+  list(
+    geom_line(mapping = mapping, colour = unhighlighted_colour),
+    geom_line(data = filter_func, mapping_orig, ...)
+  )
 }
