@@ -2,5 +2,6 @@
 
 export(annotate_highlights)
 export(gghighlight_line)
+export(gghighlight_point)
 importFrom(magrittr,"%>%")
 importFrom(rlang,.data)

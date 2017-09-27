@@ -3,16 +3,22 @@
 \name{gghighlight}
 \alias{gghighlight}
 \alias{gghighlight_line}
+\alias{gghighlight_point}
 \title{Highlight Data With Predicate}
 \usage{
 gghighlight(data, mapping, predicate_quo,
   unhighlighted_colour = ggplot2::alpha("grey", 0.3),
-  geom_func = ggplot2::geom_blank, group_key = NULL, ...,
+  geom_func = ggplot2::geom_blank, use_group_by = TRUE, ...,
   environment = parent.frame())
 
 gghighlight_line(data, mapping, predicate,
   unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = TRUE,
-  ..., environment = parent.frame())
+  use_direct_label = TRUE, ..., environment = parent.frame())
+
+gghighlight_point(data, mapping, predicate,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = FALSE,
+  use_direct_label = TRUE, label_key = NULL, ...,
+  environment = parent.frame())
 }
 \arguments{
 \item{data}{Default dataset to use for plot. If not already a data.frame,
@@ -24,6 +30,8 @@ If not specified, must be supplied in each layer added to the plot.}
 
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 
+\item{use_group_by}{If \code{TRUE}, apply \code{filter} on the grouped data.}
+
 \item{...}{Arguments passed to the corresponding geometry functions (e.g. \code{geom_line()}).}
 
 \item{environment}{If a variable defined in the aesthetic mapping is not
@@ -31,8 +39,6 @@ found in the data, ggplot will look for it in this environment. It defaults
 to using the environment in which \code{ggplot()} is called.}
 
 \item{predicate}{Expression to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
-
-\item{use_group_by}{If \code{TRUE}, apply \code{filter} on the grouped data.}
 }
 \description{
 Highlight Data With Predicate

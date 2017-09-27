@@ -114,3 +114,53 @@ gghighlight_line <- function(data,
     ggrepel::geom_label_repel(data = leftmost_points,
                               mapping = mapping_label)
 }
+
+
+#' @rdname gghighlight
+#' @export
+gghighlight_point <- function(data,
+                              mapping,
+                              predicate,
+                              unhighlighted_colour = ggplot2::alpha("grey", 0.3),
+                              use_group_by = FALSE,
+                              use_direct_label = TRUE,
+                              label_key = NULL,
+                              ...,
+                              environment = parent.frame()) {
+
+  p <- gghighlight(data = data,
+                   mapping = mapping,
+                   predicate_quo = rlang::enquo(predicate),
+                   unhighlighted_colour = unhighlighted_colour,
+                   geom_func = ggplot2::geom_point,
+                   use_group_by = use_group_by,
+                   ...,
+                   environment = environment)
+
+  if (!use_direct_label) return(p)
+
+  layer_highlight <- p$layers[[2]]
+  data_highlight <- layer_highlight$data
+  mapping_highlight <- layer_highlight$mapping
+
+  mapping_highlight$label <- substitute(label_key)
+  if (is.null(mapping_highlight$label)) {
+    col_labelable_idx <- which(purrr::map_lgl(data_highlight, is.character) |
+                         purrr::map_lgl(data_highlight, is.logical))
+
+    if (length(col_labelable_idx) == 0) {
+      warning(glue::glue("Please provide the proper label_key.\n",
+                         "Falling back to a usual legend..."))
+      return(p)
+    }
+
+    col_labelable <- colnames(data_highlight)[col_labelable_idx[1]]
+    mapping_highlight$label <- rlang::sym(col_labelable)
+    warning(glue::glue("Using {col_labelable} as label for now, but please provide the proper label_key..."))
+  }
+
+  p +
+    ggplot2::guides(colour=FALSE) +
+    ggrepel::geom_label_repel(data = data_highlight,
+                              mapping = mapping_highlight)
+}

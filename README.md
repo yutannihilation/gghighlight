@@ -52,3 +52,14 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
 ![](images/gghighlight-line-1.png)
+
+``` r
+set.seed(10)
+d2 <- sample_n(d, 20)
+
+gghighlight_point(d2, aes(idx, value), value > 0)
+#> Warning in gghighlight_point(d2, aes(idx, value), value > 0): Use type as
+#> label for now, but please provide the proper label_key...
+```
+
+![](images/gghighlight-point-1.png)

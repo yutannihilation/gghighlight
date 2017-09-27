@@ -57,3 +57,10 @@ library(gghighlight)
 
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
+
+```{r gghighlight-point}
+set.seed(10)
+d2 <- sample_n(d, 20)
+
+gghighlight_point(d2, aes(idx, value), value > 0)
+```
