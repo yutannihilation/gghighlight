@@ -55,6 +55,5 @@ So we are motivated to highlight only important series, like this:
 ```{r gghighlight-line}
 library(gghighlight)
 
-ggplot(d) +
-  geom_highlighted_line(max(value) > 20, aes(idx, value, colour = type))
+gghighlight(d, aes(idx, value, colour = type), max(value) > 20)
 ```
