@@ -3,7 +3,9 @@
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
 #' @param unhighlighted_colour Colour for unhighlited lines/points.
-#' @param use_group_by If \code{TRUE}, apply \code{filter} on the grouped data.
+#' @param use_group_by If `TRUE`, apply `filter` on the grouped data.
+#' @param use_direct_label If `TRUE`, add labels directly on the plot instead of a legend.
+#' @param label_key Column name for `label` aesthetics.
 #' @param ... Arguments passed to the corresponding geometry functions (e.g. `geom_line()`).
 #'
 #' @examples
@@ -76,6 +78,7 @@ gghighlight_line <- function(data,
                              unhighlighted_colour = ggplot2::alpha("grey", 0.3),
                              use_group_by = TRUE,
                              use_direct_label = TRUE,
+                             label_key = NULL,
                              ...,
                              environment = parent.frame()) {
 
@@ -93,16 +96,16 @@ gghighlight_line <- function(data,
   layer_highlight <- p$layers[[2]]
   data_highlight <- layer_highlight$data
   # data_highlight is a grouped df
-  group_key <- dplyr::groups(data_highlight)[[1]]
+  label_key <- dplyr::groups(data_highlight)[[1]] %||% substitute(label_key)
 
-  if (is.null(group_key)) {
-    warning("No grouped vars.\n",
+  if (is.null(label_key)) {
+    warning("No grouped vars or label_key.\n",
             "Falling back to a usual legend...")
     return(p)
   }
 
   mapping_label <- layer_highlight$mapping
-  mapping_label$label <- group_key
+  mapping_label$label <- label_key
 
   x_key <- mapping_label$x
 

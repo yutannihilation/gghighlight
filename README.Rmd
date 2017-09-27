@@ -58,6 +58,14 @@ library(gghighlight)
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
+As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2.
+
+```{r gghighlight-line-theme}
+gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
+  theme_minimal()
+```
+
+
 ```{r gghighlight-point}
 set.seed(10)
 d2 <- sample_n(d, 20)

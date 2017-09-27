@@ -13,7 +13,8 @@ gghighlight(data, mapping, predicate_quo,
 
 gghighlight_line(data, mapping, predicate,
   unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = TRUE,
-  use_direct_label = TRUE, ..., environment = parent.frame())
+  use_direct_label = TRUE, label_key = NULL, ...,
+  environment = parent.frame())
 
 gghighlight_point(data, mapping, predicate,
   unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = FALSE,
@@ -39,6 +40,10 @@ found in the data, ggplot will look for it in this environment. It defaults
 to using the environment in which \code{ggplot()} is called.}
 
 \item{predicate}{Expression to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
+
+\item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of a legend.}
+
+\item{label_key}{Column name for \code{label} aesthetics.}
 }
 \description{
 Highlight Data With Predicate
