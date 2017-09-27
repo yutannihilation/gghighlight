@@ -2,7 +2,7 @@
 #'
 #' Make it easier to explore data with highlights
 #'
-#' @name gghighlights
+#' @name gghighlight
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 #' @docType package

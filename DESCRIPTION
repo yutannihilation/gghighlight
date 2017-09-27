@@ -7,9 +7,10 @@ Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
 Description: Make it easier to explore data with highlights.
 License: MIT
 Encoding: UTF-8
+Depends:
+  ggplot2 (>= 2.2.0)
 Imports:
   dplyr (> 0.5.0),
-  ggplot2,
   ggrepel,
   magrittr,
   purrr,
