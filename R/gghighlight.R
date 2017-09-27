@@ -22,9 +22,17 @@ gghighlight <- function(data,
                         predicate_quo,
                         unhighlighted_colour = ggplot2::alpha("grey", 0.3),
                         geom_func = ggplot2::geom_blank,
-                        group_key = NULL,
+                        use_group_by = TRUE,
                         ...,
                         environment = parent.frame()) {
+
+
+  group_key <- if (use_group_by) infer_group_key_from_aes(mapping) else NULL
+
+  if (use_group_by && is.null(group_key)) {
+    warning("Please provide group or colour aes.\n",
+            "Falling back to ungrouped filter operation...")
+  }
 
   mapping_unhighlitghted <- mapping
   # https://cran.r-project.org/doc/FAQ/R-FAQ.html#Others
@@ -71,36 +79,35 @@ gghighlight_line <- function(data,
                              ...,
                              environment = parent.frame()) {
 
-  group_key <- if (use_group_by) infer_group_key_from_aes(mapping) else NULL
-
-  if (use_group_by && is.null(group_key)) {
-    warning("Please provide group or colour aes.\n",
-            "Falling back to ungrouped filter operation...")
-  }
-
   p <- gghighlight(data = data,
                    mapping = mapping,
                    predicate_quo = rlang::enquo(predicate),
                    unhighlighted_colour = unhighlighted_colour,
                    geom_func = ggplot2::geom_line,
-                   group_key = group_key,
+                   use_group_by = use_group_by,
                    ...,
                    environment = environment)
 
-  if (use_direct_label && is.null(group_key)) {
-    warning("Please provide group or colour aes.\n",
-            "Falling back to usual legend...")
+  if (!use_direct_label) return(p)
+
+  layer_highlight <- p$layers[[2]]
+  data_highlight <- layer_highlight$data
+  # data_highlight is a grouped df
+  group_key <- dplyr::groups(data_highlight)[[1]]
+
+  if (is.null(group_key)) {
+    warning("No grouped vars.\n",
+            "Falling back to a usual legend...")
     return(p)
   }
 
-
-  layer_highlight <- p$layers[[2]]
-  # data is grouped df
-  leftmost_points <- layer_highlight$data %>%
-    dplyr::filter((!! layer_highlight$mapping$x) == max(!! layer_highlight$mapping$x))
-
   mapping_label <- layer_highlight$mapping
   mapping_label$label <- group_key
+
+  x_key <- mapping_label$x
+
+  leftmost_points <- data_highlight %>%
+    dplyr::filter((!! x_key) == max(!! x_key))
 
   p +
     ggplot2::guides(colour=FALSE) +
