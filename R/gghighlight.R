@@ -22,28 +22,20 @@ gghighlight <- function(data,
                         predicate_quo,
                         unhighlighted_colour = ggplot2::alpha("grey", 0.3),
                         geom_func = ggplot2::geom_blank,
-                        use_group_by = NULL,
+                        group_key = NULL,
                         ...,
                         environment = parent.frame()) {
-
-  key <- infer_group_key_from_aes(mapping)
-
-  if (use_group_by && is.null(key)) {
-    warning("Please provide group or colour aes. Falling back to ungrouped filter.")
-    use_group_by <- FALSE
-  }
 
   mapping_unhighlitghted <- mapping
   # https://cran.r-project.org/doc/FAQ/R-FAQ.html#Others
   mapping_unhighlitghted["colour"] <- list(NULL)
   mapping_unhighlitghted["fill"]   <- list(NULL)
 
-  if (use_group_by) {
-    data_filtered <- dplyr::group_by(data, !! key) %>%
-      dplyr::filter(!! predicate_quo) %>%
-      dplyr::ungroup()
+  if (!is.null(group_key)) {
+    data_filtered <- dplyr::group_by(data, !! group_key) %>%
+      dplyr::filter(!! predicate_quo)
 
-    mapping_unhighlitghted$group  <- key
+    mapping_unhighlitghted$group  <- group_key
   } else {
     data_filtered <- dplyr::filter(data, !! predicate_quo)
   }
@@ -75,16 +67,43 @@ gghighlight_line <- function(data,
                              predicate,
                              unhighlighted_colour = ggplot2::alpha("grey", 0.3),
                              use_group_by = TRUE,
+                             use_direct_label = TRUE,
                              ...,
                              environment = parent.frame()) {
 
-  gghighlight(data = data,
-              mapping = mapping,
-              predicate_quo = rlang::enquo(predicate),
-              unhighlighted_colour = unhighlighted_colour,
-              geom_func = ggplot2::geom_line,
-              use_group_by = use_group_by,
-              ...,
-              environment = parent.frame()) +
-    ggplot2::guides(colour=FALSE)
+  group_key <- if (use_group_by) infer_group_key_from_aes(mapping) else NULL
+
+  if (use_group_by && is.null(group_key)) {
+    warning("Please provide group or colour aes.\n",
+            "Falling back to ungrouped filter operation...")
+  }
+
+  p <- gghighlight(data = data,
+                   mapping = mapping,
+                   predicate_quo = rlang::enquo(predicate),
+                   unhighlighted_colour = unhighlighted_colour,
+                   geom_func = ggplot2::geom_line,
+                   group_key = group_key,
+                   ...,
+                   environment = environment)
+
+  if (use_direct_label && is.null(group_key)) {
+    warning("Please provide group or colour aes.\n",
+            "Falling back to usual legend...")
+    return(p)
+  }
+
+
+  layer_highlight <- p$layers[[2]]
+  # data is grouped df
+  leftmost_points <- layer_highlight$data %>%
+    dplyr::filter((!! layer_highlight$mapping$x) == max(!! layer_highlight$mapping$x))
+
+  mapping_label <- layer_highlight$mapping
+  mapping_label$label <- group_key
+
+  p +
+    ggplot2::guides(colour=FALSE) +
+    ggrepel::geom_label_repel(data = leftmost_points,
+                              mapping = mapping_label)
 }
