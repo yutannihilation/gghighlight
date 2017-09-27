@@ -48,7 +48,7 @@ So we are motivated to highlight only important series, like this:
 ``` r
 library(gghighlight)
 
-gghighlight(d, aes(idx, value, colour = type), max(value) > 20)
+gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
 ![](images/gghighlight-line-1.png)
