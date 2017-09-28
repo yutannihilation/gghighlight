@@ -45,7 +45,10 @@ gghighlight <- function(data,
     data_filtered <- dplyr::group_by(data, !! group_key) %>%
       dplyr::filter(!! predicate_quo)
 
-    mapping_unhighlitghted$group  <- group_key
+    # rename the column for group key in original column so that this cannot be faccetted.
+    # assume that no one use this silly colname :P
+    data <- dplyr::rename(data, group.......... = !! group_key)
+    mapping_unhighlitghted$group  <- rlang::sym("group..........")
   } else {
     data_filtered <- dplyr::filter(data, !! predicate_quo)
   }
