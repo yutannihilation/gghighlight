@@ -155,14 +155,14 @@ gghighlight_point <- function(data,
                          purrr::map_lgl(data_highlight, is.logical))
 
     if (length(col_labelable_idx) == 0) {
-      warning(glue::glue("Please provide the proper label_key.\n",
-                         "Falling back to a usual legend..."))
+      warning("Please provide the proper label_key.\n",
+              "Falling back to a usual legend...")
       return(p)
     }
 
     col_labelable <- colnames(data_highlight)[col_labelable_idx[1]]
     mapping_highlight$label <- rlang::sym(col_labelable)
-    warning(glue::glue("Using {col_labelable} as label for now, but please provide the proper label_key..."))
+    warning("Using %s as label for now, but please provide the label_key explicity!", col_labelable)
   }
 
   p +
