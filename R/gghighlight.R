@@ -61,12 +61,12 @@ gghighlight <- function(data,
   # base plot
   ggplot2::ggplot(data = data_filtered,
                   mapping = mapping,
-                  environment = environment) +
+                  environment = environment) %+%
     # unhighlighted plot
     geom_func(data = data,
               mapping = mapping_unhighlitghted,
               colour = unhighlighted_colour,
-              ...) +
+              ...) %+%
     # highlighted plot
     geom_func(data = data_filtered,
               mapping = mapping,
@@ -120,8 +120,8 @@ gghighlight_line <- function(data,
   leftmost_points <- data_highlight %>%
     dplyr::filter((!! x_key) == max(!! x_key))
 
-  p +
-    ggplot2::guides(colour=FALSE) +
+  p %+%
+    ggplot2::guides(colour=FALSE) %+%
     ggrepel::geom_label_repel(data = leftmost_points,
                               mapping = mapping_label)
 }
@@ -173,8 +173,8 @@ gghighlight_point <- function(data,
     )
   }
 
-  p +
-    ggplot2::guides(colour=FALSE) +
+  p %+%
+    ggplot2::guides(colour=FALSE) %+%
     ggrepel::geom_label_repel(data = data_highlight,
                               mapping = mapping_highlight)
 }

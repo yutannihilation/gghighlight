@@ -5,5 +5,10 @@
 #' @name gghighlight-package
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
+#' @importFrom ggplot2 %+%
 #' @docType package
 NULL
+
+#' @importFrom ggplot2 aes
+#' @export
+ggplot2::aes
