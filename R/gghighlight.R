@@ -4,6 +4,7 @@
 #'
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
+#' @param max_highlight Max number of series to highlight.
 #' @param unhighlighted_colour Colour for unhighlited lines/points.
 #' @param use_group_by If `TRUE`, apply `filter` on the grouped data.
 #' @param use_direct_label If `TRUE`, add labels directly on the plot instead of a legend.
@@ -27,6 +28,7 @@ NULL
 gghighlight <- function(data,
                         mapping,
                         predicate_quo,
+                        max_highlight = 5L,
                         unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                         geom_func = ggplot2::geom_blank,
                         use_group_by = TRUE,
@@ -47,15 +49,31 @@ gghighlight <- function(data,
   mapping_unhighlitghted[aes_null] <- list(NULL)
 
   if (!is.null(group_key)) {
-    data_filtered <- dplyr::group_by(data, !! group_key) %>%
-      dplyr::filter(!! predicate_quo)
+    data_grouped <- dplyr::group_by(data, !! group_key)
+    # assume that no one use this silly colname :P
+    data_predicated <- dplyr::summarise(data_grouped, predicate.......... = !! predicate_quo)
+
+    groups <- if (is.logical(data_predicated$predicate..........)) {
+      data_predicated[[as.character(group_key)]][data_predicated$predicate..........]
+    } else {
+      data_predicated[[as.character(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
+    }
+
+    data_filtered <- dplyr::filter(data_grouped, (!! group_key) %in% (!! groups))
 
     # rename the column for group key in original column so that this cannot be faccetted.
     # assume that no one use this silly colname :P
     data <- dplyr::rename(data, group.......... = !! group_key)
     mapping_unhighlitghted$group  <- rlang::sym("group..........")
   } else {
-    data_filtered <- dplyr::filter(data, !! predicate_quo)
+    data_predicated <- dplyr::mutate(data, predicate.......... = !! predicate_quo)
+    data_filtered <- if (is.logical(data_predicated$predicate..........)) {
+      dplyr::filter(data_predicated, .data$predicate..........)
+    } else {
+      data_predicated %>%
+      dplyr::arrange(-.data$predicate..........) %>%
+        dplyr::slice(!! 1:max_highlight)
+    }
   }
 
   # base plot
@@ -83,6 +101,7 @@ infer_group_key_from_aes <- function(mapping) {
 gghighlight_line <- function(data,
                              mapping,
                              predicate,
+                             max_highlight = 5L,
                              unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                              use_group_by = TRUE,
                              use_direct_label = TRUE,
@@ -93,6 +112,7 @@ gghighlight_line <- function(data,
   p <- gghighlight(data = data,
                    mapping = mapping,
                    predicate_quo = rlang::enquo(predicate),
+                   max_highlight = max_highlight,
                    unhighlighted_colour = unhighlighted_colour,
                    geom_func = ggplot2::geom_line,
                    use_group_by = use_group_by,
@@ -132,6 +152,7 @@ gghighlight_line <- function(data,
 gghighlight_point <- function(data,
                               mapping,
                               predicate,
+                              max_highlight = 5L,
                               unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                               use_group_by = FALSE,
                               use_direct_label = TRUE,
@@ -142,6 +163,7 @@ gghighlight_point <- function(data,
   p <- gghighlight(data = data,
                    mapping = mapping,
                    predicate_quo = rlang::enquo(predicate),
+                   max_highlight = max_highlight,
                    unhighlighted_colour = unhighlighted_colour,
                    geom_func = ggplot2::geom_point,
                    use_group_by = use_group_by,

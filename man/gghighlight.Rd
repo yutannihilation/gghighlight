@@ -6,12 +6,12 @@
 \alias{gghighlight_point}
 \title{Highlight Data With Predicate}
 \usage{
-gghighlight_line(data, mapping, predicate,
+gghighlight_line(data, mapping, predicate, max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = TRUE,
   use_direct_label = TRUE, label_key = NULL, ...,
   environment = parent.frame())
 
-gghighlight_point(data, mapping, predicate,
+gghighlight_point(data, mapping, predicate, max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = FALSE,
   use_direct_label = TRUE, label_key = NULL, ...,
   environment = parent.frame())
@@ -25,6 +25,8 @@ must be supplied in each layer added to the plot.}
 If not specified, must be supplied in each layer added to the plot.}
 
 \item{predicate}{Expression to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
+
+\item{max_highlight}{Max number of series to highlight.}
 
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 

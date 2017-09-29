@@ -28,7 +28,7 @@ test_that("gghighligt_line() with usual arguments works", {
 
   # check if the data for label is as expected
   expect_equal(nrow(data_highlighted_label), 2L)
-  expect_equal(length(unique(data_highlighted_label$group)), 2L)
+  expect_equal(data_highlighted_label$label, c("b", "c"))
 })
 
 test_that("gghighligt_line() without direct labeling works", {
@@ -95,5 +95,33 @@ test_that("gghighligt_line() works with facets", {
 
   # check if the data for label is as expected
   data_highlighted_label_split <- split(data_highlighted_label, data_highlighted_label$PANEL)
-  expect_equivalent(lapply(data_highlighted_label_split, nrow), list(1L, 1L))
+  expect_equivalent(lapply(data_highlighted_label_split, getElement, name = "label"), list("b", "c"))
+})
+
+test_that("gghighligt_line() raises error if use_group_by = TRUE but predicate returns multiple values per group", {
+  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value))
+  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0))
+})
+
+test_that("gghighligt_line() works with numerical predicate", {
+  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L))
+  d_built <- ggplot2::ggplot_build(p)
+
+  expect_equal(length(d_built$data), 3L)
+
+  data_unhighlighted <- d_built$data[[1]]
+  data_highlighted_line <- d_built$data[[2]]
+  data_highlighted_label <- d_built$data[[3]]
+
+  # check if the unhighlighted data the same as the original one
+  expect_equal(nrow(data_unhighlighted), 9L)
+  expect_equal(length(unique(data_unhighlighted$group)), 3L)
+
+  # check if the highlited data is as expected
+  expect_equal(nrow(data_highlighted_line), 6L)
+  expect_equal(length(unique(data_highlighted_line$group)), 2L)
+
+  # check if the data for label is as expected
+  expect_equal(nrow(data_highlighted_label), 2L)
+  expect_equal(data_highlighted_label$label, c("b", "c"))
 })
