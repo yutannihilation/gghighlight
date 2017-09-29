@@ -70,4 +70,30 @@ test_that("gghighligt_line() without colour mapping works", {
   expect_true(all(data_highlighted_line$group == -1L))
 })
 
+library(ggplot2)
 
+test_that("gghighligt_line() works with facets", {
+  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category))
+  d_built <- ggplot2::ggplot_build(p)
+
+  expect_equal(length(d_built$data), 3L)
+
+  data_unhighlighted <- d_built$data[[1]]
+  data_highlighted_line <- d_built$data[[2]]
+  data_highlighted_label <- d_built$data[[3]]
+
+  # check if the unhighlighted data exists on all panels.
+  data_unhighlighted_split <- split(data_unhighlighted, data_unhighlighted$PANEL)
+  expect_equal(length(data_unhighlighted_split), 2L)
+  expect_equivalent(lapply(data_unhighlighted_split, nrow), list(9L, 9L))
+  expect_equivalent(lapply(data_unhighlighted_split, function(x) length(unique(x$group))), list(3L, 3L))
+
+  # check if the highlited data is as expected
+  data_highlighted_line_split <- split(data_highlighted_line, data_highlighted_line$PANEL)
+  expect_equivalent(lapply(data_highlighted_line_split, nrow), list(3L, 3L))
+  expect_equivalent(lapply(data_highlighted_line_split, function(x) length(unique(x$group))), list(1L, 1L))
+
+  # check if the data for label is as expected
+  data_highlighted_label_split <- split(data_highlighted_label, data_highlighted_label$PANEL)
+  expect_equivalent(lapply(data_highlighted_label_split, nrow), list(1L, 1L))
+})
