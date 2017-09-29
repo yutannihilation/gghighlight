@@ -43,8 +43,8 @@ gghighlight <- function(data,
 
   mapping_unhighlitghted <- mapping
   # https://cran.r-project.org/doc/FAQ/R-FAQ.html#Others
-  mapping_unhighlitghted["colour"] <- list(NULL)
-  mapping_unhighlitghted["fill"]   <- list(NULL)
+  aes_null <- intersect(c("colour", "fill"), names(mapping_unhighlitghted))
+  mapping_unhighlitghted[aes_null] <- list(NULL)
 
   if (!is.null(group_key)) {
     data_filtered <- dplyr::group_by(data, !! group_key) %>%
