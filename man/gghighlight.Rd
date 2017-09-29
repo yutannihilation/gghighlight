@@ -7,12 +7,12 @@
 \title{Highlight Data With Predicate}
 \usage{
 gghighlight_line(data, mapping, predicate,
-  unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = TRUE,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = TRUE,
   use_direct_label = TRUE, label_key = NULL, ...,
   environment = parent.frame())
 
 gghighlight_point(data, mapping, predicate,
-  unhighlighted_colour = ggplot2::alpha("grey", 0.3), use_group_by = FALSE,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = FALSE,
   use_direct_label = TRUE, label_key = NULL, ...,
   environment = parent.frame())
 }
