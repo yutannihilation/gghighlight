@@ -5,7 +5,7 @@ Version: 0.0.1
 Author: Hiroaki Yutani
 Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
 Description: Make it easier to explore data with highlights.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
   R (>= 3.3.0)
