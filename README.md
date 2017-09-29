@@ -66,7 +66,7 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
 
 ![](images/gghighlight-line-theme-1.png)
 
-The plot can be facetted:
+The plot also can be facetted:
 
 ``` r
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
@@ -93,3 +93,45 @@ gghighlight_point(d2, aes(idx, value), value > 0)
 ```
 
 ![](images/gghighlight-point-1.png)
+
+### Semantics
+
+#### Grouped vs ungrouped
+
+You may notice that the `gghighlight_line()` and `gghighlight_point()` has different semantics.
+
+By default, `gghighlight_line()` calculates `predicate` per group, more precisely, `dplyr::group_by()` + `dplyr::summarise()`. So if the predicate expression returns more than one value per group, it ends up with an error like this:
+
+``` r
+gghighlight_line(d, aes(idx, value, colour = type), value > 20)
+#> Error in summarise_impl(.data, dots): Column `predicate..........` must be length 1 (a summary value), not 387
+```
+
+`gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
+
+``` r
+gghighlight_point(d2, aes(idx, value, colour = type), max(value) > 0, use_group_by = TRUE)
+#> Warning in gghighlight_point(d2, aes(idx, value, colour = type), max(value)
+#> > : Using type as label for now, but please provide the label_key
+#> explicity!
+```
+
+![](images/grouped_point-1.png)
+
+While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped line can be interesting because data that can be represented as line must have series, or groups.
+
+#### Logical predicate vs numerical predicate
+
+To construct a predicate expression like bellow, we need to determine a threshold. But it is difficult to choose a nice one before we draw plots.
+
+``` r
+max(value) > 20
+```
+
+So, `gghighlight_*()` allows predicates that return numeric (or character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
+
+``` r
+gghighlight_line(d, aes(idx, value, colour = type), max(value), max_highlight = 5L)
+```
+
+![](images/numeric-highlight-1.png)
