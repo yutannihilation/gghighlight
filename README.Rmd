@@ -32,7 +32,7 @@ devtools::install_github("yutannihilation/gghighlight")
 Suppose the data has a lot of series.
 
 ```{r example-data, message=FALSE}
-library(tidyverse)
+library(dplyr, warn.conflicts = FALSE)
 
 set.seed(1)
 d <- tibble(
@@ -48,6 +48,8 @@ d <- tibble(
 It is difficult to distinguish them by colour.
 
 ```{r ggplot-too-many}
+library(ggplot2)
+
 ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
@@ -60,12 +62,27 @@ library(gghighlight)
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
-As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2.
+As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2. (Note that, while gghighlights doesn't require ggplot2 loaded, ggplot2 need to be loaded to customize the plot)
 
 ```{r gghighlight-line-theme}
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
   theme_minimal()
 ```
+
+The plot can be facetted:
+
+```{r gghighlight-line-facet}
+gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
+  facet_wrap(~ type)
+```
+
+### Supported geoms
+
+#### Line
+
+(As shown above)
+
+#### Point
 
 
 ```{r gghighlight-point}

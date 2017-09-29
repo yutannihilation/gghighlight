@@ -23,7 +23,7 @@ Example
 Suppose the data has a lot of series.
 
 ``` r
-library(tidyverse)
+library(dplyr, warn.conflicts = FALSE)
 
 set.seed(1)
 d <- tibble(
@@ -39,6 +39,8 @@ d <- tibble(
 It is difficult to distinguish them by colour.
 
 ``` r
+library(ggplot2)
+
 ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
@@ -55,7 +57,7 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 
 ![](images/gghighlight-line-1.png)
 
-As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2.
+As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2. (Note that, while gghighlights doesn't require ggplot2 loaded, ggplot2 need to be loaded to customize the plot)
 
 ``` r
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
@@ -64,13 +66,30 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
 
 ![](images/gghighlight-line-theme-1.png)
 
+The plot can be facetted:
+
+``` r
+gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
+  facet_wrap(~ type)
+```
+
+![](images/gghighlight-line-facet-1.png)
+
+### Supported geoms
+
+#### Line
+
+(As shown above)
+
+#### Point
+
 ``` r
 set.seed(10)
 d2 <- sample_n(d, 20)
 
 gghighlight_point(d2, aes(idx, value), value > 0)
 #> Warning in gghighlight_point(d2, aes(idx, value), value > 0): Using type as
-#> label for now, but please provide the proper label_key...
+#> label for now, but please provide the label_key explicity!
 ```
 
 ![](images/gghighlight-point-1.png)
