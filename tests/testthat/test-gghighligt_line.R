@@ -63,11 +63,11 @@ test_that("gghighligt_line() without colour mapping works", {
 
   # check if the unhighlighted data the same as the original one
   expect_equal(nrow(data_unhighlighted), 9L)
-  expect_equal(length(unique(data_unhighlighted$group)), 1L)
+  expect_true(all(data_unhighlighted$group == -1L))
 
   # check if the highlited data is as expected
   expect_equal(nrow(data_highlighted_line), 9L)
-  expect_equal(length(unique(data_highlighted_line$group)), 1L)
+  expect_true(all(data_highlighted_line$group == -1L))
 })
 
 
