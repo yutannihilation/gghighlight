@@ -1,5 +1,7 @@
 #' Highlight Data With Predicate
 #'
+#' @name gghighlight
+#'
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
 #' @param unhighlighted_colour Colour for unhighlited lines/points.
@@ -19,6 +21,9 @@
 #' gghighlight_line(d, aes(idx, value, colour = category),
 #'                  max(value) > 10)
 #'
+NULL
+
+
 gghighlight <- function(data,
                         mapping,
                         predicate_quo,
