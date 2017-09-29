@@ -167,7 +167,10 @@ gghighlight_point <- function(data,
 
     col_labelable <- colnames(data_highlight)[col_labelable_idx[1]]
     mapping_highlight$label <- rlang::sym(col_labelable)
-    warning("Using %s as label for now, but please provide the label_key explicity!", col_labelable)
+    warning(
+      sprintf("Using %s as label for now, but please provide the label_key explicity!",
+              col_labelable)
+    )
   }
 
   p +
