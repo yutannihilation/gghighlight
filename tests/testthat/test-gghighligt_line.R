@@ -1,7 +1,7 @@
 context("gghighligt_line")
 
 d <- data.frame(
-  idx = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
+  idx   = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
   value = c( 1, 2, 3,10,11,12, 9,10,11),
   category = rep(c("a","b","c"), 3),
   stringsAsFactors = FALSE
