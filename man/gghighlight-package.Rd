@@ -3,7 +3,7 @@
 \docType{package}
 \name{gghighlight-package}
 \alias{gghighlight-package}
-\title{Highlight Points And Lines In 'ggplot2'}
+\title{Highlight Lines And Points In 'ggplot2'}
 \description{
 Make it easier to explore data with highlights
 }

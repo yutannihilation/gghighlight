@@ -5,7 +5,7 @@
 gghighlight
 ===========
 
-Highlight points and lines in ggplot2.
+Highlight lines and points in ggplot2.
 
 Installation
 ------------

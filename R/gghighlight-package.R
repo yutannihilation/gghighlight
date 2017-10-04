@@ -1,4 +1,4 @@
-#' Highlight Points And Lines In 'ggplot2'
+#' Highlight Lines And Points In 'ggplot2'
 #'
 #' Make it easier to explore data with highlights
 #'

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # gghighlight
 
-Highlight points and lines in ggplot2.
+Highlight lines and points in ggplot2.
 
 ## Installation
 
