@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-^images/.*\.png$
 ^\.travis\.yml$
 ^cran-comments\.md$

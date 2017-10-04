@@ -46,7 +46,7 @@ ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
 
-![](images/ggplot-too-many-1.png)
+![](man/figures/README-ggplot-too-many-1.png)
 
 So we are motivated to highlight only important series, like this:
 
@@ -56,7 +56,7 @@ library(gghighlight)
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
-![](images/gghighlight-line-1.png)
+![](man/figures/README-gghighlight-line-1.png)
 
 As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2. (Note that, while gghighlights doesn't require ggplot2 loaded, ggplot2 need to be loaded to customize the plot)
 
@@ -65,7 +65,7 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
   theme_minimal()
 ```
 
-![](images/gghighlight-line-theme-1.png)
+![](man/figures/README-gghighlight-line-theme-1.png)
 
 The plot also can be facetted:
 
@@ -74,7 +74,7 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
   facet_wrap(~ type)
 ```
 
-![](images/gghighlight-line-facet-1.png)
+![](man/figures/README-gghighlight-line-facet-1.png)
 
 ### Supported geoms
 
@@ -86,7 +86,7 @@ library(gghighlight)
 gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 ```
 
-![](images/unnamed-chunk-2-1.png)
+![](man/figures/README-unnamed-chunk-2-1.png)
 
 #### Point
 
@@ -99,11 +99,9 @@ gghighlight_point(d2, aes(idx, value), value > 0)
 #> label for now, but please provide the label_key explicity!
 ```
 
-![](images/gghighlight-point-1.png)
+![](man/figures/README-gghighlight-point-1.png)
 
-### Semantics
-
-#### Grouped vs ungrouped
+### Grouped vs ungrouped
 
 You may notice that the `gghighlight_line()` and `gghighlight_point()` has different semantics.
 
@@ -114,7 +112,7 @@ gghighlight_line(d, aes(idx, value, colour = type), value > 20)
 #> Error in summarise_impl(.data, dots): Column `predicate..........` must be length 1 (a summary value), not 387
 ```
 
-`gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
+On the other hand, `gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
 
 ``` r
 gghighlight_point(d2, aes(idx, value, colour = type), max(value) > 0, use_group_by = TRUE)
@@ -123,13 +121,13 @@ gghighlight_point(d2, aes(idx, value, colour = type), max(value) > 0, use_group_
 #> explicity!
 ```
 
-![](images/grouped_point-1.png)
+![](man/figures/README-grouped_point-1.png)
 
-While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped line can be interesting because data that can be represented as line must have series, or groups.
+While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped lines can be interesting because data that can be represented as line must have its series, or groups.
 
-#### Logical predicate vs numerical predicate
+#### Non-logical predicate
 
-To construct a predicate expression like bellow, we need to determine a threshold. But it is difficult to choose a nice one before we draw plots.
+To construct a predicate expression like bellow, we need to determine a threshold (in this example, `20`). But it is difficult to choose a nice one before we draw plots.
 
 ``` r
 max(value) > 20
@@ -141,4 +139,4 @@ So, `gghighlight_*()` allows predicates that return numeric (or character) resul
 gghighlight_line(d, aes(idx, value, colour = type), max(value), max_highlight = 5L)
 ```
 
-![](images/numeric-highlight-1.png)
+![](man/figures/README-numeric-highlight-1.png)
