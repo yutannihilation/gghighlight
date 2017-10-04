@@ -1,15 +1,32 @@
 #' Highlight Data With Predicate
 #'
+#' `gghiglight_line()` highlights lines ([ggplot2::geom_line()]) and `gghighlight_points()` highlights
+#' points ([ggplot2::geom_point()]) according to the given predicates.
+#'
 #' @name gghighlight
 #'
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
 #' @param max_highlight Max number of series to highlight.
 #' @param unhighlighted_colour Colour for unhighlited lines/points.
-#' @param use_group_by If `TRUE`, apply `filter` on the grouped data.
-#' @param use_direct_label If `TRUE`, add labels directly on the plot instead of a legend.
+#' @param use_group_by If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
+#' @param use_direct_label If `TRUE`, add labels directly on the plot instead of using a legend.
 #' @param label_key Column name for `label` aesthetics.
 #' @param ... Arguments passed to the corresponding geometry functions (e.g. `geom_line()`).
+#'
+#' @details
+#' `gghiglight_lines()` evaluates `predicate` by grouped calculation; You must specify the expression that returns one value
+#'  per group. Aggregate functions (e.g. `max()`, `all()`) are usually needed.
+#'
+#' `gghighlight_points()` evaluates `predicate` by ungrouped calculation; You must specify the expression that returns one value
+#' per row.
+#'
+#' `gghighlight_*()` behaves differently, depending on what type of vector the result of the `predicate` is.
+#'
+#' * If `predicate` is evaluated into a logical vector, the data series/points filtered by the logical vector will
+#'   be highlighted.
+#' * Otherwise, the data series/points are sorted by the result of `predicate` and the top `max_highlight` ones will
+#'   be highlighted.
 #'
 #' @examples
 #' d <- data.frame(
@@ -19,8 +36,14 @@
 #'   stringsAsFactors = FALSE
 #' )
 #'
-#' gghighlight_line(d, aes(idx, value, colour = category),
-#'                  max(value) > 10)
+#' gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
+#'
+#' \dontrun{
+#' # This throws an error because the predicate returns multiple values per group.
+#' gghighlight_line(d, aes(idx, value, colour = category), value > 10)
+#' }
+#'
+#' gghighlight_point(d, aes(idx, value), value > 10, label_key = category)
 #'
 NULL
 

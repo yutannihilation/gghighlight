@@ -30,9 +30,9 @@ If not specified, must be supplied in each layer added to the plot.}
 
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 
-\item{use_group_by}{If \code{TRUE}, apply \code{filter} on the grouped data.}
+\item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 
-\item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of a legend.}
+\item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of using a legend.}
 
 \item{label_key}{Column name for \code{label} aesthetics.}
 
@@ -43,7 +43,23 @@ found in the data, ggplot will look for it in this environment. It defaults
 to using the environment in which \code{ggplot()} is called.}
 }
 \description{
-Highlight Data With Predicate
+\code{gghiglight_line()} highlights lines (\code{\link[ggplot2:geom_line]{ggplot2::geom_line()}}) and \code{gghighlight_points()} highlights
+points (\code{\link[ggplot2:geom_point]{ggplot2::geom_point()}}) according to the given predicates.
+}
+\details{
+\code{gghiglight_lines()} evaluates \code{predicate} by grouped calculation; You must specify the expression that returns one value
+per group. Aggregate functions (e.g. \code{max()}, \code{all()}) are usually needed.
+
+\code{gghighlight_points()} evaluates \code{predicate} by ungrouped calculation; You must specify the expression that returns one value
+per row.
+
+\code{gghighlight_*()} behaves differently, depending on what type of vector the result of the \code{predicate} is.
+\itemize{
+\item If \code{predicate} is evaluated into a logical vector, the data series/points filtered by the logical vector will
+be highlighted.
+\item Otherwise, the data series/points are sorted by the result of \code{predicate} and the top \code{max_highlight} ones will
+be highlighted.
+}
 }
 \examples{
 d <- data.frame(
@@ -53,7 +69,13 @@ d <- data.frame(
   stringsAsFactors = FALSE
 )
 
-gghighlight_line(d, aes(idx, value, colour = category),
-                 max(value) > 10)
+gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
+
+\dontrun{
+# This throws an error because the predicate returns multiple values per group.
+gghighlight_line(d, aes(idx, value, colour = category), value > 10)
+}
+
+gghighlight_point(d, aes(idx, value), value > 10, label_key = category)
 
 }

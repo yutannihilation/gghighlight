@@ -1,6 +1,6 @@
 #' Highlight Lines And Points In 'ggplot2'
 #'
-#' Make it easier to explore data with highlights
+#' Make it easier to explore data with highlights.
 #'
 #' @name gghighlight-package
 #' @importFrom rlang .data

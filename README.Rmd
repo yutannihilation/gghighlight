@@ -20,11 +20,12 @@ Highlight lines and points in ggplot2.
 
 ## Installation
 
-You can install gghighlight from github with:
-
 ```{r gh-installation, eval = FALSE}
+install.packages("dplyr")
+
+# Or the development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("yutannihilation/gghighlight")
+devtools::install_github("tidyverse/dplyr")
 ```
 
 ## Example
@@ -80,7 +81,8 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
 
 #### Line
 
-(As shown above)
+```{r ref.label='gghighlight-line'}
+```
 
 #### Point
 
@@ -91,9 +93,7 @@ d2 <- sample_n(d, 20)
 gghighlight_point(d2, aes(idx, value), value > 0)
 ```
 
-### Semantics
-
-#### Grouped vs ungrouped
+### Grouped vs ungrouped
 
 You may notice that the `gghighlight_line()` and `gghighlight_point()` has different semantics.
 
@@ -103,17 +103,17 @@ By default, `gghighlight_line()` calculates `predicate` per group, more precisel
 gghighlight_line(d, aes(idx, value, colour = type), value > 20)
 ```
 
-`gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
+On the other hand, `gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
 
 ```{r grouped_point}
 gghighlight_point(d2, aes(idx, value, colour = type), max(value) > 0, use_group_by = TRUE)
 ```
 
-While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped line can be interesting because data that can be represented as line must have series, or groups.
+While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped lines can be interesting because data that can be represented as line must have its series, or groups.
 
-#### Logical predicate vs numerical predicate
+#### Non-logical predicate
 
-To construct a predicate expression like bellow, we need to determine a threshold. But it is difficult to choose a nice one before we draw plots.
+To construct a predicate expression like bellow, we need to determine a threshold (in this example, `20`). But it is difficult to choose a nice one before we draw plots.
 
 ```{r predicate-example, eval=FALSE}
 max(value) > 20

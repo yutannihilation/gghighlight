@@ -10,11 +10,12 @@ Highlight lines and points in ggplot2.
 Installation
 ------------
 
-You can install gghighlight from github with:
-
 ``` r
+install.packages("dplyr")
+
+# Or the development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("yutannihilation/gghighlight")
+devtools::install_github("tidyverse/dplyr")
 ```
 
 Example
@@ -79,7 +80,13 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
 
 #### Line
 
-(As shown above)
+``` r
+library(gghighlight)
+
+gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
+```
+
+![](images/unnamed-chunk-2-1.png)
 
 #### Point
 
