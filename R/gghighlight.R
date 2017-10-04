@@ -202,7 +202,7 @@ gghighlight_point <- function(data,
   mapping_highlight$label <- substitute(label_key)
   if (is.null(mapping_highlight$label)) {
     col_labelable_idx <- which(
-      purrr::map_lgl(data_highlight, is.character) | purrr::map_lgl(data_highlight, is.logical)
+      purrr::map_lgl(data_highlight, is.character) | purrr::map_lgl(data_highlight, is.factor)
     )
 
     if (length(col_labelable_idx) == 0) {
