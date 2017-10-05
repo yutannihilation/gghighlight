@@ -1,6 +1,6 @@
 Package: gghighlight
 Type: Package
-Title: Highlight Lines And Points In 'ggplot2'
+Title: Highlight Lines and Points in 'ggplot2'
 Version: 0.0.1
 Author: Hiroaki Yutani
 Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
