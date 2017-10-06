@@ -26,15 +26,13 @@ Suppose the data has a lot of series.
 ``` r
 library(dplyr, warn.conflicts = FALSE)
 
-set.seed(1)
-d <- tibble(
-  idx = 1:10000,
-  value = runif(idx, -1, 1),
-  type = sample(letters, size = length(idx), replace = TRUE)
-) %>%
-  group_by(type) %>%
-  mutate(value = cumsum(value)) %>%
-  ungroup()
+set.seed(2)
+d <- purrr::map_dfr(
+  letters,
+  ~ data.frame(idx = 1:400,
+               value = cumsum(runif(400, -1, 1)),
+               type = .,
+               stringsAsFactors = FALSE))
 ```
 
 It is difficult to distinguish them by colour.
@@ -109,7 +107,7 @@ By default, `gghighlight_line()` calculates `predicate` per group, more precisel
 
 ``` r
 gghighlight_line(d, aes(idx, value, colour = type), value > 20)
-#> Error in summarise_impl(.data, dots): Column `predicate..........` must be length 1 (a summary value), not 387
+#> Error in summarise_impl(.data, dots): Column `predicate..........` must be length 1 (a summary value), not 400
 ```
 
 On the other hand, `gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:

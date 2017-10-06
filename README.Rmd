@@ -36,15 +36,13 @@ Suppose the data has a lot of series.
 ```{r example-data, message=FALSE}
 library(dplyr, warn.conflicts = FALSE)
 
-set.seed(1)
-d <- tibble(
-  idx = 1:10000,
-  value = runif(idx, -1, 1),
-  type = sample(letters, size = length(idx), replace = TRUE)
-) %>%
-  group_by(type) %>%
-  mutate(value = cumsum(value)) %>%
-  ungroup()
+set.seed(2)
+d <- purrr::map_dfr(
+  letters,
+  ~ data.frame(idx = 1:400,
+               value = cumsum(runif(400, -1, 1)),
+               type = .,
+               stringsAsFactors = FALSE))
 ```
 
 It is difficult to distinguish them by colour.
