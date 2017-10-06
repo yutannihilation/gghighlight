@@ -11,11 +11,11 @@ Installation
 ------------
 
 ``` r
-install.packages("dplyr")
+install.packages("gghighlight")
 
 # Or the development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("tidyverse/dplyr")
+devtools::install_github("yutannihilation/gghighlight")
 ```
 
 Example

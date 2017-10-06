@@ -22,11 +22,11 @@ Highlight lines and points in ggplot2.
 ## Installation
 
 ```{r gh-installation, eval = FALSE}
-install.packages("dplyr")
+install.packages("gghighlight")
 
 # Or the development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("tidyverse/dplyr")
+devtools::install_github("yutannihilation/gghighlight")
 ```
 
 ## Example
