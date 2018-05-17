@@ -12,7 +12,7 @@ Encoding: UTF-8
 Depends:
   R (>= 3.1.0)
 Imports:
-  ggplot2 (>= 2.3.0),
+  ggplot2 (> 2.2.0),
   dplyr (> 0.7.0),
   ggrepel,
   magrittr,
