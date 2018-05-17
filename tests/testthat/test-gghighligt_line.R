@@ -1,6 +1,6 @@
 context("gghighligt_line")
 
-skip()
+skip("skip for now")
 
 d <- data.frame(
   idx   = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),

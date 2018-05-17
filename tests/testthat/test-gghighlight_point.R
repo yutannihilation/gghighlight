@@ -1,6 +1,6 @@
 context("gghighlight_point")
 
-skip()
+skip("skip for now")
 
 d <- data.frame(
   x     = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
