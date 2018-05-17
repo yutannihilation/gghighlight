@@ -34,8 +34,6 @@ devtools::install_github("yutannihilation/gghighlight")
 Suppose the data has a lot of series.
 
 ```{r example-data, message=FALSE}
-library(dplyr, warn.conflicts = FALSE)
-
 set.seed(2)
 d <- purrr::map_dfr(
   letters,
