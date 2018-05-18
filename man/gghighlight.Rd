@@ -38,9 +38,7 @@ If not specified, must be supplied in each layer added to the plot.}
 
 \item{...}{Arguments passed to the corresponding geometry functions (e.g. \code{geom_line()}).}
 
-\item{environment}{If a variable defined in the aesthetic mapping is not
-found in the data, ggplot will look for it in this environment. It defaults
-to using the environment in which \code{ggplot()} is called.}
+\item{environment}{DEPRECATED. Used prior to tidy evaluation.}
 }
 \description{
 \code{gghiglight_line()} highlights lines (\code{\link[ggplot2:geom_line]{ggplot2::geom_line()}}) and \code{gghighlight_points()} highlights

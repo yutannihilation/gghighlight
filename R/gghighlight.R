@@ -77,9 +77,9 @@ gghighlight <- function(data,
     data_predicated <- dplyr::summarise(data_grouped, predicate.......... = !! predicate_quo)
 
     groups <- if (is.logical(data_predicated$predicate..........)) {
-      data_predicated[[as.character(group_key)]][data_predicated$predicate..........]
+      data_predicated[[rlang::quo_text(group_key)]][data_predicated$predicate..........]
     } else {
-      data_predicated[[as.character(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
+      data_predicated[[rlang::quo_text(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
     }
 
     data_filtered <- dplyr::filter(data_grouped, (!! group_key) %in% (!! groups))

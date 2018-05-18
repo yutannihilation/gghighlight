@@ -6,6 +6,7 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 #' @importFrom ggplot2 %+%
+#' @importFrom ggplot2 ggplot_add
 #' @docType package
 NULL
 
