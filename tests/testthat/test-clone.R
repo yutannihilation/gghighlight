@@ -1,6 +1,15 @@
 context("test-clone.R")
+library(ggplot2)
 
 d <- data.frame(x = 1:10, y = 1:10, cat = rep(1:2, each = 5))
+
+test_that("clone_layer() clones a layer properly", {
+  p <- ggplot(d, aes(x, y)) +
+    geom_point(aes(group = x), color = "red")
+
+  l <- clone_layer(p$layers[[1]])
+  expect_equal(l, p$layers[[1]])
+})
 
 test_that("geom_clone() clones the upper layers as it is", {
   p <- ggplot(d, aes(x, y)) +
