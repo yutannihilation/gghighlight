@@ -81,8 +81,24 @@ test_that("geom_clone() clones the upper layers as it is", {
 })
 
 test_that("geom_clone() clones the upper layers and modifies the parameters", {
-  p <- ggplot(d, aes(x, y)) +
-    geom_point()
+  d2 <- data.frame(x = 1)
+
+  p <- ggplot(d) +
+    geom_point(aes(group = x), color = "red") +
+    geom_line()
+
+  # two layers
+  p1 <- p + geom_clone(data = d2)
+
+  expect_equal(length(p1$layers), 4)
+  expect_s3_class(p1$layers[[1]]$geom, "GeomPoint")
+  expect_s3_class(p1$layers[[2]]$geom, "GeomLine")
+  expect_s3_class(p1$layers[[3]]$geom, "GeomPoint")
+  expect_s3_class(p1$layers[[4]]$geom, "GeomLine")
+  expect_equal(p1$layers[[1]]$data, waiver())
+  expect_equal(p1$layers[[2]]$data, waiver())
+  expect_equal(p1$layers[[3]]$data, d2)
+  expect_equal(p1$layers[[4]]$data, d2)
 })
 
 test_that("geom_clone() throws error if there is no upper layers", {

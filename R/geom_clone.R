@@ -18,6 +18,10 @@ geom_clone <- function(mapping = NULL,
 }
 
 ggplot_add.gg_cloner <- function(object, plot, object_name) {
+  if (length(plot$layers) == 0) {
+    stop("there is no layer to clone!")
+  }
+
   if (!is.null(object$n)) {
     layers_to_clone <- tail(plot$layers, object$n)
   } else {
@@ -30,13 +34,13 @@ ggplot_add.gg_cloner <- function(object, plot, object_name) {
                            mapping = object$mapping,
                            aes_params = object$aes_params)
 
-  plot + new_layers
+  plot %+% new_layers
 }
 
 clone_layer <- function(layer) {
   new_layer <- rlang::env_clone(layer)
   class(new_layer) <- class(layer)
-  layer
+  new_layer
 }
 
 update_layer <- function(layer, data, mapping, aes_params) {
