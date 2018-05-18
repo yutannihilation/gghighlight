@@ -20,6 +20,7 @@ geom_clone <- function(mapping = NULL,
   )
 }
 
+#' @export
 ggplot_add.gg_cloner <- function(object, plot, object_name) {
   if (length(plot$layers) == 0) {
     stop("there is no layer to clone!")
