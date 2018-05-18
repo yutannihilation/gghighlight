@@ -1,6 +1,9 @@
 #' Clone Other Layers
 #'
 #' @name clone
+#' @param n
+#'   Number of layers to clone.
+#' @inheritParams ggplot2::geom_bar
 #' @export
 geom_clone <- function(mapping = NULL,
                        data = NULL,
@@ -23,7 +26,7 @@ ggplot_add.gg_cloner <- function(object, plot, object_name) {
   }
 
   if (!is.null(object$n)) {
-    layers_to_clone <- tail(plot$layers, object$n)
+    layers_to_clone <- utils::tail(plot$layers, object$n)
   } else {
     layers_to_clone <- plot$layers
   }
@@ -46,7 +49,7 @@ clone_layer <- function(layer) {
 update_layer <- function(layer, data, mapping, aes_params) {
   layer$data <- data %||% layer$data
   layer$mapping <- rename_variables(mapping) %||% layer$mapping
-  layer$aes_params <- modifyList(layer$aes_params, rename_variables(aes_params))
+  layer$aes_params <- utils::modifyList(layer$aes_params, rename_variables(aes_params))
   layer
 }
 
