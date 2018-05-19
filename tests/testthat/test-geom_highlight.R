@@ -83,9 +83,75 @@ test_that("geom_highlight() works when the data belongs to the plot and the aes 
   p <- ggplot(d) +
     geom_line(aes(x, y, colour = type))
 
+  expect_one_layer(p)
 })
 
 test_that("geom_highlight() works when both the data and the aes belongs to the layer", {
   p <- ggplot() +
     geom_line(data = d, aes(x, y, colour = type))
+
+  expect_one_layer(p)
+})
+
+test_that("geom_highlight() works with two layers", {
+  p_orig <- ggplot(data = d, aes(x, y, colour = type)) +
+    geom_point() +
+    geom_line()
+
+  mapping_orig <- p_orig$layers[[1]]$mapping
+  data_orig <- p_orig$layers[[1]]$data
+
+  p <- p_orig + geom_highlight(mean(value) > 1)
+
+  expect_equal(length(p$layers), 4L)
+
+  class_expected <- c("GeomPoint", "GeomLine", "GeomPoint", "GeomLine")
+  for (i in 1:4) {
+    expect_s3_class(p$layers[[!!i]]$geom, class_expected[!!i])
+  }
+
+  # Group aes is needed because otherwise lines are not grouped without colour aes.
+  expect_equal(p$layers[[1]]$mapping, aes(x = x, y = y, group = type))
+  expect_equal(p$layers[[2]]$mapping, aes(x = x, y = y, group = type))
+  expect_equal(p$layers[[1]]$aes_params, list(colour = grey07))
+  expect_equal(p$layers[[2]]$aes_params, list(colour = grey07))
+
+  # the new layer should be highlighted
+  expect_equal(p$layers[[3]]$data, d[d$type != "a", ])
+  expect_equal(p$layers[[4]]$data, d[d$type != "a", ])
+  expect_equal(p$layers[[3]]$mapping, mapping_orig)
+  expect_equal(p$layers[[4]]$mapping, mapping_orig)
+  empty_named_list <- setNames(list(), character(0))
+  expect_equal(p$layers[[3]]$aes_params, empty_named_list)
+  expect_equal(p$layers[[4]]$aes_params, empty_named_list)
+})
+
+
+test_that("geom_highlight() works with two layers but highlights bottom one.", {
+  p_orig <- ggplot(data = d, aes(x, y, colour = type)) +
+    geom_point() +
+    geom_line()
+
+  mapping_orig <- p_orig$layers[[1]]$mapping
+  data_orig <- p_orig$layers[[1]]$data
+
+  p <- p_orig + geom_highlight(mean(value) > 1, n = 1)
+
+  expect_equal(length(p$layers), 3L)
+
+  class_expected <- c("GeomPoint", "GeomLine", "GeomLine")
+  for (i in 1:3) {
+    expect_s3_class(p$layers[[!!i]]$geom, class_expected[!!i])
+  }
+  # the original layer should be greyed out
+  expect_equal(p$layers[[2]]$data, data_orig)
+  # Group aes is needed because otherwise lines are not grouped without colour aes.
+  expect_equal(p$layers[[2]]$mapping, aes(x = x, y = y, group = type))
+  expect_equal(p$layers[[2]]$aes_params, list(colour = ggplot2::alpha("grey", 0.7)))
+
+  # the new layer should be highlighted
+  expect_equal(p$layers[[3]]$data, d[d$type != "a", ])
+  expect_equal(p$layers[[3]]$mapping, mapping_orig)
+  empty_named_list <- setNames(list(), character(0))
+  expect_equal(p$layers[[3]]$aes_params, empty_named_list)
 })
