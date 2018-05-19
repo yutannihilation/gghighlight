@@ -5,7 +5,7 @@
 \title{Clone Other Layers}
 \usage{
 geom_highlight(..., n = NULL, unhighlighted_colour = ggplot2::alpha("grey",
-  0.7))
+  0.7), max_highlight = 5L)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
@@ -13,6 +13,8 @@ geom_highlight(..., n = NULL, unhighlighted_colour = ggplot2::alpha("grey",
 \item{n}{Number of layers to clone.}
 
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
+
+\item{max_highlight}{Max number of series to highlight.}
 }
 \description{
 Clone Other Layers
