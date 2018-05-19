@@ -2,6 +2,10 @@
 #'
 #' @param n
 #'   Number of layers to clone.
+#' @param unhighlighted_colour
+#'   Colour for unhighlited lines/points.
+#' @param ...
+#'   Expressions to filter data, which is passed to [dplyr::filter()].
 #' @inheritParams ggplot2::geom_bar
 #' @export
 geom_highlight <- function(...,

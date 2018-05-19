@@ -8,12 +8,11 @@ geom_highlight(..., n = NULL, unhighlighted_colour = ggplot2::alpha("grey",
   0.7))
 }
 \arguments{
-\item{...}{Other arguments passed on to \code{\link[=layer]{layer()}}. These are
-often aesthetics, used to set an aesthetic to a fixed value, like
-\code{color = "red"} or \code{size = 3}. They may also be parameters
-to the paired geom/stat.}
+\item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
 
 \item{n}{Number of layers to clone.}
+
+\item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 }
 \description{
 Clone Other Layers
