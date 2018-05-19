@@ -47,11 +47,11 @@ d <- tibble::tribble(
   3,  3,   "c",    10
 )
 
-expect_one_layer <- function(p) {
-  mapping_orig <- p$layers[[1]]$mapping
-  data_orig <- p$layers[[1]]$data
+expect_one_layer <- function(p_orig) {
+  mapping_orig <- p_orig$layers[[1]]$mapping
+  data_orig <- p_orig$layers[[1]]$data
 
-  p <- p + geom_highlight(mean(value) > 1)
+  p <- p_orig + geom_highlight(mean(value) > 1)
 
   expect_equal(length(p$layers), 2L)
 
@@ -68,7 +68,8 @@ expect_one_layer <- function(p) {
   # the new layer should be highlighted
   expect_equal(p$layers[[2]]$data, d[d$type != "a", ])
   expect_equal(p$layers[[2]]$mapping, mapping_orig)
-  expect_equal(p$layers[[2]]$aes_params, list())
+  empty_named_list <- setNames(list(), character(0))
+  expect_equal(p$layers[[2]]$aes_params, empty_named_list)
 }
 
 test_that("geom_highlight() works when both the data and the aes belong to the plot", {
