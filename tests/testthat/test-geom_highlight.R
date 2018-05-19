@@ -62,17 +62,16 @@ expect_one_layer <- function(p) {
   # the original layer should be greyed out
   expect_equal(p$layers[[1]]$data, data_orig)
   # Group aes is needed because otherwise lines are not grouped without colour aes.
-  expect_equal(p$layers[[1]]$mapping, aes(group = type))
+  expect_equal(p$layers[[1]]$mapping, aes(x = x, y = y, group = type))
   expect_equal(p$layers[[1]]$aes_params, list(colour = ggplot2::alpha("grey", 0.7)))
 
   # the new layer should be highlighted
-  expect_equal(p$layers[[1]]$data, d[d$type != "a", ])
-  expect_equal(p$layers[[1]]$mapping, mapping_orig)
-  expect_equal(p$layers[[1]]$aes_params, list())
+  expect_equal(p$layers[[2]]$data, d[d$type != "a", ])
+  expect_equal(p$layers[[2]]$mapping, mapping_orig)
+  expect_equal(p$layers[[2]]$aes_params, list())
 }
 
 test_that("geom_highlight() works when both the data and the aes belong to the plot", {
-  skip("TODO")
   p <- ggplot(d, aes(x, y, colour = type)) +
     geom_line()
 
