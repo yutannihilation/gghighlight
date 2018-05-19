@@ -115,7 +115,7 @@ gghighlight <- function(data,
 }
 
 infer_group_key_from_aes <- function(mapping) {
-  mapping$group %||% mapping$colour
+  mapping$group %||% mapping$fill %||% mapping$colour
 }
 
 
