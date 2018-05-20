@@ -75,7 +75,8 @@ test_that("sieve_layer() works", {
 test_that("geom_highlight() works the plot with one layer, grouped", {
   d_bleached <- d
   names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
+                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
 
   d_sieved <- d[d$type != "a", ]
 
@@ -103,14 +104,17 @@ test_that("geom_highlight() works the plot with one layer, ungrouped", {
 test_that("geom_highlight() works with two layers, grouped", {
   d_bleached <- d
   names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, group = !!VERY_SECRET_GROUP_COLUMN_NAME, fill = NULL, colour = NULL)
+  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
+                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
 
   d_sieved <- d[d$type != "a", ]
 
   l_bleached_1 <- geom_line(aes_bleached, d_bleached, colour = grey07)
   l_sieved_1 <- geom_line(aes(x, y, colour = type), d_sieved)
-  l_bleached_2 <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = grey07, shape = "circle filled")
-  l_sieved_2 <- geom_point(aes(x, y, colour = type, fill = type), d_sieved, shape = "circle filled")
+  l_bleached_2 <- geom_point(aes_bleached, d_bleached,
+                             shape = "circle filled", colour = grey07, fill = grey07)
+  l_sieved_2 <- geom_point(aes(x, y, colour = type, fill = type), d_sieved,
+                           shape = "circle filled")
 
   p1 <- ggplot(d, aes(x, y, colour = type, fill = type)) +
     geom_line() +
@@ -118,34 +122,12 @@ test_that("geom_highlight() works with two layers, grouped", {
 
   expect_equal((p1 + geom_highlight(mean(value) > 1))$layers,
                list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
+
+  # If n = 1, only one layer above is highlighted.
+  expect_equal((p1 + geom_highlight(mean(value) > 1, n = 1))$layers,
+               list(geom_line(), l_bleached_2, l_sieved_2))
 })
 
-
-test_that("geom_highlight() works with two layers but highlights bottom one.", {
-  p_orig <- ggplot(data = d, aes(x, y, colour = type)) +
-    geom_point() +
-    geom_line()
-
-  mapping_orig <- p_orig$layers[[1]]$mapping
-  data_orig <- p_orig$layers[[1]]$data
-
-  p <- p_orig + geom_highlight(mean(value) > 1, n = 1)
-
-  expect_equal(length(p$layers), 3L)
-
-  class_expected <- c("GeomPoint", "GeomLine", "GeomLine")
-  for (i in 1:3) {
-    expect_s3_class(p$layers[[!!i]]$geom, class_expected[!!i])
-  }
-  # the original layer should be greyed out
-  expect_equal(p$layers[[2]]$data, data_orig)
-  # Group aes is needed because otherwise lines are not grouped without colour aes.
-  expect_equal(p$layers[[2]]$mapping, aes(x = x, y = y, group = type))
-  expect_equal(p$layers[[2]]$aes_params, list(colour = ggplot2::alpha("grey", 0.7)))
-
-  # the new layer should be highlighted
-  expect_equal(p$layers[[3]]$data, d[d$type != "a", ])
-  expect_equal(p$layers[[3]]$mapping, mapping_orig)
-  empty_named_list <- setNames(list(), character(0))
-  expect_equal(p$layers[[3]]$aes_params, empty_named_list)
+test_that("geom_highlight() works with two layers, grouped", {
+  skip("TODO")
 })
