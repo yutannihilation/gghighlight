@@ -42,7 +42,7 @@ test_that("bleach_layer() works", {
   d_bleached <- d
   names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
 
-  aes_bleached <- aes(group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(colour = NULL, fill = NULL, group = !!VERY_SECRET_GROUP_COLUMN_NAME)
 
   # If mapping doesn't have colour or fill, it raises an error.
   expect_error(bleach_layer(geom_bar(aes(x = x, y = y), d), rlang::quo(x), grey07))
@@ -53,7 +53,7 @@ test_that("bleach_layer() works", {
 
   # If colour is specified but group_key is NULL, the result is the same data.
   expect_equal(bleach_layer(geom_point(aes(colour = type), d), NULL, grey07),
-               geom_point(aes(), d, colour = grey07))
+               geom_point(aes(colour = NULL, fill = NULL), d, colour = grey07))
 
   # If colour and fill is specified at the same time, fill is used as the group key.
   expect_equal(bleach_layer(geom_bar(aes(colour = type, fill = type), d), rlang::quo(type), grey07),
