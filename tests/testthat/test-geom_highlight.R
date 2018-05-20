@@ -3,39 +3,6 @@ library(ggplot2)
 
 grey07 <- ggplot2::alpha("grey", 0.7)
 
-test_that("merge_aes() works", {
-  bar_aes <- geom_bar()$geom$aesthetics()
-  line_aes <- geom_line()$geom$aesthetics()
-  # If one is NULL, return the other one as is
-  expect_equal(merge_aes(aes(colour = a), NULL, bar_aes),
-               aes(colour = a))
-  expect_equal(merge_aes(NULL, aes(colour = a), bar_aes),
-               aes(colour = a))
-  # If both are not NULL, layer_mapping is used.
-  expect_equal(merge_aes(aes(x = x, colour = b), aes(colour = a, fill = c), bar_aes),
-               aes(x = x, colour = b, fill = c))
-  # If the layer doesn't have fill aes, it is omitted.
-  expect_equal(merge_aes(aes(x = x, colour = b), aes(colour = a, fill = c), line_aes),
-               aes(x = x, colour = b))
-})
-
-test_that("bleach_layer() works", {
-  expect_equal(bleach_layer(geom_bar(aes(colour = a)), NULL, grey07),
-               geom_bar(aes(group = a), colour = grey07))
-
-  # when colour and fill is specified at the same time, fill is used as the group key
-  expect_equal(bleach_layer(geom_bar(aes(colour = a, fill = b)), NULL, grey07),
-               geom_bar(aes(group = b), colour = grey07, fill = grey07))
-
-  # if the fill aes belongs to the plot, the result is the same as above.
-  expect_equal(bleach_layer(geom_bar(aes(colour = a)), aes(fill = b), grey07),
-               geom_bar(aes(group = b), colour = grey07, fill = grey07))
-
-  # but if the geom doesn't have fill aes, colour is used as the group key.
-  expect_equal(bleach_layer(geom_line(aes(colour = a)), aes(fill = b), grey07),
-               geom_line(aes(group = a), colour = grey07))
-})
-
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
   1,  2,   "a",     0,
@@ -47,83 +14,110 @@ d <- tibble::tribble(
   3,  3,   "c",    10
 )
 
-expect_one_layer <- function(p_orig) {
-  mapping_orig <- p_orig$layers[[1]]$mapping
-  data_orig <- p_orig$layers[[1]]$data
-
-  p <- p_orig + geom_highlight(mean(value) > 1)
-
-  expect_equal(length(p$layers), 2L)
-
-  class_expected <- c("GeomLine", "GeomLine")
-  for (i in 1:2) {
-    expect_s3_class(p$layers[[!!i]]$geom, class_expected[!!i])
-  }
-  # the original layer should be greyed out
-  expect_equal(p$layers[[1]]$data, data_orig)
-  # Group aes is needed because otherwise lines are not grouped without colour aes.
-  expect_equal(p$layers[[1]]$mapping, aes(x = x, y = y, group = type))
-  expect_equal(p$layers[[1]]$aes_params, list(colour = ggplot2::alpha("grey", 0.7)))
-
-  # the new layer should be highlighted
-  expect_equal(p$layers[[2]]$data, d[d$type != "a", ])
-  expect_equal(p$layers[[2]]$mapping, mapping_orig)
-  empty_named_list <- setNames(list(), character(0))
-  expect_equal(p$layers[[2]]$aes_params, empty_named_list)
-}
-
-test_that("geom_highlight() works when both the data and the aes belong to the plot", {
-  p <- ggplot(d, aes(x, y, colour = type)) +
-    geom_line()
-
-  expect_one_layer(p)
+test_that("merge_mapping() works", {
+  # If both are NULL, throw error
+  expect_error(merge_mapping(geom_bar(), NULL))
+  # If one is NULL, return the other one as is.
+  expect_equal(merge_mapping(geom_bar(aes(x = a)), NULL),
+               aes(x = a))
+  expect_equal(merge_mapping(geom_bar(), aes(x = a)),
+               aes(x = a))
+  # If both are not NULL, layer_mapping is used.
+  expect_equal(merge_mapping(geom_bar(aes(x = x, colour = b)), aes(colour = a, fill = c)),
+               aes(x = x, colour = b, fill = c))
+  # If the layer doesn't have fill aes, it is omitted.
+  expect_equal(merge_mapping(geom_line(aes(x = x, colour = b)), aes(colour = a, fill = c)),
+               aes(x = x, colour = b))
 })
 
-test_that("geom_highlight() works when the data belongs to the plot and the aes belongs to the layer", {
-  p <- ggplot(d) +
+test_that("merge_data() works", {
+  # if oneare NULL, return the other one as is
+  expect_equal(merge_data(geom_bar(data = d), waiver()),
+               d)
+  expect_equal(merge_data(geom_bar(), d),
+               d)
+})
+
+test_that("bleach_layer() works", {
+  d_bleached <- d
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+
+  aes_bleached <- aes(group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+
+  # If mapping doesn't have colour or fill, it raises an error.
+  expect_error(bleach_layer(geom_bar(aes(x = x, y = y), d), rlang::quo(x), grey07))
+
+  # If colour is specified, colour is used as the group key.
+  expect_equal(bleach_layer(geom_bar(aes(colour = type), d), rlang::quo(type), grey07),
+               geom_bar(aes_bleached, d_bleached, colour = grey07))
+
+  # If colour is specified but group_key is NULL, the result is the same data.
+  expect_equal(bleach_layer(geom_point(aes(colour = type), d), NULL, grey07),
+               geom_point(aes(), d, colour = grey07))
+
+  # If colour and fill is specified at the same time, fill is used as the group key.
+  expect_equal(bleach_layer(geom_bar(aes(colour = type, fill = type), d), rlang::quo(type), grey07),
+               geom_bar(aes_bleached, d_bleached, colour = grey07, fill = grey07))
+})
+
+test_that("sieve_layer() works", {
+  pred_ungrouped <- list(rlang::quo(value > 1))
+  pred_grouped <- list(rlang::quo(mean(value) > 1))
+  d_sieved_ungrouped <- d[d$value > 1, ]
+  d_sieved_grouped <- d[d$type != "a", ]
+
+  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), NULL, pred_ungrouped, 5L),
+               geom_bar(aes(colour = type), d_sieved_ungrouped))
+  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped, 5L),
+               geom_bar(aes(colour = type), d_sieved_grouped))
+})
+
+test_that("geom_highlight() works the plot with one layer, grouped", {
+  d_bleached <- d
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(x = x, y = y, group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+
+  d_sieved <- d[d$type != "a", ]
+
+  l_bleached <- geom_line(aes_bleached, d_bleached, colour = grey07)
+  l_sieved <- geom_line(aes(x, y, colour = type), d_sieved)
+
+  p1 <- ggplot(d, aes(x, y, colour = type)) +
+    geom_line()
+
+  p2 <- ggplot(d) +
     geom_line(aes(x, y, colour = type))
 
-  expect_one_layer(p)
-})
-
-test_that("geom_highlight() works when both the data and the aes belongs to the layer", {
-  p <- ggplot() +
+  p3 <- ggplot() +
     geom_line(data = d, aes(x, y, colour = type))
 
-  expect_one_layer(p)
+  expect_equal((p1 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
+  expect_equal((p2 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
+  expect_equal((p3 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
 })
 
-test_that("geom_highlight() works with two layers", {
-  p_orig <- ggplot(data = d, aes(x, y, colour = type)) +
-    geom_point() +
-    geom_line()
+test_that("geom_highlight() works the plot with one layer, ungrouped", {
+  skip("TODO")
+})
 
-  mapping_orig <- p_orig$layers[[1]]$mapping
-  data_orig <- p_orig$layers[[1]]$data
+test_that("geom_highlight() works with two layers, grouped", {
+  d_bleached <- d
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(x = x, y = y, group = !!VERY_SECRET_GROUP_COLUMN_NAME, fill = NULL, colour = NULL)
 
-  p <- p_orig + geom_highlight(mean(value) > 1)
+  d_sieved <- d[d$type != "a", ]
 
-  expect_equal(length(p$layers), 4L)
+  l_bleached_1 <- geom_line(aes_bleached, d_bleached, colour = grey07)
+  l_sieved_1 <- geom_line(aes(x, y, colour = type), d_sieved)
+  l_bleached_2 <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = grey07, shape = "circle filled")
+  l_sieved_2 <- geom_point(aes(x, y, colour = type, fill = type), d_sieved, shape = "circle filled")
 
-  class_expected <- c("GeomPoint", "GeomLine", "GeomPoint", "GeomLine")
-  for (i in 1:4) {
-    expect_s3_class(p$layers[[!!i]]$geom, class_expected[!!i])
-  }
+  p1 <- ggplot(d, aes(x, y, colour = type, fill = type)) +
+    geom_line() +
+    geom_point(shape = "circle filled")
 
-  # Group aes is needed because otherwise lines are not grouped without colour aes.
-  expect_equal(p$layers[[1]]$mapping, aes(x = x, y = y, group = type))
-  expect_equal(p$layers[[2]]$mapping, aes(x = x, y = y, group = type))
-  expect_equal(p$layers[[1]]$aes_params, list(colour = grey07))
-  expect_equal(p$layers[[2]]$aes_params, list(colour = grey07))
-
-  # the new layer should be highlighted
-  expect_equal(p$layers[[3]]$data, d[d$type != "a", ])
-  expect_equal(p$layers[[4]]$data, d[d$type != "a", ])
-  expect_equal(p$layers[[3]]$mapping, mapping_orig)
-  expect_equal(p$layers[[4]]$mapping, mapping_orig)
-  empty_named_list <- setNames(list(), character(0))
-  expect_equal(p$layers[[3]]$aes_params, empty_named_list)
-  expect_equal(p$layers[[4]]$aes_params, empty_named_list)
+  expect_equal((p1 + geom_highlight(mean(value) > 1))$layers,
+               list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 })
 
 

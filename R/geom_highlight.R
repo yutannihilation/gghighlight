@@ -48,34 +48,26 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   # data and group_keys are used commonly both in the bleaching and sieving process.
   # Especially, group_key should be extracted here before it gets renamed to VERY_SECRET_GROUP_COLUMN_NAME.
-  data_list <- purrr::map(layers_cloned, merge_data, plot_data = plot$data)
-  mapping_list <- purrr::map(layers_cloned, merge_mapping, plot_mapping = plot$mapping)
-  group_keys <- purrr::map(mapping_list, "group")
+  purrr::walk(layers_cloned, merge_plot_to_layer,
+              plot_data = plot$data, plot_mapping = plot$mapping)
+  group_keys <- purrr::map(layers_cloned, ~ infer_group_key_from_aes(.$mapping))
 
   # Clone layers again before we bleach them.
   layers_bleached <- layers_cloned
-  layers_sieved <- purrr::map(plot$layers[idx_layers], clone_layer)
+  layers_sieved <- purrr::map(layers_bleached, clone_layer)
 
   # Bleach the lower layer.
-  purrr::pwalk(
-    list(
-      layer = layers_bleached,
-      data = data_list,
-      mapping = mapping_list,
-      group_key = group_keys
-    ),
+  purrr::walk2(
+    layers_bleached,
+    group_keys,
     bleach_layer,
     unhighlighted_colour = object$unhighlighted_colour
   )
 
   # Sieve the upper layer.
-  purrr::pwalk(
-    list(
-      layer = layers_sieved,
-      data = data_list,
-      mapping = mapping_list,
-      group_key = group_keys
-    ),
+  purrr::walk2(
+    layers_sieved,
+    group_keys,
     sieve_layer,
     predicates = object$predicates
   )
@@ -84,55 +76,67 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot %+% layers_sieved
 }
 
+merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {
+  layer$data <- merge_data(layer, plot_data)
+  layer$mapping <- merge_mapping(layer, plot_mapping)
+  layer
+}
+
 merge_data <- function(layer, plot_data) {
   # c.f.) https://github.com/tidyverse/ggplot2/blob/54de616213d9811f422f45cf1a6c04d1de6ccaee/R/layer.r#L182
   layer$layer_data(plot_data)
 }
 
 merge_mapping <- function(layer, plot_mapping) {
-  mapping <- merge_aes(layer$mapping, plot_mapping, layer$geom$aesthetics())
+  # Merge the layer's mapping with the plot's mapping
+  mapping <- utils::modifyList(plot_mapping %||% aes(), layer$mapping %||% aes())
+  # Filter out unused variables (e.g. fill aes for line geom)
+  aes_names <- base::intersect(layer$geom$aesthetics(), names(mapping))
+  mapping <- mapping[aes_names]
+
   if (length(mapping) == 0) {
     stop("No mapping found on this layer!")
   }
-  group_key <- infer_group_key_from_aes(mapping)
-  mapping$group <- group_key
+
   mapping
 }
 
-bleach_layer <- function(layer, data, mapping, group_key, unhighlighted_colour) {
-  colour_aes <- mapping$colour
-  fill_aes <- mapping$fill
+bleach_layer <- function(layer, group_key, unhighlighted_colour) {
+  # bleach colour and fill aes
+  colour_aes <- layer$mapping$colour
+  fill_aes <- layer$mapping$fill
 
   if (is.null(colour_aes) && is.null(fill_aes)) {
     stop("No colour or fill aes found on this layer!")
   }
 
-  layer$mapping <- utils::modifyList(mapping, list(colour = NULL, fill = NULL))
-
+  # set colour and fill to grey only when it is included in the mappping
+  # (Note that this needs to be executed before modifying the layer$mapping)
   params_bleached <- list()
-  params_bleached[base::intersect(names(mapping), c("colour", "fill"))] <- unhighlighted_colour
+  aes_names <- base::intersect(c("colour", "fill"), names(layer$mapping))
+  params_bleached[aes_names] <- unhighlighted_colour
   layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
 
+  # remove colour and fill from mapping
+  layer$mapping[c("colour", "fill")] <- list(NULL)
+
   if (!is.null(group_key)) {
-    # To prevent the bleached data to facetted, rename the group column to the very improbable name.
-    layer$data <- dplyr::rename(data, !!VERY_SECRET_GROUP_COLUMN_NAME := !!group_key)
+    # Add group var to preserver implicit grouping to prevent the bleached
+    # data to facetted, rename the group column to the very improbable name.
+    # e.g. geom_line(aes(colour = c)); if colour aes is removed, line will be drawn unintentionally.
+    # But, is group key always needed...? (e.g. points)
+    layer$data <- dplyr::rename(layer$data, !!VERY_SECRET_GROUP_COLUMN_NAME := !!group_key)
     layer$mapping$group <- rlang::quo(!!VERY_SECRET_GROUP_COLUMN_NAME)
   }
 
   layer
 }
 
-sieve_layer <- function(layer, data, mapping, group_key, predicates, max_highlight) {
+sieve_layer <- function(layer, group_key, predicates, max_highlight) {
   if (!is.null(group_key)) {
-    data <- dplyr::group_by(data, !! group_key)
+    layer$data <- dplyr::group_by(layer$data, !! group_key)
   }
 
-  layer$data <- dplyr::filter(data, !!! predicates)
+  layer$data <- dplyr::filter(layer$data, !!! predicates)
   layer
-}
-
-merge_aes <- function(layer_mapping, plot_mapping, aes_names) {
-  mapping <- utils::modifyList(plot_mapping %||% aes(), layer_mapping %||% aes())
-  aes_names <- base::intersect(aes_names, names(mapping))
-  mapping[aes_names]
 }
