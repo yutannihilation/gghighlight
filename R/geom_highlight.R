@@ -102,14 +102,6 @@ merge_mapping <- function(layer, plot_mapping) {
 }
 
 bleach_layer <- function(layer, group_key, unhighlighted_colour) {
-  # bleach colour and fill aes
-  colour_aes <- layer$mapping$colour
-  fill_aes <- layer$mapping$fill
-
-  if (is.null(colour_aes) && is.null(fill_aes)) {
-    stop("No colour or fill aes found on this layer!")
-  }
-
   # set colour and fill to grey only when it is included in the mappping
   # (Note that this needs to be executed before modifying the layer$mapping)
   params_bleached <- list()

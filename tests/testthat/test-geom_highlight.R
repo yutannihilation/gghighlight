@@ -44,9 +44,6 @@ test_that("bleach_layer() works", {
 
   aes_bleached <- aes(colour = NULL, fill = NULL, group = !!VERY_SECRET_GROUP_COLUMN_NAME)
 
-  # If mapping doesn't have colour or fill, it raises an error.
-  expect_error(bleach_layer(geom_bar(aes(x = x, y = y), d), rlang::quo(x), grey07))
-
   # If colour is specified, colour is used as the group key.
   expect_equal(bleach_layer(geom_bar(aes(colour = type), d), rlang::quo(type), grey07),
                geom_bar(aes_bleached, d_bleached, colour = grey07))
@@ -58,6 +55,12 @@ test_that("bleach_layer() works", {
   # If colour and fill is specified at the same time, fill is used as the group key.
   expect_equal(bleach_layer(geom_bar(aes(colour = type, fill = type), d), rlang::quo(type), grey07),
                geom_bar(aes_bleached, d_bleached, colour = grey07, fill = grey07))
+
+  # If mapping doesn't have colour or fill, it's OK.
+  # c.f. https://github.com/yutannihilation/gghighlight/pull/17#issuecomment-390486101.
+  expect_equal(bleach_layer(geom_bar(aes(group = type), d), rlang::quo(type), grey07),
+               # since group aes already exists, group comes first
+               geom_bar(aes(group = !!VERY_SECRET_GROUP_COLUMN_NAME, colour = NULL, fill = NULL), d_bleached))
 })
 
 test_that("sieve_layer() works", {
