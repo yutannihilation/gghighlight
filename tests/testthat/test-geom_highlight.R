@@ -75,6 +75,15 @@ test_that("sieve_layer() works", {
                geom_bar(aes(colour = type), d_sieved_grouped))
 })
 
+test_that("geom_highlight() does not change the existing layers", {
+  p1 <- ggplot(d, aes(x, y, colour = type)) + geom_line()
+  p2 <- ggplot(d, aes(x, y, colour = type)) + geom_line()
+
+  invisible(p1 + geom_highlight(mean(value) > 1))
+
+  expect_equal(p1, p2)
+})
+
 test_that("geom_highlight() works the plot with one layer, grouped", {
   d_bleached <- d
   names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
