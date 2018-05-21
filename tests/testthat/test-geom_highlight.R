@@ -138,6 +138,12 @@ test_that("sieve_layer() works with more than two predicates", {
     any(val2 %% 2 == 0), # logical to filter out "d"
     sum(val2)            # numerical
   )
+
+  # logical predicates only; max_highlight is ignored.
+  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), rlang::quo(type),
+                           pred_grouped[1:2], max_highlight = 2),
+               geom_line(aes(colour = type), d2[!d2$type %in% c("a", "d"), ]))
+
   expect_equal(sieve_layer(geom_line(aes(colour = type), d2), rlang::quo(type),
                            pred_grouped, max_highlight = 2),
                geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
@@ -221,5 +227,28 @@ test_that("geom_highlight() works with two layers, grouped", {
 })
 
 test_that("geom_highlight() works with two layers, ungrouped", {
-  skip("TODO")
+  d_bleached <- d
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
+                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+
+  d_sieved <- d[d$value > 1, ]
+
+  l_bleached_1 <- geom_point(aes_bleached, d_bleached, shape = "circle open", size = 5,
+                             colour = grey07, fill = grey07)
+  l_sieved_1 <- geom_point(aes(x, y, colour = type), d_sieved, shape = "circle open", size = 5)
+  l_bleached_2 <- geom_point(aes_bleached, d_bleached,
+                             colour = grey07, fill = grey07)
+  l_sieved_2 <- geom_point(aes(x, y, colour = type), d_sieved)
+
+  p1 <- ggplot(d, aes(x, y, colour = type)) +
+    geom_point(shape = "circle open", size = 5) +
+    geom_point()
+
+  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE))$layers,
+               list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
+
+  # If n = 1, only one layer above is highlighted.
+  expect_equal((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE))$layers,
+               list(geom_point(shape = "circle open", size = 5), l_bleached_2, l_sieved_2))
 })
