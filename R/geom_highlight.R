@@ -180,7 +180,7 @@ sieve_layer <- function(layer, group_key, predicates,
     data_predicated <- layer$data %>%
       # TODO: chage this to more improbable name
       tibble::rowid_to_column("rowid") %>%
-      dplyr::transmute(!!! predicates, rowid)
+      dplyr::transmute(!!! predicates, .data$rowid)
 
     cols_idx <- purrr::map_lgl(data_predicated, is.logical)
     cols_filter <- rlang::syms(names(cols_idx)[cols_idx])
