@@ -158,11 +158,15 @@ sieve_layer <- function(layer, group_key, predicates,
       dplyr::group_by(!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
       dplyr::summarise(!!!predicates)
 
+    cols_idx <- purrr::map_lgl(data_predicated, is.logical)
+    cols_filter <- rlang::syms(names(cols_idx)[cols_idx])
+    cols_arrange <- rlang::syms(names(cols_idx)[!cols_idx])
+
     data_filtered <- data_predicated %>%
       # first, fitler by the logical predicates
-      dplyr::filter_if(is.logical, dplyr::all_vars(.)) %>%
+      dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      dplyr::arrange_if(purrr::negate(is.logical), dplyr::desc) %>%
+      dplyr::arrange(dplyr::desc(!!!cols_arrange)) %>%
       # slice down to max_highlight
       dplyr::slice(1:(!!max_highlight))
 
@@ -175,13 +179,17 @@ sieve_layer <- function(layer, group_key, predicates,
       tibble::rowid_to_column("rowid") %>%
       dplyr::transmute(!!! predicates, rowid)
 
+    cols_idx <- purrr::map_lgl(data_predicated, is.logical)
+    cols_filter <- rlang::syms(names(cols_idx)[cols_idx])
+    cols_arrange <- rlang::syms(names(cols_idx)[!cols_idx])
+
     data_filtered <- data_predicated %>%
       # first, fitler by the logical predicates
-      dplyr::filter_if(is.logical, dplyr::all_vars(.)) %>%
+      dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      dplyr::arrange_if(purrr::negate(is.logical), dplyr::desc) %>%
+      dplyr::arrange(dplyr::desc(!!!cols_arrange)) %>%
       # slice down to max_highlight
-      dplyr::slice(!! 1:max_highlight)
+      dplyr::slice(1:(!!max_highlight))
 
     # sort to preserve the original order
     rowids_filtered <- sort(data_filtered$rowid)

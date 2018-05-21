@@ -5,7 +5,7 @@
 \title{Clone Other Layers}
 \usage{
 geom_highlight(..., n = NULL, max_highlight = 5L,
-  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = TRUE)
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
