@@ -7,5 +7,5 @@ cache: packages
 # lintr
 r_github_packages:
   - jimhester/lintr
-after_successafter_success:
+after_success:
   - Rscript -e 'lintr::lint_package()'
