@@ -157,22 +157,24 @@ sieve_layer <- function(layer, group_key, predicates,
   if (use_group_by) {
     data_predicated <- layer$data %>%
       # Rename group_key to prevent it from name collision.
-      dplyr::rename(!!VERY_SECRET_GROUP_COLUMN_NAME := !! group_key) %>%
+      dplyr::rename(!!VERY_SECRET_GROUP_COLUMN_NAME := !!group_key) %>%
       dplyr::group_by(!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
       dplyr::summarise(!!!predicates)
 
-    cols_idx <- purrr::map_lgl(data_predicated, is.logical)
-    cols_filter <- rlang::syms(names(cols_idx)[cols_idx])
-    cols_arrange <- rlang::syms(names(cols_idx)[!cols_idx])
+    col_idx <- data_predicated %>%
+      # do not use group_key to arrange
+      dplyr::select(-!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      purrr::map_lgl(is.logical)
+    cols_filter <- rlang::syms(names(col_idx)[col_idx])
+    cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
 
     data_filtered <- data_predicated %>%
       # first, fitler by the logical predicates
       dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      # Note that desc() is different from dplyr::desc() (hint: hybrid evaluation)
-      dplyr::arrange(desc(!!!cols_arrange)) %>%
+      dplyr::arrange(!!!cols_arrange) %>%
       # slice down to max_highlight
-      dplyr::slice(1:(!!max_highlight))
+      utils::tail(max_highlight)
 
     groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_GROUP_COLUMN_NAME)
 
@@ -183,22 +185,22 @@ sieve_layer <- function(layer, group_key, predicates,
       tibble::rowid_to_column("rowid") %>%
       dplyr::transmute(!!! predicates, .data$rowid)
 
-    cols_idx <- purrr::map_lgl(data_predicated, is.logical)
-    cols_filter <- rlang::syms(names(cols_idx)[cols_idx])
-    cols_arrange <- rlang::syms(names(cols_idx)[!cols_idx])
+    col_idx <- purrr::map_lgl(data_predicated, is.logical)
+    cols_filter <- rlang::syms(names(col_idx)[col_idx])
+    cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
 
     data_filtered <- data_predicated %>%
       # first, fitler by the logical predicates
       dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      dplyr::arrange(desc(!!!cols_arrange)) %>%
+      dplyr::arrange(!!!cols_arrange) %>%
       # slice down to max_highlight
-      dplyr::slice(1:(!!max_highlight))
+      utils::tail(max_highlight)
 
     # sort to preserve the original order
     rowids_filtered <- sort(data_filtered$rowid)
 
-    layer$data <- dplyr::slice(layer$data, !!rowids_filtered)
+    layer$data <- layer$data[rowids_filtered,]
   }
 
   layer

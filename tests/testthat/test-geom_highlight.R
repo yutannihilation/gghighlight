@@ -105,9 +105,33 @@ test_that("sieve_layer() works with simple cases", {
   expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
 })
 
-test_that("sieve_layer() works with zero predicates", {
+test_that("sieve_layer() works with zero predicate", {
   expect_equal(sieve_layer(geom_bar(aes(x = x), d), NULL, list()),
                geom_bar(aes(x = x), d))
+})
+
+test_that("sieve_layer() works with more than two predicates", {
+  d2 <- tibble::tribble(
+   ~type, ~val1, ~val2,
+     "a",     1,     0,
+     "a",     2,     2,
+     "b",     4,     2,
+     "b",     5,     2,
+     "c",    10,     0,
+     "c",    10,     2,
+     "d",    10,     1,
+     "d",    10,     3,
+     "e",    11,    10,
+     "e",    12,    30
+  )
+  pred_grouped <- rlang::quos(
+    mean(val1) > 2,      # logical to filter out "a"
+    any(val2 %% 2 == 0), # logical to filter out "d"
+    sum(val2)            # numerical
+  )
+  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), rlang::quo(type),
+                           pred_grouped, max_highlight = 2),
+               geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
 })
 
 test_that("geom_highlight() does not change the existing layers", {
@@ -175,6 +199,6 @@ test_that("geom_highlight() works with two layers, grouped", {
                list(geom_line(), l_bleached_2, l_sieved_2))
 })
 
-test_that("geom_highlight() works with two layers, grouped", {
+test_that("geom_highlight() works with two layers, ungrouped", {
   skip("TODO")
 })
