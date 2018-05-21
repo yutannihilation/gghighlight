@@ -112,7 +112,7 @@ bleach_layer <- function(layer, group_key,
   # set colour and fill to grey only when it is included in the mappping
   # (Note that this needs to be executed before modifying the layer$mapping)
   params_bleached <- list()
-  aes_names <- base::intersect(c("colour", "fill"), names(layer$mapping))
+  aes_names <- base::intersect(c("colour", "fill"), layer$geom$aesthetics())
   params_bleached[aes_names] <- unhighlighted_colour
   layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
 
@@ -134,6 +134,9 @@ bleach_layer <- function(layer, group_key,
 sieve_layer <- function(layer, group_key, predicates,
                         max_highlight = 5L,
                         use_group_by = NULL) {
+  # If there are no predicates, do nothing.
+  if (length(predicates) == 0) return(layer)
+
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
   use_group_by <- use_group_by %||% !is.null(group_key)
 
