@@ -183,7 +183,10 @@ sieve_layer <- function(layer, group_key, predicates,
       # slice down to max_highlight
       dplyr::slice(!! 1:max_highlight)
 
-    layer$data <- dplyr::slice(layer$data, data_filtered$rowid)
+    # sort to preserve the original order
+    rowids_filtered <- sort(data_filtered$rowid)
+
+    layer$data <- dplyr::slice(layer$data, !!rowids_filtered)
   }
 
   layer

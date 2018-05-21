@@ -69,10 +69,31 @@ test_that("sieve_layer() works", {
   d_sieved_ungrouped <- d[d$value > 1, ]
   d_sieved_grouped <- d[d$type != "a", ]
 
-  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), NULL, pred_ungrouped),
-               geom_bar(aes(colour = type), d_sieved_ungrouped))
-  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped),
-               geom_bar(aes(colour = type), d_sieved_grouped))
+  # Ungrouped.
+  f <- function(...) sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, ...)
+  # Basic usage.
+  expect_equal(f(), geom_bar(aes(x = x), d_sieved_ungrouped))
+  # Large number of max_highlights doesn't affect the result.
+  expect_equal(f(max_highlight = 100L), geom_bar(aes(x = x), d_sieved_ungrouped))
+  # If the max_highlight is smaller, the result is sliced down to the number.
+  expect_equal(f(max_highlight = 2L), geom_bar(aes(x = x), d[d$value == 10, ]))
+
+  # Grouped.
+  f <- function(...) sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped, ...)
+  # Basic usage.
+  expect_equal(f(), geom_bar(aes(colour = type), d_sieved_grouped))
+  # Large number of max_highlights doesn't affect the result.
+  expect_equal(f(max_highlight = 100L), geom_bar(aes(colour = type), d_sieved_grouped))
+  # If the max_highlight is smaller, the result is sliced down to the number.
+  expect_equal(f(max_highlight = 1L), geom_bar(aes(colour = type), d[d$type == "c", ]))
+
+  # can be grouped, but intentionally avoid group_by;
+  # the result is same no matter group_key is provided or not
+  f <- function (key) {
+    sieve_layer(geom_bar(aes(colour = type), d), key, pred_ungrouped, use_group_by = FALSE)
+  }
+  expect_equal(f(rlang::quo(type)), geom_bar(aes(colour = type), d_sieved_ungrouped))
+  expect_equal(f(NULL), geom_bar(aes(colour = type), d_sieved_ungrouped))
 })
 
 test_that("geom_highlight() does not change the existing layers", {
