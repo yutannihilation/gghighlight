@@ -169,7 +169,8 @@ sieve_layer <- function(layer, group_key, predicates,
       # first, fitler by the logical predicates
       dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      dplyr::arrange(dplyr::desc(!!!cols_arrange)) %>%
+      # Note that desc() is different from dplyr::desc() (hint: hybrid evaluation)
+      dplyr::arrange(desc(!!!cols_arrange)) %>%
       # slice down to max_highlight
       dplyr::slice(1:(!!max_highlight))
 
@@ -190,7 +191,7 @@ sieve_layer <- function(layer, group_key, predicates,
       # first, fitler by the logical predicates
       dplyr::filter(!!!cols_filter) %>%
       # then, arrange by the other predicates
-      dplyr::arrange(dplyr::desc(!!!cols_arrange)) %>%
+      dplyr::arrange(desc(!!!cols_arrange)) %>%
       # slice down to max_highlight
       dplyr::slice(1:(!!max_highlight))
 
