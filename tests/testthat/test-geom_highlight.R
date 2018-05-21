@@ -80,8 +80,12 @@ test_that("sieve_layer() works with simple cases", {
   expect_equal(f(), geom_bar(aes(x = x), d_sieved_ungrouped))
   # Large number of max_highlights doesn't affect the result.
   expect_equal(f(max_highlight = 100L), geom_bar(aes(x = x), d_sieved_ungrouped))
-  # If the max_highlight is smaller, the result is sliced down to the number.
-  expect_equal(f(max_highlight = 2L), geom_bar(aes(x = x), d[d$value == 10, ]))
+  # Even when the max_highlight is smaller, if no numeric predicates are available,
+  # the result is not sliced down to the number.
+  expect_equal(f(max_highlight = 2L), geom_bar(aes(x = x), d_sieved_ungrouped))
+  # When predicate is numerical, the result is sliced.
+  expect_equal(sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(value)), max_highlight = 2L),
+               geom_bar(aes(x = x), d[6:7, ]))
 
   # Grouped.
   f <- function(...) sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped, ...)
@@ -89,8 +93,13 @@ test_that("sieve_layer() works with simple cases", {
   expect_equal(f(), geom_bar(aes(colour = type), d_sieved_grouped))
   # Large number of max_highlights doesn't affect the result.
   expect_equal(f(max_highlight = 100L), geom_bar(aes(colour = type), d_sieved_grouped))
-  # If the max_highlight is smaller, the result is sliced down to the number.
-  expect_equal(f(max_highlight = 1L), geom_bar(aes(colour = type), d[d$type == "c", ]))
+  # Even when the max_highlight is smaller, if no numeric predicates are available,
+  # the result is not sliced down to the number.
+  expect_equal(f(max_highlight = 1L), geom_bar(aes(colour = type), d[d$type != "a", ]))
+  # When predicate is numerical, the result is sliced.
+  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type),
+                           list(rlang::quo(mean(value))), max_highlight = 1L),
+               geom_bar(aes(colour = type), d[6:7, ]))
 
   # can be grouped, but intentionally avoid group_by;
   # the result is same no matter group_key is provided or not
@@ -169,7 +178,19 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
 })
 
 test_that("geom_highlight() works the plot with one layer, ungrouped", {
-  skip("TODO")
+  d_bleached <- d
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
+                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = grey07)
+  l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
+
+  p1 <- ggplot(d, aes(x, y, colour = type)) +
+    geom_point()
+
+  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE))$layers,
+               list(l_bleached, l_sieved))
 })
 
 test_that("geom_highlight() works with two layers, grouped", {

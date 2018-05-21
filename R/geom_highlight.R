@@ -162,19 +162,22 @@ sieve_layer <- function(layer, group_key, predicates,
       dplyr::summarise(!!!predicates)
 
     col_idx <- data_predicated %>%
-      # do not use group_key to arrange
+      # Do not use group_key to arrange.
       dplyr::select(-!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
       purrr::map_lgl(is.logical)
     cols_filter <- rlang::syms(names(col_idx)[col_idx])
     cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
 
+    # Filter by the logical predicates.
     data_filtered <- data_predicated %>%
-      # first, fitler by the logical predicates
-      dplyr::filter(!!!cols_filter) %>%
-      # then, arrange by the other predicates
-      dplyr::arrange(!!!cols_arrange) %>%
-      # slice down to max_highlight
-      utils::tail(max_highlight)
+      dplyr::filter(!!!cols_filter)
+
+    # Arrange by the other predicates and slice rows down to max_highlights.
+    if (length(cols_arrange) > 0) {
+      data_filtered <- data_filtered %>%
+        dplyr::arrange(!!!cols_arrange) %>%
+        utils::tail(max_highlight)
+    }
 
     groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_GROUP_COLUMN_NAME)
 
@@ -185,22 +188,28 @@ sieve_layer <- function(layer, group_key, predicates,
       tibble::rowid_to_column("rowid") %>%
       dplyr::transmute(!!! predicates, .data$rowid)
 
-    col_idx <- purrr::map_lgl(data_predicated, is.logical)
+    col_idx <- data_predicated %>%
+      # Do not use rowid to arrange.
+      dplyr::select(-rowid) %>%
+      purrr::map_lgl(is.logical)
     cols_filter <- rlang::syms(names(col_idx)[col_idx])
     cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
 
+    # Filter by the logical predicates.
     data_filtered <- data_predicated %>%
-      # first, fitler by the logical predicates
-      dplyr::filter(!!!cols_filter) %>%
-      # then, arrange by the other predicates
-      dplyr::arrange(!!!cols_arrange) %>%
-      # slice down to max_highlight
-      utils::tail(max_highlight)
+      dplyr::filter(!!!cols_filter)
+
+    # Arrange by the other predicates and slice rows down to max_highlights.
+    if (length(cols_arrange) > 0) {
+      data_filtered <- data_filtered %>%
+        dplyr::arrange(!!!cols_arrange) %>%
+        utils::tail(max_highlight)
+    }
 
     # sort to preserve the original order
     rowids_filtered <- sort(data_filtered$rowid)
 
-    layer$data <- layer$data[rowids_filtered,]
+    layer$data <- layer$data[rowids_filtered, ]
   }
 
   layer
