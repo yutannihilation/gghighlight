@@ -135,7 +135,7 @@ sieve_layer <- function(layer, group_key, predicates,
                         max_highlight = 5L,
                         use_group_by = NULL) {
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
-  use_group_by <- use_group_by %||% is.null(group_key)
+  use_group_by <- use_group_by %||% !is.null(group_key)
 
   # 1) If use_group_by is FALSE, do not use group_by().
   # 2) If use_group_by is TRUE and group_key is not NULL, use group_by().
@@ -154,9 +154,9 @@ sieve_layer <- function(layer, group_key, predicates,
   if (use_group_by) {
     data_predicated <- layer$data %>%
       # Rename group_key to prevent it from name collision.
-      dplyr::rename(!! group_key := !! VERY_SECRET_GROUP_COLUMN_NAME) %>%
-      dplyr::group_by(!! VERY_SECRET_GROUP_COLUMN_NAME) %>%
-      dplyr::summarise(!!! predicates)
+      dplyr::rename(!!VERY_SECRET_GROUP_COLUMN_NAME := !! group_key) %>%
+      dplyr::group_by(!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      dplyr::summarise(!!!predicates)
 
     data_filtered <- data_predicated %>%
       # first, fitler by the logical predicates
@@ -164,9 +164,11 @@ sieve_layer <- function(layer, group_key, predicates,
       # then, arrange by the other predicates
       dplyr::arrange_if(purrr::negate(is.logical), dplyr::desc) %>%
       # slice down to max_highlight
-      dplyr::slice(!! 1:max_highlight)
+      dplyr::slice(1:(!!max_highlight))
 
-    layer$data <- dplyr::filter(layer$data, (!! group_key) %in% (!! data_filtered$groups))
+    groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_GROUP_COLUMN_NAME)
+
+    layer$data <- dplyr::filter(layer$data, (!!group_key) %in% (!!groups_filtered))
   } else {
     data_predicated <- layer$data %>%
       # TODO: chage this to more improbable name
