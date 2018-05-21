@@ -63,7 +63,7 @@ test_that("bleach_layer() works", {
                geom_bar(aes(group = !!VERY_SECRET_GROUP_COLUMN_NAME, colour = NULL, fill = NULL), d_bleached))
 })
 
-test_that("sieve_layer() works", {
+test_that("sieve_layer() works with simple cases", {
   pred_ungrouped <- list(rlang::quo(value > 1))
   pred_grouped <- list(rlang::quo(mean(value) > 1))
   d_sieved_ungrouped <- d[d$value > 1, ]
@@ -94,6 +94,10 @@ test_that("sieve_layer() works", {
   }
   expect_equal(f(rlang::quo(type)), geom_bar(aes(colour = type), d_sieved_ungrouped))
   expect_equal(f(NULL), geom_bar(aes(colour = type), d_sieved_ungrouped))
+
+  # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
+  expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
+  expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
 })
 
 test_that("geom_highlight() does not change the existing layers", {
