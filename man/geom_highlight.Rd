@@ -4,17 +4,19 @@
 \alias{geom_highlight}
 \title{Clone Other Layers}
 \usage{
-geom_highlight(..., n = NULL, unhighlighted_colour = ggplot2::alpha("grey",
-  0.7), max_highlight = 5L)
+geom_highlight(..., n = NULL, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = TRUE)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
 
 \item{n}{Number of layers to clone.}
 
+\item{max_highlight}{Max number of series to highlight.}
+
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 
-\item{max_highlight}{Max number of series to highlight.}
+\item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 }
 \description{
 Clone Other Layers

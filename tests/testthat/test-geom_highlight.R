@@ -69,9 +69,9 @@ test_that("sieve_layer() works", {
   d_sieved_ungrouped <- d[d$value > 1, ]
   d_sieved_grouped <- d[d$type != "a", ]
 
-  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), NULL, pred_ungrouped, 5L),
+  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), NULL, pred_ungrouped),
                geom_bar(aes(colour = type), d_sieved_ungrouped))
-  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped, 5L),
+  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_grouped),
                geom_bar(aes(colour = type), d_sieved_grouped))
 })
 

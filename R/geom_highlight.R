@@ -4,21 +4,25 @@
 #'   Expressions to filter data, which is passed to [dplyr::filter()].
 #' @param n
 #'   Number of layers to clone.
-#' @param unhighlighted_colour
-#'   Colour for unhighlited lines/points.
 #' @param max_highlight
 #'   Max number of series to highlight.
+#' @param unhighlighted_colour
+#'   Colour for unhighlited lines/points.
+#' @param use_group_by
+#'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @export
 geom_highlight <- function(...,
                            n = NULL,
+                           max_highlight = 5L,
                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                           max_highlight = 5L) {
+                           use_group_by = NULL) {
   structure(
     list(
       predicates = rlang::enquos(...),
       n = n,
+      max_highlight = max_highlight,
       unhighlighted_colour = unhighlighted_colour,
-      max_highlight = max_highlight
+      use_group_by = use_group_by
     ),
     class = "gg_highlighter"
   )
@@ -69,7 +73,9 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     layers_sieved,
     group_keys,
     sieve_layer,
-    predicates = object$predicates
+    predicates = object$predicates,
+    max_highlight = object$max_highlight,
+    use_group_by = object$use_group_by
   )
 
   plot$layers[idx_layers] <- layers_bleached
@@ -101,7 +107,8 @@ merge_mapping <- function(layer, plot_mapping) {
   mapping
 }
 
-bleach_layer <- function(layer, group_key, unhighlighted_colour) {
+bleach_layer <- function(layer, group_key,
+                         unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
   # set colour and fill to grey only when it is included in the mappping
   # (Note that this needs to be executed before modifying the layer$mapping)
   params_bleached <- list()
@@ -124,11 +131,58 @@ bleach_layer <- function(layer, group_key, unhighlighted_colour) {
   layer
 }
 
-sieve_layer <- function(layer, group_key, predicates, max_highlight) {
-  if (!is.null(group_key)) {
-    layer$data <- dplyr::group_by(layer$data, !! group_key)
+sieve_layer <- function(layer, group_key, predicates,
+                        max_highlight = 5L,
+                        use_group_by = NULL) {
+  # If use_group_by is NULL, infer it from whether group_key is NULL or not.
+  use_group_by <- use_group_by %||% is.null(group_key)
+
+  # 1) If use_group_by is FALSE, do not use group_by().
+  # 2) If use_group_by is TRUE and group_key is not NULL, use group_by().
+  # 3) If use_group_by is TRUE but group_key is NULL, show a warning and do not use group_by().
+  if (use_group_by) {
+    if (is.null(group_key)) {
+      warning("You set use_group_by = TRUE, but there seems no group_key.\n",
+              "Please provide group, colour or fill aes.\n",
+              "Falling back to ungrouped filter operation...")
+      use_group_by <- FALSE
+    }
   }
 
-  layer$data <- dplyr::filter(layer$data, !!! predicates)
+  names(predicates) <- paste0("p", seq_along(predicates))
+
+  if (use_group_by) {
+    data_predicated <- layer$data %>%
+      # Rename group_key to prevent it from name collision.
+      dplyr::rename(!! group_key := !! VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      dplyr::group_by(!! VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      dplyr::summarise(!!! predicates)
+
+    data_filtered <- data_predicated %>%
+      # first, fitler by the logical predicates
+      dplyr::filter_if(is.logical, dplyr::all_vars(.)) %>%
+      # then, arrange by the other predicates
+      dplyr::arrange_if(purrr::negate(is.logical), dplyr::desc) %>%
+      # slice down to max_highlight
+      dplyr::slice(!! 1:max_highlight)
+
+    layer$data <- dplyr::filter(layer$data, (!! group_key) %in% (!! data_filtered$groups))
+  } else {
+    data_predicated <- layer$data %>%
+      # TODO: chage this to more improbable name
+      tibble::rowid_to_column("rowid") %>%
+      dplyr::transmute(!!! predicates, rowid)
+
+    data_filtered <- data_predicated %>%
+      # first, fitler by the logical predicates
+      dplyr::filter_if(is.logical, dplyr::all_vars(.)) %>%
+      # then, arrange by the other predicates
+      dplyr::arrange_if(purrr::negate(is.logical), dplyr::desc) %>%
+      # slice down to max_highlight
+      dplyr::slice(!! 1:max_highlight)
+
+    layer$data <- dplyr::slice(layer$data, data_filtered$rowid)
+  }
+
   layer
 }
