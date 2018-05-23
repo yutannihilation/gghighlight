@@ -28,7 +28,7 @@ geom_highlight <- function(...,
   )
 }
 
-VERY_SECRET_GROUP_COLUMN_NAME <- rlang::sym("group..........")
+VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
@@ -51,7 +51,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   layers_cloned <- purrr::map(plot$layers[idx_layers], clone_layer)
 
   # data and group_keys are used commonly both in the bleaching and sieving process.
-  # Especially, group_key should be extracted here before it gets renamed to VERY_SECRET_GROUP_COLUMN_NAME.
+  # Especially, group_key should be extracted here before it gets renamed to VERY_SECRET_COLUMN_NAME.
   purrr::walk(layers_cloned, merge_plot_to_layer,
               plot_data = plot$data, plot_mapping = plot$mapping)
   group_keys <- purrr::map(layers_cloned, ~ infer_group_key_from_aes(.$mapping))
@@ -130,8 +130,8 @@ bleach_layer <- function(layer, group_key,
     # data to facetted, rename the group column to the very improbable name.
     # e.g. geom_line(aes(colour = c)); if colour aes is removed, line will be drawn unintentionally.
     # But, is group key always needed...? (e.g. points)
-    layer$data <- dplyr::rename(layer$data, !!VERY_SECRET_GROUP_COLUMN_NAME := !!group_key)
-    layer$mapping$group <- rlang::quo(!!VERY_SECRET_GROUP_COLUMN_NAME)
+    layer$data <- dplyr::rename(layer$data, !!VERY_SECRET_COLUMN_NAME := !!group_key)
+    layer$mapping$group <- rlang::quo(!!VERY_SECRET_COLUMN_NAME)
   }
 
   layer
@@ -163,13 +163,13 @@ sieve_layer <- function(layer, group_key, predicates,
   if (use_group_by) {
     data_predicated <- layer$data %>%
       # Rename group_key to prevent it from name collision.
-      dplyr::rename(!!VERY_SECRET_GROUP_COLUMN_NAME := !!group_key) %>%
-      dplyr::group_by(!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      dplyr::rename(!!VERY_SECRET_COLUMN_NAME := !!group_key) %>%
+      dplyr::group_by(!!VERY_SECRET_COLUMN_NAME) %>%
       dplyr::summarise(!!!predicates)
 
     col_idx <- data_predicated %>%
       # Do not use group_key to arrange.
-      dplyr::select(-!!VERY_SECRET_GROUP_COLUMN_NAME) %>%
+      dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
       purrr::map_lgl(is.logical)
     cols_filter <- rlang::syms(names(col_idx)[col_idx])
     cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
@@ -185,18 +185,17 @@ sieve_layer <- function(layer, group_key, predicates,
         utils::tail(max_highlight)
     }
 
-    groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_GROUP_COLUMN_NAME)
+    groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
 
     layer$data <- dplyr::filter(layer$data, (!!group_key) %in% (!!groups_filtered))
   } else {
     data_predicated <- layer$data %>%
-      # TODO: chage this to more improbable name
-      tibble::rowid_to_column("rowid") %>%
-      dplyr::transmute(!!! predicates, .data$rowid)
+      tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
+      dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
 
     col_idx <- data_predicated %>%
-      # Do not use rowid to arrange.
-      dplyr::select(-rowid) %>%
+      # Do not use row IDs to arrange.
+      dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
       purrr::map_lgl(is.logical)
     cols_filter <- rlang::syms(names(col_idx)[col_idx])
     cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
@@ -213,7 +212,7 @@ sieve_layer <- function(layer, group_key, predicates,
     }
 
     # sort to preserve the original order
-    rowids_filtered <- sort(data_filtered$rowid)
+    rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
 
     layer$data <- layer$data[rowids_filtered, ]
   }

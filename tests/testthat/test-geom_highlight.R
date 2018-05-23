@@ -40,9 +40,9 @@ test_that("merge_data() works", {
 
 test_that("bleach_layer() works", {
   d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
 
-  aes_bleached <- aes(colour = NULL, fill = NULL, group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+  aes_bleached <- aes(colour = NULL, fill = NULL, group = !!VERY_SECRET_COLUMN_NAME)
 
   # If colour is specified, colour is used as the group key.
   expect_equal(bleach_layer(geom_line(aes(colour = type), d), rlang::quo(type), grey07),
@@ -64,7 +64,7 @@ test_that("bleach_layer() works", {
   # c.f. https://github.com/yutannihilation/gghighlight/pull/17#issuecomment-390486101.
   expect_equal(bleach_layer(geom_bar(aes(group = type), d), rlang::quo(type), grey07),
                # since group aes already exists, group comes first
-               geom_bar(aes(group = !!VERY_SECRET_GROUP_COLUMN_NAME, colour = NULL, fill = NULL),
+               geom_bar(aes(group = !!VERY_SECRET_COLUMN_NAME, colour = NULL, fill = NULL),
                         d_bleached, colour = grey07, fill = grey07))
 })
 
@@ -160,9 +160,9 @@ test_that("geom_highlight() does not change the existing layers", {
 
 test_that("geom_highlight() works the plot with one layer, grouped", {
   d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
   aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+                      group = !!VERY_SECRET_COLUMN_NAME)
 
   d_sieved <- d[d$type != "a", ]
 
@@ -187,9 +187,9 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
 
 test_that("geom_highlight() works the plot with one layer, ungrouped", {
   d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
   aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+                      group = !!VERY_SECRET_COLUMN_NAME)
 
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = grey07)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
@@ -203,9 +203,9 @@ test_that("geom_highlight() works the plot with one layer, ungrouped", {
 
 test_that("geom_highlight() works with two layers, grouped", {
   d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
   aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+                      group = !!VERY_SECRET_COLUMN_NAME)
 
   d_sieved <- d[d$type != "a", ]
 
@@ -230,9 +230,9 @@ test_that("geom_highlight() works with two layers, grouped", {
 
 test_that("geom_highlight() works with two layers, ungrouped", {
   d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_GROUP_COLUMN_NAME)
+  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
   aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_GROUP_COLUMN_NAME)
+                      group = !!VERY_SECRET_COLUMN_NAME)
 
   d_sieved <- d[d$value > 1, ]
 
