@@ -178,9 +178,11 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
   p3 <- ggplot() +
     geom_line(data = d, aes(x, y, colour = type))
 
-  expect_equal((p1 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
-  expect_equal((p2 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
-  expect_equal((p3 + geom_highlight(mean(value) > 1))$layers, list(l_bleached, l_sieved))
+  for (p in list(p1, p2, p3)) {
+    p_highlighted <- p + geom_highlight(mean(value) > 1)
+    expect_equal(p_highlighted$data, d_bleached)
+    expect_equal(p_highlighted$layers, list(l_bleached, l_sieved))
+  }
 })
 
 test_that("geom_highlight() works the plot with one layer, ungrouped", {
