@@ -10,19 +10,27 @@
 #'   Colour for unhighlited lines/points.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
+#' @param use_direct_label
+#'   If `TRUE`, add labels directly on the plot instead of using a legend.
+#' @param label_key
+#'   Column name for `label` aesthetics.
 #' @export
 geom_highlight <- function(...,
                            n = NULL,
                            max_highlight = 5L,
                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                           use_group_by = NULL) {
+                           use_group_by = NULL,
+                           use_direct_label = TRUE,
+                           label_key = NULL) {
   structure(
     list(
       predicates = rlang::enquos(...),
       n = n,
       max_highlight = max_highlight,
       unhighlighted_colour = unhighlighted_colour,
-      use_group_by = use_group_by
+      use_group_by = use_group_by,
+      use_direct_label = use_direct_label,
+      label_key = label_key
     ),
     class = "gg_highlighter"
   )

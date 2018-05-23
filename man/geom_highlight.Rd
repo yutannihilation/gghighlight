@@ -5,7 +5,8 @@
 \title{Clone Other Layers}
 \usage{
 geom_highlight(..., n = NULL, max_highlight = 5L,
-  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL)
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
+  use_direct_label = TRUE, label_key = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
@@ -17,6 +18,10 @@ geom_highlight(..., n = NULL, max_highlight = 5L,
 \item{unhighlighted_colour}{Colour for unhighlited lines/points.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
+
+\item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of using a legend.}
+
+\item{label_key}{Column name for \code{label} aesthetics.}
 }
 \description{
 Clone Other Layers
