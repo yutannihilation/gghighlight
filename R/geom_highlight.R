@@ -107,6 +107,12 @@ merge_mapping <- function(layer, plot_mapping) {
   mapping
 }
 
+clone_layer <- function(layer) {
+  new_layer <- rlang::env_clone(layer)
+  class(new_layer) <- class(layer)
+  new_layer
+}
+
 bleach_layer <- function(layer, group_key,
                          unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
   # set colour and fill to grey only when it is included in the mappping
