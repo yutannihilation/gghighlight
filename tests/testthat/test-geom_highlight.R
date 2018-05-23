@@ -1,4 +1,8 @@
 context("test-geom_highlight.R")
+
+# ggplot_add() is only available on ggplot2 >= 2.3.0
+skip_if(packageVersion("ggplot2") <= "2.2.1")
+
 library(ggplot2)
 
 grey07 <- ggplot2::alpha("grey", 0.7)

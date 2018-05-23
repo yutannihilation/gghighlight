@@ -47,6 +47,8 @@
 #'
 NULL
 
+# to cope with the breaking change of ggplot2 2.3.0
+as.character.quosure <- rlang::quo_expr
 
 gghighlight <- function(data,
                         mapping,

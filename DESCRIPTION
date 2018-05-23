@@ -7,7 +7,7 @@ Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
 Description: Make it easier to explore data with highlights.
 URL: https://github.com/yutannihilation/gghighlight/
 BugReports: https://github.com/yutannihilation/gghighlight/issues
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 Depends:
   R (>= 3.1.0)
