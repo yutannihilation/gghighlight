@@ -78,6 +78,11 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     use_group_by = object$use_group_by
   )
 
+  # The plot data should also be sieved to deleting facets for unhighlighted levels
+  # TODO: This may be treated more carefully.
+  # c.f. https://github.com/yutannihilation/gghighlight/pull/26#issuecomment-391332229
+  plot$data <- layers_sieved[[1]]$data
+
   plot$layers[idx_layers] <- layers_bleached
   plot %+% layers_sieved
 }

@@ -180,7 +180,7 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
 
   for (p in list(p1, p2, p3)) {
     p_highlighted <- p + geom_highlight(mean(value) > 1)
-    expect_equal(p_highlighted$data, d_bleached)
+    expect_equal(p_highlighted$data, d_sieved)
     expect_equal(p_highlighted$layers, list(l_bleached, l_sieved))
   }
 })
