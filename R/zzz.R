@@ -1,6 +1,6 @@
 
 .onLoad <- function(...) {
-  if (packageVersion("ggplot2") > "2.2.1") {
+  if (utils::packageVersion("ggplot2") > "2.2.1") {
     register_s3_method("ggplot2", "ggplot_add", "gg_highlighter")
   }
 
