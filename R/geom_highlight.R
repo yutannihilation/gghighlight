@@ -22,6 +22,16 @@ geom_highlight <- function(...,
                            use_group_by = NULL,
                            use_direct_label = NULL,
                            label_key = NULL) {
+
+  # if use_direct_label is NULL, try to use direct labels but ignore failures
+  # if use_direct_label is TRUE, use direct labels, otherwise stop()
+  # if use_direct_label is FALSE, do not use direct labeys
+  label_key_must_exist <- TRUE
+  if (is.null(use_direct_label)) {
+    use_direct_label <- TRUE
+    label_key_must_exist <- FALSE
+  }
+
   structure(
     list(
       predicates = rlang::enquos(...),
@@ -30,6 +40,7 @@ geom_highlight <- function(...,
       unhighlighted_colour = unhighlighted_colour,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
+      label_key_must_exist = label_key_must_exist,
       label_key = rlang::enquo(label_key)
     ),
     class = "gg_highlighter"
@@ -94,25 +105,21 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot$layers[idx_layers] <- layers_bleached
   plot <- plot %+% layers_sieved
 
-  label_key_must_exist <- TRUE
-  if (is.null(object$use_direct_label)) {
-    object$use_direct_label <- TRUE
-    label_key_must_exist <- FALSE
+  if (!object$use_direct_label) {
+    return(plot)
   }
 
-  if (object$use_direct_label) {
-    layer_labelled <- choose_layer_for_label(layer_sieved, object$label_key, label_key_must_exist)
-    if (label_key_must_exist) {
-      if (is.null(layer_labelled)) {
-        stop("No layer can be used for labels", call. = FALSE)
-      }
+  layer_labelled <- generate_labelled_layer(layers_sieved, object$label_key)
+
+  if (is.null(layer_labelled)) {
+    if (object$label_key_must_exist) {
+      stop("No layer can be used for labels", call. = FALSE)
     } else {
-      layer_label <- generate_layer_label(layer_labelled, object$label_key)
-      plot <- plot %+% layer_label %+% ggplot2::guides(colour = "none", fill = "none")
+      return(plot)
     }
   }
 
-  plot
+  plot %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
 }
 
 merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {
