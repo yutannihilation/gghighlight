@@ -20,7 +20,7 @@ geom_highlight <- function(...,
                            max_highlight = 5L,
                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                            use_group_by = NULL,
-                           use_direct_label = TRUE,
+                           use_direct_label = NULL,
                            label_key = NULL) {
   structure(
     list(
@@ -30,7 +30,7 @@ geom_highlight <- function(...,
       unhighlighted_colour = unhighlighted_colour,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
-      label_key = label_key
+      label_key = rlang::enquo(label_key)
     ),
     class = "gg_highlighter"
   )
@@ -92,7 +92,27 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot$data <- layers_sieved[[1]]$data
 
   plot$layers[idx_layers] <- layers_bleached
-  plot %+% layers_sieved
+  plot <- plot %+% layers_sieved
+
+  label_key_must_exist <- TRUE
+  if (is.null(object$use_direct_label)) {
+    object$use_direct_label <- TRUE
+    label_key_must_exist <- FALSE
+  }
+
+  if (object$use_direct_label) {
+    layer_labelled <- choose_layer_for_label(layer_sieved, object$label_key, label_key_must_exist)
+    if (label_key_must_exist) {
+      if (is.null(layer_labelled)) {
+        stop("No layer can be used for labels", call. = FALSE)
+      }
+    } else {
+      layer_label <- generate_layer_label(layer_labelled, object$label_key)
+      plot <- plot %+% layer_label %+% ggplot2::guides(colour = "none", fill = "none")
+    }
+  }
+
+  plot
 }
 
 merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {

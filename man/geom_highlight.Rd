@@ -6,7 +6,7 @@
 \usage{
 geom_highlight(..., n = NULL, max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
-  use_direct_label = TRUE, label_key = NULL)
+  use_direct_label = NULL, label_key = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
