@@ -109,7 +109,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     return(plot)
   }
 
-  layer_labelled <- generate_labelled_layer(layers_sieved, object$label_key)
+  layer_labelled <- generate_labelled_layer(layers_sieved, group_keys, object$label_key)
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {

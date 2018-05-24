@@ -2,18 +2,17 @@
 
 # TODO: return the index of layer so that the group_key can be used
 # label_key is a quosure
-generate_labelled_layer <- function(layers, label_key) {
-  layer_for_label <- choose_layer_for_label(layers, label_key)
+generate_labelled_layer <- function(layers, group_keys, label_key) {
+  layer_for_label <- choose_layer_for_label(layers, group_keys, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
   }
 
   layer_labelled <- clone_layer(layer_for_label$layer)
-  label_layer(layer_labelled, layer_for_label$label)
-  layer_labelled
+  label_layer(layer_labelled, layer_for_label$group_key, layer_for_label$label)
 }
 
-choose_layer_for_label <- function(layers, label_key) {
+choose_layer_for_label <- function(layers, group_keys, label_key) {
   if (!rlang::quo_is_null(label_key)) {
     # If label_key is specified, some layer must have the kye.
     label_key_text <- rlang::quo_text(label_key)
@@ -21,7 +20,7 @@ choose_layer_for_label <- function(layers, label_key) {
     labellables <- purrr::map(idx, ~ if (.) label_key)
   } else {
     # If label_key is not specified, some key might be usable for label.
-    labellables <- purrr::map(layers, ~ infer_label_key(.$mapping))
+    labellables <- purrr::map2(layers, group_keys, ~ infer_label_key(.x$mapping, .y))
     idx <- !purrr::map_lgl(labellables, is.null)
   }
 
@@ -33,23 +32,24 @@ choose_layer_for_label <- function(layers, label_key) {
   # Filter out the layers that cannot be labelled.
   layers <- layers[idx]
   labellables <- labellables[idx]
+  group_keys <- group_keys[idx]
 
   # If there's line geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_line)
   if (any(idx)) {
-    return(list(layer = layer[idx][[1]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
   }
-  
+
   # If there's point geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_point)
   if (any(idx)) {
-    return(list(layer = layer[idx][[1]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
   }
 
   # If there's bar geom, use it.
   idx <- purrr::map_lgl(layers, is_bar)
   if (any(idx)) {
-    return(list(layer = layer[idx][[1]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
   }
 
   # Other geoms are currently unsupported.
@@ -60,7 +60,7 @@ is_identity_line <- function(x) {
   is_direct_class(x$stat, "StatIdentity") && is_direct_class(x$geom, "GeomLine")
 }
 
-is_identity_point <- function(x) function(x) {
+is_identity_point <- function(x) {
   is_direct_class(x$stat, "StatIdentity") && is_direct_class(x$geom, "GeomPoint")
 }
 
@@ -68,38 +68,47 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-label_layer <- function(layer, label_key) {
-  UseGeneric("label_layer")
+label_layer <- function(layer, group_key, label_key) {
+  switch (class(layer$geom)[1],
+    GeomLine = label_layer_line(layer, group_key, label_key),
+    GeomPoint = label_layer_point(layer, group_key, label_key),
+    GeomBar = NULL,
+    stop("Unsupported geom!", call. = FALSE)
+  )
 }
 
-label_layer.default <- function(layer, label_key) stop("Unsupported geom!", call. = FALSE)
+label_layer_point <- function(layer, group_key, label_key) {
+  mapping <- layer$mapping
+  mapping$label <- label_key
 
-label_layer.GeomBar <- function(layer, label_key) NULL
-
-label_layer.GeomPoint <- function(layer, label_key) {
-  layer$mapping$label <- label_key
-  layer
+  ggrepel::geom_label_repel(data = layer$data,
+                            mapping = mapping)
 }
 
-label_layer.GeomLine <- function(layer, label_key) {
-  # TODO
+label_layer_line <- function(layer, group_key, label_key) {
+  mapping <- layer$mapping
+  mapping$label <- label_key
+
+  x_key <- layer$mapping$x
+
+  rightmost_points <- layer$data %>%
+    dplyr::group_by(!!group_key) %>%
+    dplyr::filter(!!x_key == max(!!x_key)) %>%
+    dplyr::slice(1)
+
+  ggrepel::geom_label_repel(data = rightmost_points,
+                            mapping = mapping)
 }
 
-infer_label_key <- function(layer) {
-  # If the layer has label aes, use it.
-  if (!is.null(layer$mapping$label)) {
-    return(layer$mapping$label)
-  }
-
-  # If the layer has groupable aes, use it.
-  key <- infer_group_key_from_aes(layer)
+infer_label_key <- function(layer, group_key) {
+  # If the layer has label aes or group_key, use it.
+  key <- layer$mapping$label %||% group_key
   if (!is.null(key)) {
     return(key)
   }
 
   # If the data has discrete variable, use it.
   idx <- purrr::map_lgl(layer$data, is.character) | purrr::map_lgl(layer$data, is.factor)
-  
   if (any(idx)) {
     col_sym <- rlang::sym(colnames(layer$data)[idx][[1]])
     return(rlang::quo(!!col_sym))
