@@ -91,10 +91,17 @@ label_layer_line <- function(layer, group_key, label_key) {
 
   x_key <- layer$mapping$x
 
+  # To restore the original group, extract group keys (I don't know this is really necessary, though...)
+  group_key_orig <- dplyr::groups(layer$data)
+
   rightmost_points <- layer$data %>%
     dplyr::group_by(!!group_key) %>%
     dplyr::filter(!!x_key == max(!!x_key)) %>%
+    # max value can appear multiple times, so ensure only one row per group
     dplyr::slice(1)
+
+  # restore the original group
+  rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
   ggrepel::geom_label_repel(data = rightmost_points,
                             mapping = mapping)
