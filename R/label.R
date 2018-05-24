@@ -1,7 +1,5 @@
 # Labels
 
-# TODO: return the index of layer so that the group_key can be used
-# label_key is a quosure
 generate_labelled_layer <- function(layers, group_keys, label_key) {
   layer_for_label <- choose_layer_for_label(layers, group_keys, label_key)
   if (is.null(layer_for_label)) {
@@ -72,7 +70,9 @@ label_layer <- function(layer, group_key, label_key) {
   switch (class(layer$geom)[1],
     GeomLine = label_layer_line(layer, group_key, label_key),
     GeomPoint = label_layer_point(layer, group_key, label_key),
-    GeomBar = NULL,
+    # TODO: To distinguish NULL, return list() to hide guides here.
+    #       But, can we use more explicit representation?
+    GeomBar = list(),
     stop("Unsupported geom!", call. = FALSE)
   )
 }
