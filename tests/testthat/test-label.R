@@ -1,5 +1,18 @@
 context("test-label.R")
 
+d <- data.frame(x = 1, y = 2, type = "a", type2 = "b", stringsAsFactors = FALSE)
+d2 <- data.frame(x = 1, y = 2, type = "a")
+
+l_point <- geom_point(aes(x, y, colour = type), d)
+l_point2 <- geom_point(aes(x, y, colour = type), d, shape = "filled circle")
+l_line <- geom_line(aes(x, y, colour = type), d)
+l_bar <- geom_bar(aes(x, fill = type), d)
+l_text <- geom_text(aes(x, y, label = type), d)
+
+type_quo <- rlang::quo(type)
+type2_quo <- rlang::quo(type2)
+null_quo <- rlang::quo(NULL)
+
 test_that("The types of layers are detected properly", {
   expect_true(is_identity_line(geom_line()))
   expect_false(is_identity_line(geom_bar()))
@@ -15,11 +28,6 @@ test_that("The types of layers are detected properly", {
 })
 
 test_that("infer_label_key() infers the label key properly", {
-  d <- data.frame(x = 1, y = 2, type = "a", type2 = "b", stringsAsFactors = FALSE)
-  d2 <- data.frame(x = 1, y = 2, type = "a")
-  type_quo <- rlang::quo(type)
-  type2_quo <- rlang::quo(type2)
-
   # If no group_key is available, use the first labellable column.
   expect_equal(infer_label_key(geom_point(aes(x, y, colour = type), d), NULL),
                type_quo)
@@ -35,20 +43,6 @@ test_that("infer_label_key() infers the label key properly", {
 })
 
 test_that("choose_layer_for_label() chooses a layer properly", {
-  d <- data.frame(x = 1, y = 2, type = "a")
-  d_wo_labellables <- data.frame(x = 1, y = 2)
-
-  type_quo <- rlang::quo(type)
-  null_quo <- rlang::quo(NULL)
-
-  l_point <- geom_point(aes(x, y, colour = type), d)
-  l_point2 <- geom_point(aes(x, y, colour = type), d, shape = "filled circle")
-  l_line <- geom_line(aes(x, y, colour = type), d)
-  l_bar <- geom_bar(aes(x, fill = type), d)
-  l_point_no_type_in_aes <- geom_point(aes(x, y), d)
-  l_point_no_type_in_data <- geom_point(aes(x, y, colour = x), d_wo_labellables)
-  l_text <- geom_text(aes(x, y, label = type), d)
-
   # if label_key is specified and the layer contains it, it should be choosed
   expect_equal(choose_layer_for_label(list(l_point), list(type_quo), type_quo),
                list(layer = l_point, label_key = type_quo))
@@ -82,11 +76,12 @@ test_that("choose_layer_for_label() chooses a layer properly", {
 })
 
 test_that("generate_labelled_layer() geenrates a layer for label.", {
-  d <- data.frame(x = 1, y = 2, type = "a")
-  type_quo <- rlang::quo(type)
-  
   expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), type_quo),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d))
+  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
+               NULL)
+  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
+               NULL)
   expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
                NULL)
 })
