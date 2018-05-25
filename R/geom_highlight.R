@@ -202,14 +202,12 @@ sieve_layer <- function(layer, group_key, predicates,
 
   if (use_group_by) {
     data_predicated <- layer$data %>%
-      # Rename group_key to prevent it from name collision.
-      dplyr::rename(!!VERY_SECRET_COLUMN_NAME := !!group_key) %>%
-      dplyr::group_by(!!VERY_SECRET_COLUMN_NAME) %>%
+      dplyr::group_by(!!group_key) %>%
       dplyr::summarise(!!!predicates)
 
     col_idx <- data_predicated %>%
       # Do not use group_key to arrange.
-      dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
+      dplyr::select(-!!group_key) %>%
       purrr::map_lgl(is.logical)
     cols_filter <- rlang::syms(names(col_idx)[col_idx])
     cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
@@ -225,7 +223,7 @@ sieve_layer <- function(layer, group_key, predicates,
         utils::tail(max_highlight)
     }
 
-    groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
+    groups_filtered <- dplyr::pull(data_filtered, !!group_key)
 
     layer$data <- dplyr::filter(layer$data, (!!group_key) %in% (!!groups_filtered))
   } else {
