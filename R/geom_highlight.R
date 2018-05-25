@@ -193,67 +193,84 @@ sieve_layer <- function(layer, group_key, predicates,
     if (is.null(group_key)) {
       warning("You set use_group_by = TRUE, but there seems no group_key.\n",
               "Please provide group, colour or fill aes.\n",
-              "Falling back to ungrouped filter operation...")
+              "Falling back to ungrouped filter operation...", call. = FALSE)
       use_group_by <- FALSE
     }
   }
 
   names(predicates) <- paste0("p", seq_along(predicates))
 
+  # If use_group_by is TRUE, try to calculate grouped
   if (use_group_by) {
-    data_predicated <- layer$data %>%
-      dplyr::group_by(!!group_key) %>%
-      dplyr::summarise(!!!predicates)
-
-    col_idx <- data_predicated %>%
-      # Do not use group_key to arrange.
-      dplyr::select(-!!group_key) %>%
-      purrr::map_lgl(is.logical)
-    cols_filter <- rlang::syms(names(col_idx)[col_idx])
-    cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
-
-    # Filter by the logical predicates.
-    data_filtered <- data_predicated %>%
-      dplyr::filter(!!!cols_filter)
-
-    # Arrange by the other predicates and slice rows down to max_highlights.
-    if (length(cols_arrange) > 0) {
-      data_filtered <- data_filtered %>%
-        dplyr::arrange(!!!cols_arrange) %>%
-        utils::tail(max_highlight)
-    }
-
-    groups_filtered <- dplyr::pull(data_filtered, !!group_key)
-
-    layer$data <- dplyr::filter(layer$data, (!!group_key) %in% (!!groups_filtered))
-  } else {
-    data_predicated <- layer$data %>%
-      tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
-      dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
-
-    col_idx <- data_predicated %>%
-      # Do not use row IDs to arrange.
-      dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
-      purrr::map_lgl(is.logical)
-    cols_filter <- rlang::syms(names(col_idx)[col_idx])
-    cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
-
-    # Filter by the logical predicates.
-    data_filtered <- data_predicated %>%
-      dplyr::filter(!!!cols_filter)
-
-    # Arrange by the other predicates and slice rows down to max_highlights.
-    if (length(cols_arrange) > 0) {
-      data_filtered <- data_filtered %>%
-        dplyr::arrange(!!!cols_arrange) %>%
-        utils::tail(max_highlight)
-    }
-
-    # sort to preserve the original order
-    rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
-
-    layer$data <- layer$data[rowids_filtered, ]
+    tryCatch({
+      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_key)
+      # if this succeeds, return the layer
+      return(layer)
+    },
+    error = function(e) {
+      warning("You set use_group_by = TRUE, but grouped calculation failed.\n",
+              "Falling back to ungrouped filter operation...", call. = FALSE)
+    })
   }
 
+  # the grouped calculation failed or skipped, try ungrouped one.
+  layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
   layer
+}
+
+calculate_grouped <- function(data, predicates, max_highlight, group_key) {
+  data_predicated <- data %>%
+    dplyr::group_by(!!group_key) %>%
+    dplyr::summarise(!!!predicates)
+
+  col_idx <- data_predicated %>%
+    # Do not use group_key to arrange.
+    dplyr::select(-!!group_key) %>%
+    purrr::map_lgl(is.logical)
+  cols_filter <- rlang::syms(names(col_idx)[col_idx])
+  cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
+
+  # Filter by the logical predicates.
+  data_filtered <- data_predicated %>%
+    dplyr::filter(!!!cols_filter)
+
+  # Arrange by the other predicates and slice rows down to max_highlights.
+  if (length(cols_arrange) > 0) {
+    data_filtered <- data_filtered %>%
+      dplyr::arrange(!!!cols_arrange) %>%
+      utils::tail(max_highlight)
+  }
+
+  groups_filtered <- dplyr::pull(data_filtered, !!group_key)
+
+  dplyr::filter(data, (!!group_key) %in% (!!groups_filtered))
+}
+
+calculate_ungrouped <- function(data, predicates, max_highlight) {
+  data_predicated <- data %>%
+    tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
+    dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
+
+  col_idx <- data_predicated %>%
+    # Do not use row IDs to arrange.
+    dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
+    purrr::map_lgl(is.logical)
+  cols_filter <- rlang::syms(names(col_idx)[col_idx])
+  cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
+
+  # Filter by the logical predicates.
+  data_filtered <- data_predicated %>%
+    dplyr::filter(!!!cols_filter)
+
+  # Arrange by the other predicates and slice rows down to max_highlights.
+  if (length(cols_arrange) > 0) {
+    data_filtered <- data_filtered %>%
+      dplyr::arrange(!!!cols_arrange) %>%
+      utils::tail(max_highlight)
+  }
+
+  # sort to preserve the original order
+  rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
+
+  data[rowids_filtered, ]
 }

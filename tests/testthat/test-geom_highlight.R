@@ -108,8 +108,9 @@ test_that("sieve_layer() works with simple cases", {
   }
   expect_equal(f(rlang::quo(type), use_group_by = FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
   expect_equal(f(NULL, FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
-  # even if use_group_by = TRUE, this succeeds
-  expect_equal(f(rlang::quo(type), use_group_by = TRUE), geom_bar(aes(colour = type), d_sieved_ungrouped))
+  # even if use_group_by = TRUE, this succeeds with a warning
+  expect_warning(l <- f(rlang::quo(type), use_group_by = TRUE))
+  expect_equal(l, geom_bar(aes(colour = type), d_sieved_ungrouped))
   
   # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
   expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
