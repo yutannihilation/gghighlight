@@ -3,6 +3,8 @@
 S3method(ggplot_add,gg_highlighter)
 export(aes)
 export(geom_highlight)
+export(geom_line_highlight)
+export(geom_point_highlight)
 export(gghighlight_line)
 export(gghighlight_point)
 importFrom(dplyr,desc)
