@@ -7,7 +7,7 @@ generate_labelled_layer <- function(layers, group_keys, label_key) {
   }
 
   layer_labelled <- clone_layer(layer_for_label$layer)
-  label_layer(layer_labelled, layer_for_label$group_key, layer_for_label$label_key)
+  label_layer(layer_labelled, layer_for_label$label_key)
 }
 
 choose_layer_for_label <- function(layers, group_keys, label_key) {
@@ -30,24 +30,23 @@ choose_layer_for_label <- function(layers, group_keys, label_key) {
   # Filter out the layers that cannot be labelled.
   layers <- layers[idx]
   labellables <- labellables[idx]
-  group_keys <- group_keys[idx]
 
   # If there's line geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_line)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # If there's point geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_point)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # If there's bar geom, use it.
   idx <- purrr::map_lgl(layers, is_bar)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # Other geoms are currently unsupported.
@@ -66,10 +65,10 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-label_layer <- function(layer, group_key, label_key) {
+label_layer <- function(layer, label_key) {
   switch (class(layer$geom)[1],
-    GeomLine = label_layer_line(layer, group_key, label_key),
-    GeomPoint = label_layer_point(layer, group_key, label_key),
+    GeomLine = label_layer_line(layer, label_key),
+    GeomPoint = label_layer_point(layer, label_key),
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
     GeomBar = list(),
@@ -77,19 +76,19 @@ label_layer <- function(layer, group_key, label_key) {
   )
 }
 
-label_layer_point <- function(layer, group_key, label_key) {
+label_layer_point <- function(layer, label_key) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
-  ggrepel::geom_label_repel(data = layer$data,
-                            mapping = mapping)
+  ggrepel::geom_label_repel(mapping, layer$data)
 }
 
-label_layer_line <- function(layer, group_key, label_key) {
+label_layer_line <- function(layer, label_key) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
   x_key <- layer$mapping$x
+  group_key <- layer$mapping$group %||% layer$mapping$colour
 
   # To restore the original group, extract group keys (I don't know this is really necessary, though...)
   group_key_orig <- dplyr::groups(layer$data)
@@ -103,8 +102,7 @@ label_layer_line <- function(layer, group_key, label_key) {
   # restore the original group
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
-  ggrepel::geom_label_repel(data = rightmost_points,
-                            mapping = mapping)
+  ggrepel::geom_label_repel(mapping, rightmost_points)
 }
 
 infer_label_key <- function(layer, group_key) {

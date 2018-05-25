@@ -19,7 +19,7 @@ test_that("choose_layer_for_label() chooses a layer properly", {
   d_wo_labellables <- data.frame(x = 1, y = 2)
 
   type_quo <- rlang::quo(type)
-  
+
   l_point <- geom_point(aes(x, y, colour = type), d)
   l_point2 <- geom_point(aes(x, y, colour = type), d, shape = "filled circle")
   l_line <- geom_line(aes(x, y, colour = type), d)
@@ -30,24 +30,24 @@ test_that("choose_layer_for_label() chooses a layer properly", {
 
   # if label_key is specified and the layer contains it, it should be choosed
   expect_equal(choose_layer_for_label(list(l_point), list(type_quo), type_quo),
-               list(layer = l_point, group_key = type_quo, label_key = type_quo))
+               list(layer = l_point, label_key = type_quo))
   expect_equal(choose_layer_for_label(list(l_line), list(type_quo), type_quo),
-               list(layer = l_line, group_key = type_quo, label_key = type_quo))
+               list(layer = l_line, label_key = type_quo))
   expect_equal(choose_layer_for_label(list(l_bar), list(type_quo), type_quo),
-               list(layer = l_bar, group_key = type_quo, label_key = type_quo))
+               list(layer = l_bar, label_key = type_quo))
   # If group_key is NULL, it's OK (I don't know in what case this happens...)
   expect_equal(choose_layer_for_label(list(l_point), list(NULL), type_quo),
-               list(layer = l_point, group_key = NULL, label_key = type_quo))
+               list(layer = l_point, label_key = type_quo))
   # If there are two layers, the first one is chosen
-  expect_equal(choose_layer_for_label(list(l_point, l_point2), list(type_quo), type_quo),
-               list(layer = l_point, group_key = type_quo, label_key = type_quo))
+  expect_equal(choose_layer_for_label(list(l_point, l_point2), list(type_quo, type_quo), type_quo),
+               list(layer = l_point, label_key = type_quo))
   # line > point > bar
-  expect_equal(choose_layer_for_label(list(l_point, l_line), list(type_quo), type_quo),
-               list(layer = l_line, group_key = type_quo, label_key = type_quo))
-  expect_equal(choose_layer_for_label(list(l_bar, l_point), list(type_quo), type_quo),
-               list(layer = l_point, group_key = type_quo, label_key = type_quo))
+  expect_equal(choose_layer_for_label(list(l_point, l_line), list(type_quo, type_quo), type_quo),
+               list(layer = l_line, label_key = type_quo))
+  expect_equal(choose_layer_for_label(list(l_bar, l_point), list(type_quo, type_quo), type_quo),
+               list(layer = l_point, label_key = type_quo))
   # If there are two layers and one is an unsupported geom, the other one is returned.
-  expect_equal(choose_layer_for_label(list(l_text, l_point), list(type_quo), type_quo),
-               list(layer = l_point, group_key = type_quo, label_key = type_quo))
+  expect_equal(choose_layer_for_label(list(l_text, l_point), list(type_quo, type_quo), type_quo),
+               list(layer = l_point, label_key = type_quo))
   # if label_key is not specified but no layer contains it, NULL is returned.
 })
