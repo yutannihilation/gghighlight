@@ -1,6 +1,7 @@
 context("test-label.R")
 
-d <- data.frame(x = 1, y = 2, type = "a", type2 = "b", stringsAsFactors = FALSE)
+type_chr <- c("a", "a", "b", "b")
+d <- data.frame(x = 1:4, y = 1:4, type = type_chr, type2 = type_chr, stringsAsFactors = FALSE)
 d2 <- data.frame(x = 1, y = 2, type = "a")
 
 l_point <- geom_point(aes(x, y, colour = type), d)
@@ -76,12 +77,12 @@ test_that("choose_layer_for_label() chooses a layer properly", {
 })
 
 test_that("generate_labelled_layer() geenrates a layer for label.", {
-  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), type_quo),
+  expect_equal(generate_labelled_layer(list(l_point), list(type_quo), type_quo),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d))
-  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
+  expect_equal(generate_labelled_layer(list(l_point), list(type_quo), rlang::quo(no_such_column)),
                NULL)
-  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
-               NULL)
-  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
-               NULL)
+  expect_equal(generate_labelled_layer(list(l_line), list(type_quo), type_quo),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d[c(2, 4), ]))
+  expect_equal(generate_labelled_layer(list(l_bar), list(type_quo), type_quo),
+               list())
 })
