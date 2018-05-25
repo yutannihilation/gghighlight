@@ -67,10 +67,12 @@ geom_highlight_with_preset <- function(geom_func, ...,
   predicates <- dots[!idx]
 
   geom_quo <- rlang::quo((!!geom_func)(!!!geom_args))
+  label_key <- rlang::enquo(label_key)
+
   geom_highlight(
     !!!predicates,
     n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
-    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = label_key,
+    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key,
     .preset_layers = rlang::eval_tidy(geom_quo)
   )
 }
@@ -84,11 +86,12 @@ geom_point_highlight <- function(..., mapping = NULL, data = NULL,
                                  use_group_by = NULL,
                                  use_direct_label = NULL,
                                  label_key = NULL) {
+  label_key <- rlang::enquo(label_key)
   geom_highlight_with_preset(
     geom_func = ggplot2::geom_point,
     mapping = mapping, data = data, ...,
     n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
-    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = label_key
+    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
   )
 }
 
@@ -101,11 +104,12 @@ geom_line_highlight <- function(..., mapping = NULL, data = NULL,
                                  use_group_by = NULL,
                                  use_direct_label = NULL,
                                  label_key = NULL) {
+  label_key <- rlang::enquo(label_key)
   geom_highlight_with_preset(
     geom_func = ggplot2::geom_line,
     mapping = mapping, data = data, ...,
     n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
-    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = label_key
+    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
   )
 }
 
@@ -115,7 +119,7 @@ VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (!is.null(object$.preset_layers)) {
-    plot <- plot + object$.preset_layers
+    plot <- plot %+% object$.preset_layers
   }
   if (length(plot$layers) == 0) {
     stop("there is no layer to highlight!")
