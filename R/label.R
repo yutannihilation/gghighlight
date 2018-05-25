@@ -18,7 +18,7 @@ choose_layer_for_label <- function(layers, group_keys, label_key) {
     labellables <- purrr::map(idx, ~ if (.) label_key)
   } else {
     # If label_key is not specified, some key might be usable for label.
-    labellables <- purrr::map2(layers, group_keys, ~ infer_label_key(.x$mapping, .y))
+    labellables <- purrr::map2(layers, group_keys, infer_label_key)
     idx <- !purrr::map_lgl(labellables, is.null)
   }
 
