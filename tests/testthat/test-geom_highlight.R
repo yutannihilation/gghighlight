@@ -178,10 +178,27 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
   p3 <- ggplot() +
     geom_line(data = d, aes(x, y, colour = type))
 
+  # without labels
   for (p in list(p1, p2, p3)) {
-    p_highlighted <- p + geom_highlight(mean(value) > 1)
+    p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = FALSE)
     expect_equal(p_highlighted$data, d_sieved)
     expect_equal(p_highlighted$layers, list(l_bleached, l_sieved))
+    expect_equal(p_highlighted$guides, NULL)
+  }
+
+  # with labels
+  d_label <- d_sieved %>%
+    dplyr::group_by(type) %>%
+    dplyr::arrange(desc(x)) %>%
+    dplyr::slice(1) %>%
+    dplyr::ungroup()
+
+  l_label <- ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d_label)
+  for (p in list(p1, p2, p3)) {
+    p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = TRUE)
+    expect_equal(p_highlighted$data, d_sieved)
+    expect_equal(p_highlighted$layers, list(l_bleached, l_sieved, l_label))
+    expect_equal(p_highlighted$guides, list(colour = "none", fill = "none"))
   }
 })
 
@@ -197,7 +214,7 @@ test_that("geom_highlight() works the plot with one layer, ungrouped", {
   p1 <- ggplot(d, aes(x, y, colour = type)) +
     geom_point()
 
-  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE))$layers,
+  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                list(l_bleached, l_sieved))
 })
 
@@ -220,11 +237,11 @@ test_that("geom_highlight() works with two layers, grouped", {
     geom_line() +
     geom_point(shape = "circle filled")
 
-  expect_equal((p1 + geom_highlight(mean(value) > 1))$layers,
+  expect_equal((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
                list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal((p1 + geom_highlight(mean(value) > 1, n = 1))$layers,
+  expect_equal((p1 + geom_highlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
                list(geom_line(), l_bleached_2, l_sieved_2))
 })
 
@@ -247,10 +264,10 @@ test_that("geom_highlight() works with two layers, ungrouped", {
     geom_point(shape = "circle open", size = 5) +
     geom_point()
 
-  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE))$layers,
+  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE))$layers,
+  expect_equal((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                list(geom_point(shape = "circle open", size = 5), l_bleached_2, l_sieved_2))
 })
