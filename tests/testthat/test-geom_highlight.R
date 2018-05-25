@@ -103,12 +103,14 @@ test_that("sieve_layer() works with simple cases", {
 
   # can be grouped, but intentionally avoid group_by;
   # the result is same no matter group_key is provided or not
-  f <- function (key) {
-    sieve_layer(geom_bar(aes(colour = type), d), key, pred_ungrouped, use_group_by = FALSE)
+  f <- function (key, use_group_by) {
+    sieve_layer(geom_bar(aes(colour = type), d), key, pred_ungrouped, use_group_by = use_group_by)
   }
-  expect_equal(f(rlang::quo(type)), geom_bar(aes(colour = type), d_sieved_ungrouped))
-  expect_equal(f(NULL), geom_bar(aes(colour = type), d_sieved_ungrouped))
-
+  expect_equal(f(rlang::quo(type), use_group_by = FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
+  expect_equal(f(NULL, FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
+  # even if use_group_by = TRUE, this succeeds
+  expect_equal(f(rlang::quo(type), use_group_by = TRUE), geom_bar(aes(colour = type), d_sieved_ungrouped))
+  
   # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
   expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
   expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
