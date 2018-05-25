@@ -35,19 +35,19 @@ choose_layer_for_label <- function(layers, group_keys, label_key) {
   # If there's line geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_line)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # If there's point geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_point)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # If there's bar geom, use it.
   idx <- purrr::map_lgl(layers, is_bar)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[idx][[1]], label_key = labellables[idx][[1]]))
   }
 
   # Other geoms are currently unsupported.

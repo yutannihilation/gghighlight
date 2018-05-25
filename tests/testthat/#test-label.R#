@@ -42,9 +42,7 @@ test_that("choose_layer_for_label() chooses a layer properly", {
   expect_equal(choose_layer_for_label(list(l_point, l_point2), list(type_quo), type_quo),
                list(layer = l_point, group_key = type_quo, label_key = type_quo))
   # line > point > bar
-  expect_equal(choose_layer_for_label(list(l_point, l_line), list(type_quo), type_quo),
-               list(layer = l_line, group_key = type_quo, label_key = type_quo))
-  expect_equal(choose_layer_for_label(list(l_bar, l_point), list(type_quo), type_quo),
+  expect_equal(choose_layer_for_label(list(l_point, l_point2), list(type_quo), type_quo),
                list(layer = l_point, group_key = type_quo, label_key = type_quo))
   # If there are two layers and one is an unsupported geom, the other one is returned.
   expect_equal(choose_layer_for_label(list(l_text, l_point), list(type_quo), type_quo),
