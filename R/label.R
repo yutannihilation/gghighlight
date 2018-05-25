@@ -6,8 +6,17 @@ generate_labelled_layer <- function(layers, group_keys, label_key) {
     return(NULL)
   }
 
-  layer_labelled <- clone_layer(layer_for_label$layer)
-  label_layer(layer_labelled, layer_for_label$label_key)
+  layer <- layer_for_label$layer
+  label_key <- layer_for_label$label_key
+
+  switch (class(layer$geom)[1],
+    GeomLine = generate_label_for_line(layer, label_key),
+    GeomPoint = generate_label_for_point(layer, label_key),
+    # TODO: To distinguish NULL, return list() to hide guides here.
+    #       But, can we use more explicit representation?
+    GeomBar = list(),
+    stop("Unsupported geom!", call. = FALSE)
+  )
 }
 
 choose_layer_for_label <- function(layers, group_keys, label_key) {
@@ -65,25 +74,7 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-label_layer <- function(layer, label_key) {
-  switch (class(layer$geom)[1],
-    GeomLine = label_layer_line(layer, label_key),
-    GeomPoint = label_layer_point(layer, label_key),
-    # TODO: To distinguish NULL, return list() to hide guides here.
-    #       But, can we use more explicit representation?
-    GeomBar = list(),
-    stop("Unsupported geom!", call. = FALSE)
-  )
-}
-
-label_layer_point <- function(layer, label_key) {
-  mapping <- layer$mapping
-  mapping$label <- label_key
-
-  ggrepel::geom_label_repel(mapping, layer$data)
-}
-
-label_layer_line <- function(layer, label_key) {
+generate_label_for_line <- function(layer, label_key) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -103,6 +94,13 @@ label_layer_line <- function(layer, label_key) {
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
   ggrepel::geom_label_repel(mapping, rightmost_points)
+}
+
+generate_label_for_point <- function(layer, label_key) {
+  mapping <- layer$mapping
+  mapping$label <- label_key
+
+  ggrepel::geom_label_repel(mapping, layer$data)
 }
 
 infer_label_key <- function(layer, group_key) {
