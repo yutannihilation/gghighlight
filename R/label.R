@@ -7,14 +7,14 @@ generate_labelled_layer <- function(layers, group_keys, label_key) {
   }
 
   layer_labelled <- clone_layer(layer_for_label$layer)
-  label_layer(layer_labelled, layer_for_label$group_key, layer_for_label$label)
+  label_layer(layer_labelled, layer_for_label$group_key, layer_for_label$label_key)
 }
 
 choose_layer_for_label <- function(layers, group_keys, label_key) {
   if (!rlang::quo_is_null(label_key)) {
-    # If label_key is specified, some layer must have the kye.
+    # If label_key is specified, some layer must have the key in their data.
     label_key_text <- rlang::quo_text(label_key)
-    idx <- purrr::map_lgl(layers, ~ label_key_text %in% names(.$mapping))
+    idx <- purrr::map_lgl(layers, ~ label_key_text %in% names(.$data))
     labellables <- purrr::map(idx, ~ if (.) label_key)
   } else {
     # If label_key is not specified, some key might be usable for label.
@@ -35,19 +35,19 @@ choose_layer_for_label <- function(layers, group_keys, label_key) {
   # If there's line geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_line)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
   }
 
   # If there's point geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_point)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
   }
 
   # If there's bar geom, use it.
   idx <- purrr::map_lgl(layers, is_bar)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label = labellables[idx][[1]]))
+    return(list(layer = layers[idx][[1]], group_key = group_keys[[idx]], label_key = labellables[idx][[1]]))
   }
 
   # Other geoms are currently unsupported.
