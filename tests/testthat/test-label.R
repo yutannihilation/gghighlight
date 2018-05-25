@@ -77,4 +77,16 @@ test_that("choose_layer_for_label() chooses a layer properly", {
   expect_equal(choose_layer_for_label(list(l_text, l_point), list(type_quo, type_quo), type_quo),
                list(layer = l_point, label_key = type_quo))
   # if label_key is not specified but no layer contains it, NULL is returned.
+  expect_equal(choose_layer_for_label(list(l_text, l_point), list(type_quo, type_quo), rlang::quo(no_such_column)),
+               NULL)
+})
+
+test_that("generate_labelled_layer() geenrates a layer for label.", {
+  d <- data.frame(x = 1, y = 2, type = "a")
+  type_quo <- rlang::quo(type)
+  
+  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), type_quo),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d))
+  expect_equal(generate_labelled_layer(list(geom_point(aes(x, y, colour = type), d)), list(type_quo), rlang::quo(no_such_column)),
+               NULL)
 })
