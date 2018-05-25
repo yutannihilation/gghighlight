@@ -112,6 +112,12 @@ test_that("sieve_layer() works with simple cases", {
   # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
   expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
   expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
+
+  # predicate can contain group key (c.f. #27)
+  m <- c(a = 1, b = 100, c = 10)
+  pred_use_group_var <- list(rlang::quo(max(value * m[type]) >= 100))
+  l <- sieve_layer(geom_bar(aes(colour = type), d), rlang::quo(type), pred_use_group_var)
+  expect_equal(l, geom_bar(aes(colour = type), d[d$type != "a", ]))
 })
 
 test_that("sieve_layer() works with zero predicate", {
