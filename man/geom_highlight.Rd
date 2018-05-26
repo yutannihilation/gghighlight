@@ -8,15 +8,15 @@
 \usage{
 geom_highlight(..., n = NULL, max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
-  use_direct_label = NULL, label_key = NULL, .preset_layers = NULL)
+  use_direct_label = NULL, label_key = NULL)
 
-geom_point_highlight(..., mapping = NULL, data = NULL, n = NULL,
-  max_highlight = 5L, unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-  use_group_by = NULL, use_direct_label = NULL, label_key = NULL)
+geom_point_highlight(..., n = NULL, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
+  use_direct_label = NULL, label_key = NULL)
 
-geom_line_highlight(..., mapping = NULL, data = NULL, n = NULL,
-  max_highlight = 5L, unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-  use_group_by = NULL, use_direct_label = NULL, label_key = NULL)
+geom_line_highlight(..., n = NULL, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
+  use_direct_label = NULL, label_key = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
@@ -32,27 +32,6 @@ geom_line_highlight(..., mapping = NULL, data = NULL, n = NULL,
 \item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of using a legend.}
 
 \item{label_key}{Column name for \code{label} aesthetics.}
-
-\item{.preset_layers}{Layers that is added before highlighting. This is intended to be used internally.}
-
-\item{mapping}{Set of aesthetic mappings created by \code{\link[=aes]{aes()}} or
-\code{\link[=aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
-
-\item{data}{The data to be displayed in this layer. There are three
-options:
-
-If \code{NULL}, the default, the data is inherited from the plot
-data as specified in the call to \code{\link[=ggplot]{ggplot()}}.
-
-A \code{data.frame}, or other object, will override the plot
-data. All objects will be fortified to produce a data frame. See
-\code{\link[=fortify]{fortify()}} for which variables will be created.
-
-A \code{function} will be called with a single argument,
-the plot data. The return value must be a \code{data.frame.}, and
-will be used as the layer data.}
 }
 \description{
 Clone Other Layers

@@ -14,8 +14,6 @@
 #'   If `TRUE`, add labels directly on the plot instead of using a legend.
 #' @param label_key
 #'   Column name for `label` aesthetics.
-#' @param .preset_layers
-#'   Layers that is added before highlighting. This is intended to be used internally.
 #' @inheritParams ggplot2::layer
 #' @export
 geom_highlight <- function(...,
@@ -24,8 +22,7 @@ geom_highlight <- function(...,
                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                            use_group_by = NULL,
                            use_direct_label = NULL,
-                           label_key = NULL,
-                           .preset_layers = NULL) {
+                           label_key = NULL) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
@@ -45,8 +42,7 @@ geom_highlight <- function(...,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
-      label_key = rlang::enquo(label_key),
-      .preset_layers = .preset_layers
+      label_key = rlang::enquo(label_key)
     ),
     class = "gg_highlighter"
   )
@@ -69,17 +65,19 @@ geom_highlight_with_preset <- function(geom_func, ...,
   geom_quo <- rlang::quo((!!geom_func)(!!!geom_args))
   label_key <- rlang::enquo(label_key)
 
-  geom_highlight(
-    !!!predicates,
-    n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
-    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key,
-    .preset_layers = rlang::eval_tidy(geom_quo)
+  list(
+    rlang::eval_tidy(geom_quo),
+    geom_highlight(
+      !!!predicates,
+      n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+      use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
+    )
   )
 }
 
 #' @rdname geom_highlight
 #' @export
-geom_point_highlight <- function(..., mapping = NULL, data = NULL,
+geom_point_highlight <- function(...,
                                  n = NULL,
                                  max_highlight = 5L,
                                  unhighlighted_colour = ggplot2::alpha("grey", 0.7),
@@ -89,26 +87,24 @@ geom_point_highlight <- function(..., mapping = NULL, data = NULL,
   label_key <- rlang::enquo(label_key)
   geom_highlight_with_preset(
     geom_func = ggplot2::geom_point,
-    mapping = mapping, data = data, ...,
-    n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+    ..., n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
     use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
   )
 }
 
 #' @rdname geom_highlight
 #' @export
-geom_line_highlight <- function(..., mapping = NULL, data = NULL,
-                                 n = NULL,
-                                 max_highlight = 5L,
-                                 unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                                 use_group_by = NULL,
-                                 use_direct_label = NULL,
-                                 label_key = NULL) {
+geom_line_highlight <- function(...,
+                                n = NULL,
+                                max_highlight = 5L,
+                                unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                                use_group_by = NULL,
+                                use_direct_label = NULL,
+                                label_key = NULL) {
   label_key <- rlang::enquo(label_key)
   geom_highlight_with_preset(
     geom_func = ggplot2::geom_line,
-    mapping = mapping, data = data, ...,
-    n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+    ..., n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
     use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
   )
 }
@@ -118,9 +114,6 @@ VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
-  if (!is.null(object$.preset_layers)) {
-    plot <- plot %+% object$.preset_layers
-  }
   if (length(plot$layers) == 0) {
     stop("there is no layer to highlight!")
   }
