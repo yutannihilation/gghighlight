@@ -14,6 +14,7 @@
 #'   If `TRUE`, add labels directly on the plot instead of using a legend.
 #' @param label_key
 #'   Column name for `label` aesthetics.
+#' @inheritParams ggplot2::layer
 #' @export
 geom_highlight <- function(...,
                            n = NULL,
@@ -46,6 +47,68 @@ geom_highlight <- function(...,
     class = "gg_highlighter"
   )
 }
+
+geom_highlight_with_preset <- function(geom_func, ...,
+                                       n,
+                                       max_highlight,
+                                       unhighlighted_colour,
+                                       use_group_by,
+                                       use_direct_label,
+                                       label_key) {
+  dots <- rlang::enquos(...)
+  idx <- rlang::have_name(dots)
+  # named arguments are for geom_func
+  geom_args <- dots[idx]
+  # unnamed arguments are for predicats
+  predicates <- dots[!idx]
+
+  geom_quo <- rlang::quo((!!geom_func)(!!!geom_args))
+  label_key <- rlang::enquo(label_key)
+
+  list(
+    rlang::eval_tidy(geom_quo),
+    geom_highlight(
+      !!!predicates,
+      n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+      use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
+    )
+  )
+}
+
+#' @rdname geom_highlight
+#' @export
+geom_point_highlight <- function(...,
+                                 n = NULL,
+                                 max_highlight = 5L,
+                                 unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                                 use_group_by = NULL,
+                                 use_direct_label = NULL,
+                                 label_key = NULL) {
+  label_key <- rlang::enquo(label_key)
+  geom_highlight_with_preset(
+    geom_func = ggplot2::geom_point,
+    ..., n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
+  )
+}
+
+#' @rdname geom_highlight
+#' @export
+geom_line_highlight <- function(...,
+                                n = NULL,
+                                max_highlight = 5L,
+                                unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                                use_group_by = NULL,
+                                use_direct_label = NULL,
+                                label_key = NULL) {
+  label_key <- rlang::enquo(label_key)
+  geom_highlight_with_preset(
+    geom_func = ggplot2::geom_line,
+    ..., n = n, max_highlight = max_highlight, unhighlighted_colour = unhighlighted_colour,
+    use_group_by = use_group_by, use_direct_label = use_direct_label, label_key = !!label_key
+  )
+}
+
 
 VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 

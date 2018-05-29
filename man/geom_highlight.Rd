@@ -2,9 +2,19 @@
 % Please edit documentation in R/geom_highlight.R
 \name{geom_highlight}
 \alias{geom_highlight}
+\alias{geom_point_highlight}
+\alias{geom_line_highlight}
 \title{Clone Other Layers}
 \usage{
 geom_highlight(..., n = NULL, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
+  use_direct_label = NULL, label_key = NULL)
+
+geom_point_highlight(..., n = NULL, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
+  use_direct_label = NULL, label_key = NULL)
+
+geom_line_highlight(..., n = NULL, max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
   use_direct_label = NULL, label_key = NULL)
 }
