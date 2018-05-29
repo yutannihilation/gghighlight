@@ -111,7 +111,7 @@ test_that("sieve_layer() works with simple cases", {
   # even if use_group_by = TRUE, this succeeds with a warning
   expect_warning(l <- f(rlang::quo(type), use_group_by = TRUE))
   expect_equal(l, geom_bar(aes(colour = type), d_sieved_ungrouped))
-  
+
   # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
   expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
   expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
@@ -156,6 +156,31 @@ test_that("sieve_layer() works with more than two predicates", {
   expect_equal(sieve_layer(geom_line(aes(colour = type), d2), rlang::quo(type),
                            pred_grouped, max_highlight = 2),
                geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
+})
+
+test_that("sieve_layer() works with list columns", {
+  d3 <- tibble::tibble(
+    x = 1:4,
+    v = 1:4,
+    z = c("a", "a", "b", "b"),
+    l = list(
+      c(1, 2, 3),
+      c(1, 4, 10),
+      c(4, 6),
+      c(1)
+    )
+  )
+
+  # ungrouped
+  sl <- sieve_layer(geom_bar(aes(x), d3), NULL, rlang::quos(p1 = l, p2 = v), max_highlight = 2)
+  expect_identical(sl$mapping, aes(x))
+  expect_identical(sl$data, d3[3:4, ])
+
+  # grouped
+  sl <- sieve_layer(geom_line(aes(x, v, colour = z), d3), rlang::quo(z),
+                    rlang::quos(p1 = list(l), p2 = sum(v)), max_highlight = 1, use_group_by = TRUE)
+  expect_identical(sl$mapping, aes(x, v, colour = z))
+  expect_identical(sl$data, d3[3:4, ])
 })
 
 test_that("geom_highlight() does not change the existing layers", {

@@ -223,21 +223,16 @@ calculate_grouped <- function(data, predicates, max_highlight, group_key) {
     dplyr::group_by(!!group_key) %>%
     dplyr::summarise(!!!predicates)
 
-  col_idx <- data_predicated %>%
-    # Do not use group_key to arrange.
-    dplyr::select(-!!group_key) %>%
-    purrr::map_lgl(is.logical)
-  cols_filter <- rlang::syms(names(col_idx)[col_idx])
-  cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
+  cols <- choose_col_for_filter_and_arrange(data_predicated, group_key)
 
   # Filter by the logical predicates.
   data_filtered <- data_predicated %>%
-    dplyr::filter(!!!cols_filter)
+    dplyr::filter(!!!cols$filter)
 
   # Arrange by the other predicates and slice rows down to max_highlights.
-  if (length(cols_arrange) > 0) {
+  if (length(cols$arrange) > 0) {
     data_filtered <- data_filtered %>%
-      dplyr::arrange(!!!cols_arrange) %>%
+      dplyr::arrange(!!!cols$arrange) %>%
       utils::tail(max_highlight)
   }
 
@@ -251,21 +246,16 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
     tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
     dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
 
-  col_idx <- data_predicated %>%
-    # Do not use row IDs to arrange.
-    dplyr::select(-!!VERY_SECRET_COLUMN_NAME) %>%
-    purrr::map_lgl(is.logical)
-  cols_filter <- rlang::syms(names(col_idx)[col_idx])
-  cols_arrange <- rlang::syms(names(col_idx)[!col_idx])
+  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
   data_filtered <- data_predicated %>%
-    dplyr::filter(!!!cols_filter)
+    dplyr::filter(!!!cols$filter)
 
   # Arrange by the other predicates and slice rows down to max_highlights.
-  if (length(cols_arrange) > 0) {
+  if (length(cols$arrange) > 0) {
     data_filtered <- data_filtered %>%
-      dplyr::arrange(!!!cols_arrange) %>%
+      dplyr::arrange(!!!cols$arrange) %>%
       utils::tail(max_highlight)
   }
 
@@ -273,4 +263,17 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
 
   data[rowids_filtered, ]
+}
+
+choose_col_for_filter_and_arrange <- function(data, exclude_col) {
+  # Do not use row IDs or group keys to arrange.
+  data <- dplyr::select(data, -!!exclude_col)
+  col_idx_lgl <- purrr::map_lgl(data, is.logical)
+  col_idx_lst <- purrr::map_lgl(data, is.list)
+  list(
+    # Use logical columns for filter()
+    filter = rlang::syms(names(data)[col_idx_lgl]),
+    # Use other columns but lists for arrange() (arrange doesn't support list columns)
+    arrange = rlang::syms(names(data)[!col_idx_lgl & !col_idx_lst])
+  )
 }
