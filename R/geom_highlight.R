@@ -73,7 +73,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   # Especially, group_key should be extracted here before it gets renamed to VERY_SECRET_COLUMN_NAME.
   purrr::walk(layers_cloned, merge_plot_to_layer,
               plot_data = plot$data, plot_mapping = plot$mapping)
-  group_keys <- purrr::map(layers_cloned, ~ infer_group_key_from_aes(.$mapping))
+  group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
 
   # Clone layers again before we bleach them.
   layers_bleached <- layers_cloned
@@ -82,7 +82,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   # Bleach the lower layer.
   purrr::walk2(
     layers_bleached,
-    group_keys,
+    group_infos,
     bleach_layer,
     unhighlighted_colour = object$unhighlighted_colour
   )
@@ -90,7 +90,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   # Sieve the upper layer.
   purrr::walk2(
     layers_sieved,
-    group_keys,
+    group_infos,
     sieve_layer,
     predicates = object$predicates,
     max_highlight = object$max_highlight,
@@ -109,7 +109,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     return(plot)
   }
 
-  layer_labelled <- generate_labelled_layer(layers_sieved, group_keys, object$label_key)
+  layer_labelled <- generate_labelled_layer(layers_sieved, purrr::map(group_infos, "id"), object$label_key)
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {
@@ -154,7 +154,25 @@ clone_layer <- function(layer) {
   new_layer
 }
 
-bleach_layer <- function(layer, group_key,
+calculate_group_info <- function(data, mapping) {
+  mapping <- purrr::compact(mapping)
+  data_evaluated <- dplyr::transmute(data, !!!mapping)
+
+  idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
+  if (!any(idx_discrete)) {
+    return(NULL)
+  } else {
+    aes_discrete <- names(which(idx_discrete))
+    list(
+      # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
+      id = dplyr::group_indices(data_evaluated, !!!rlang::syms(aes_discrete)),
+      # Try to rename the column into improbable name so that the bleached layer won't get facetted.
+      key = purrr::keep(mapping[aes_discrete], rlang::quo_is_symbol)
+    )
+  }
+}
+
+bleach_layer <- function(layer, group_info,
                          unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
   # set colour and fill to grey only when it is included in the mappping
   # (Note that this needs to be executed before modifying the layer$mapping)
@@ -166,32 +184,35 @@ bleach_layer <- function(layer, group_key,
   # remove colour and fill from mapping
   layer$mapping[c("colour", "fill")] <- list(NULL)
 
-  if (!is.null(group_key)) {
+  if (!is.null(group_info$key)) {
     # Add group var to preserver implicit grouping to prevent the bleached
     # data to facetted, rename the group column to the very improbable name.
     # e.g. geom_line(aes(colour = c)); if colour aes is removed, line will be drawn unintentionally.
     # But, is group key always needed...? (e.g. points)
-    layer$data <- dplyr::rename(layer$data, !!VERY_SECRET_COLUMN_NAME := !!group_key)
+    secret_colname <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+    names(group_info$key) <- paste0(secret_colname, seq_along(group_info$key))
+    layer$data <- dplyr::rename(layer$data, !!!group_info$key)
+    layer$data[secret_colname] <- factor(group_info$id)
     layer$mapping$group <- rlang::quo(!!VERY_SECRET_COLUMN_NAME)
   }
 
   layer
 }
 
-sieve_layer <- function(layer, group_key, predicates,
+sieve_layer <- function(layer, group_info, predicates,
                         max_highlight = 5L,
                         use_group_by = NULL) {
   # If there are no predicates, do nothing.
   if (length(predicates) == 0) return(layer)
 
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
-  use_group_by <- use_group_by %||% !is.null(group_key)
+  use_group_by <- use_group_by %||% !is.null(group_info$id)
 
   # 1) If use_group_by is FALSE, do not use group_by().
   # 2) If use_group_by is TRUE and group_key is not NULL, use group_by().
   # 3) If use_group_by is TRUE but group_key is NULL, show a warning and do not use group_by().
   if (use_group_by) {
-    if (is.null(group_key)) {
+    if (is.null(group_info$id)) {
       warning("You set use_group_by = TRUE, but there seems no group_key.\n",
               "Please provide group, colour or fill aes.\n",
               "Falling back to ungrouped filter operation...", call. = FALSE)
@@ -204,7 +225,7 @@ sieve_layer <- function(layer, group_key, predicates,
   # If use_group_by is TRUE, try to calculate grouped
   if (use_group_by) {
     tryCatch({
-      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_key)
+      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
       # if this succeeds, return the layer
       return(layer)
     },
@@ -219,12 +240,12 @@ sieve_layer <- function(layer, group_key, predicates,
   layer
 }
 
-calculate_grouped <- function(data, predicates, max_highlight, group_key) {
+calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   data_predicated <- data %>%
-    dplyr::group_by(!!group_key) %>%
+    dplyr::group_by(!!VERY_SECRET_COLUMN_NAME := !!group_ids) %>%
     dplyr::summarise(!!!predicates)
 
-  cols <- choose_col_for_filter_and_arrange(data_predicated, group_key)
+  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
   data_filtered <- data_predicated %>%
@@ -237,9 +258,9 @@ calculate_grouped <- function(data, predicates, max_highlight, group_key) {
       utils::tail(max_highlight)
   }
 
-  groups_filtered <- dplyr::pull(data_filtered, !!group_key)
+  groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
 
-  dplyr::filter(data, (!!group_key) %in% (!!groups_filtered))
+  dplyr::filter(data, (!!VERY_SECRET_COLUMN_NAME) %in% (!!groups_filtered))
 }
 
 calculate_ungrouped <- function(data, predicates, max_highlight) {
