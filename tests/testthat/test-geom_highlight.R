@@ -28,6 +28,10 @@ test_that("merge_mapping() works", {
   # If the layer doesn't have fill aes, it is omitted.
   expect_equal(merge_mapping(geom_line(aes(x = x, colour = b)), aes(colour = a, fill = c)),
                aes(x = x, colour = b))
+
+  # Aesthetics that are required by stat also stays in mapping (Note that the orders are different)
+  m <- merge_mapping(geom_boxplot(aes(x, y, colour = b)), NULL)
+  expect_equal(m, aes(x, y, colour = b)[names(m)])
 })
 
 test_that("merge_data() works", {
