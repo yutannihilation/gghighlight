@@ -137,7 +137,8 @@ merge_mapping <- function(layer, plot_mapping) {
   # Merge the layer's mapping with the plot's mapping
   mapping <- utils::modifyList(plot_mapping %||% aes(), layer$mapping %||% aes())
   # Filter out unused variables (e.g. fill aes for line geom)
-  aes_names <- base::intersect(layer$geom$aesthetics(), names(mapping))
+  layer_aes <- base::union(layer$geom$aesthetics(), layer$stat$aesthetics())
+  aes_names <- base::intersect(layer_aes, names(mapping))
   mapping <- mapping[aes_names]
 
   if (length(mapping) == 0) {
