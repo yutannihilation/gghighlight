@@ -49,7 +49,6 @@ geom_highlight <- function(...,
 
 VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 
-#' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (length(plot$layers) == 0) {
     stop("there is no layer to highlight!")

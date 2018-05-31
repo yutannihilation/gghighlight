@@ -7,20 +7,18 @@ Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
 Description: Make it easier to explore data with highlights.
 URL: https://github.com/yutannihilation/gghighlight/
 BugReports: https://github.com/yutannihilation/gghighlight/issues
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 Depends:
   R (>= 3.1.0)
 Imports:
-  ggplot2 (> 2.2.0),
+  ggplot2 (>= 2.2.1),
   dplyr (> 0.7.0),
   tibble,
   ggrepel,
   magrittr,
   purrr,
   rlang
-Remotes:
-  tidyverse/ggplot2
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1.9000
