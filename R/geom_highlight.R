@@ -164,6 +164,7 @@ calculate_group_info <- function(data, mapping) {
   } else {
     aes_discrete <- names(which(idx_discrete))
     list(
+      data = data_evaluated,
       # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
       id = dplyr::group_indices(data_evaluated, !!!rlang::syms(aes_discrete)),
       # Try to rename the column into improbable name so that the bleached layer won't get facetted.
@@ -185,15 +186,21 @@ bleach_layer <- function(layer, group_info,
   layer$mapping[c("colour", "fill")] <- list(NULL)
 
   if (!is.null(group_info$key)) {
-    # Add group var to preserver implicit grouping to prevent the bleached
-    # data to facetted, rename the group column to the very improbable name.
-    # e.g. geom_line(aes(colour = c)); if colour aes is removed, line will be drawn unintentionally.
-    # But, is group key always needed...? (e.g. points)
-    secret_colname <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-    names(group_info$key) <- paste0(secret_colname, seq_along(group_info$key))
-    layer$data <- dplyr::rename(layer$data, !!!group_info$key)
-    layer$data[secret_colname] <- factor(group_info$id)
-    layer$mapping$group <- rlang::quo(!!VERY_SECRET_COLUMN_NAME)
+    # In order to prevent the bleached layer to be facetted, we need to rename
+    # columns of group keys to improbable names. But, what happens when the group
+    # column disappears? Other calculations that uses the column fail. So, we need
+    # to use the pre-evaluated values and rename everything to improbable name.
+    layer$data <- group_info$data
+    secret_prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+    mapping_names <- names(layer$data)
+    secret_names <- paste0(secret_prefix, seq_along(mapping_names))
+    secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
+    layer$data <- dplyr::rename(layer$data, !!!setNames(mapping_names, secret_names))
+    layer$mapping <- modifyList(layer$mapping, setNames(secret_quos, mapping_names))
+
+    secret_name_group <- paste0(secret_prefix, "group")
+    layer$data[secret_name_group] <- factor(group_info$id)
+    layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
   }
 
   layer
@@ -260,7 +267,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 
   groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
 
-  dplyr::filter(data, (!!VERY_SECRET_COLUMN_NAME) %in% (!!groups_filtered))
+  data[group_ids %in% groups_filtered, ]
 }
 
 calculate_ungrouped <- function(data, predicates, max_highlight) {
