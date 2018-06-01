@@ -166,7 +166,7 @@ calculate_group_info <- function(data, mapping) {
       data = data_evaluated,
       # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
       id = dplyr::group_indices(data_evaluated, !!!rlang::syms(aes_discrete)),
-      # Try to rename the column into improbable name so that the bleached layer won't get facetted.
+      # for group key, use symbols only
       key = purrr::keep(mapping[aes_discrete], rlang::quo_is_symbol)
     )
   }
