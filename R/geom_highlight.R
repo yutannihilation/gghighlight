@@ -69,8 +69,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   # So, we need to clone them first.
   layers_cloned <- purrr::map(plot$layers[idx_layers], clone_layer)
 
-  # data and group_keys are used commonly both in the bleaching and sieving process.
-  # Especially, group_key should be extracted here before it gets renamed to VERY_SECRET_COLUMN_NAME.
+  # data and group IDs are used commonly both in the bleaching and sieving process.
   purrr::walk(layers_cloned, merge_plot_to_layer,
               plot_data = plot$data, plot_mapping = plot$mapping)
   group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
@@ -109,7 +108,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     return(plot)
   }
 
-  layer_labelled <- generate_labelled_layer(layers_sieved, purrr::map(group_infos, "id"), object$label_key)
+  layer_labelled <- generate_labelled_layer(layers_sieved, group_infos, object$label_key)
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {
@@ -216,11 +215,11 @@ sieve_layer <- function(layer, group_info, predicates,
   use_group_by <- use_group_by %||% !is.null(group_info$id)
 
   # 1) If use_group_by is FALSE, do not use group_by().
-  # 2) If use_group_by is TRUE and group_key is not NULL, use group_by().
-  # 3) If use_group_by is TRUE but group_key is NULL, show a warning and do not use group_by().
+  # 2) If use_group_by is TRUE and group IDs don't exist, use group_by().
+  # 3) If use_group_by is TRUE but group IDs exist, show a warning and do not use group_by().
   if (use_group_by) {
     if (is.null(group_info$id)) {
-      warning("You set use_group_by = TRUE, but there seems no group_key.\n",
+      warning("You set use_group_by = TRUE, but there seems no groups.\n",
               "Please provide group, colour or fill aes.\n",
               "Falling back to ungrouped filter operation...", call. = FALSE)
       use_group_by <- FALSE
