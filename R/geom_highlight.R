@@ -55,23 +55,29 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     stop("there is no layer to highlight!")
   }
 
-  if (!is.null(object$n)) {
-    n_layers <- length(plot$layers)
-    if (object$n > object$n) {
-      stop("n is larger than the actual number of layers!")
-    }
-    idx_layers <- utils::tail(seq_len(n_layers), object$n)
+  n_layers <- length(plot$layers)
+  if (is.null(object$n)) {
+    idx_layers <- rep(TRUE, n_layers)
   } else {
-    idx_layers <- seq_along(plot$layers)
+    if (object$n > n_layers) {
+      stop("n is larger than the actual number of layers!", call. = FALSE)
+    }
+    idx_layers <- rep(FALSE, n_layers)
+    idx_layers[utils::tail(seq_len(n_layers), object$n)] <- TRUE
   }
 
   # Layers are environments; if we modify an element of it, it keeps the modified value.
   # So, we need to clone them first.
-  layers_cloned <- purrr::map(plot$layers[idx_layers], clone_layer)
+  layers_cloned <- purrr::map(plot$layers, clone_layer)
 
   # data and group IDs are used commonly both in the bleaching and sieving process.
   purrr::walk(layers_cloned, merge_plot_to_layer,
               plot_data = plot$data, plot_mapping = plot$mapping)
+
+  # since the plot data is overwritten later, we need to attach the data to all layers (#31)
+  plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
+  layers_cloned <- layers_cloned[idx_layers]
+
   group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
 
   # Clone layers again before we bleach them.
@@ -97,8 +103,6 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   )
 
   # The plot data should also be sieved to deleting facets for unhighlighted levels
-  # TODO: This may be treated more carefully.
-  # c.f. https://github.com/yutannihilation/gghighlight/pull/26#issuecomment-391332229
   plot$data <- layers_sieved[[1]]$data
 
   plot$layers[idx_layers] <- layers_bleached
