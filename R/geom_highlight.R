@@ -164,6 +164,8 @@ clone_layer <- function(layer) {
   new_layer
 }
 
+clone_position <- clone_layer
+
 calculate_group_info <- function(data, mapping) {
   mapping <- purrr::compact(mapping)
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
