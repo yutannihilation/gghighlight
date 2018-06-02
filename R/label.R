@@ -1,7 +1,7 @@
 # Labels
 
-generate_labelled_layer <- function(layers, group_keys, label_key) {
-  layer_for_label <- choose_layer_for_label(layers, group_keys, label_key)
+generate_labelled_layer <- function(layers, group_infos, label_key) {
+  layer_for_label <- choose_layer_for_label(layers, group_infos, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
   }
@@ -19,43 +19,57 @@ generate_labelled_layer <- function(layers, group_keys, label_key) {
   )
 }
 
-choose_layer_for_label <- function(layers, group_keys, label_key) {
-  if (!rlang::quo_is_null(label_key)) {
-    # If label_key is specified, some layer must have the key in their data.
+choose_layer_for_label <- function(layers, group_infos, label_key) {
+  show_label_key <- FALSE
+  if (rlang::quo_is_call(label_key)) {
+    # if label_key is a call we can't check if the necessary variables exist in
+    # the data. Just pray that the proper layer will be choosed... :pray:
+    label_keys <- purrr::rerun(length(layers), label_key)
+  } else if (rlang::quo_is_symbol(label_key)) {
+    # If label_key is a symbol, some layer must have the key in their data.
     label_key_text <- rlang::quo_text(label_key)
-    idx <- purrr::map_lgl(layers, ~ label_key_text %in% names(.$data))
-    labellables <- purrr::map(idx, ~ if (.) label_key)
-  } else {
+    layers <- purrr::keep(layers, ~ label_key_text %in% names(.$data))
+    label_keys <- purrr::rerun(length(layers), label_key)
+  } else if (rlang::quo_is_null(label_key)) {
     # If label_key is not specified, some key might be usable for label.
-    labellables <- purrr::map2(layers, group_keys, infer_label_key)
-    idx <- !purrr::map_lgl(labellables, is.null)
+    group_keys <- purrr::map(group_infos, "key")
+    idx <- !purrr::map_lgl(group_keys, is.null)
+    layers <- layers[idx]
+    # group keys may be multiple, but use the first one for convenience.
+    label_keys <- purrr::map(group_keys[idx], 1L)
+    # display which key was chosen for label
+    show_label_key <- TRUE
+  } else {
+    stop("Invalid label_key!", call. = FALSE)
   }
 
   # If no layer has labellable variable, give up labelling
-  if (!any(idx)) {
+  if (length(layers) == 0) {
     return(NULL)
   }
-
-  # Filter out the layers that cannot be labelled.
-  layers <- layers[idx]
-  labellables <- labellables[idx]
 
   # If there's line geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_line)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
+    label_key <- label_keys[idx][[1]]
+    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
+    return(list(layer = layers[idx][[1]], label_key = label_key))
   }
 
   # If there's point geom, use it.
   idx <- purrr::map_lgl(layers, is_identity_point)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
+    label_key <- label_keys[idx][[1]]
+    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
+    return(list(layer = layers[idx][[1]], label_key = label_key))
   }
 
   # If there's bar geom, use it.
   idx <- purrr::map_lgl(layers, is_bar)
   if (any(idx)) {
-    return(list(layer = layers[idx][[1]], label_key = labellables[idx][[1]]))
+    label_key <- label_keys[idx][[1]]
+    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
+    return(list(layer = layers[idx][[1]], label_key = label_key))
   }
 
   # Other geoms are currently unsupported.
