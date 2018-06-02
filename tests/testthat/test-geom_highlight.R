@@ -326,7 +326,11 @@ test_that("geom_highlight() works with two layers, grouped", {
 
   # If n = 1, only one layer above is highlighted.
   expect_equal_layers((p1 + geom_highlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
-                      list(geom_line(), l_bleached_2, l_sieved_2))
+                      list(geom_line(data = d, aes(x, y, colour = type)),
+                           l_bleached_2, l_sieved_2))
+
+  # If n is larger than the number of layers, it throws error.
+  expect_error(p1 + geom_highlight(mean(value) > 1, n = 3))
 })
 
 test_that("geom_highlight() works with two layers, ungrouped", {
@@ -348,5 +352,9 @@ test_that("geom_highlight() works with two layers, ungrouped", {
 
   # If n = 1, only one layer above is highlighted.
   expect_equal_layers((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
-                      list(geom_point(shape = "circle open", size = 5), l_bleached_2, l_sieved_2))
+                      list(geom_point(data = d, aes(x, y, colour = type), shape = "circle open", size = 5),
+                           l_bleached_2, l_sieved_2))
+
+  # If n is larger than the number of layers, it throws error.
+  expect_error(p1 + geom_highlight(mean(value) > 1, n = 3))
 })
