@@ -116,21 +116,3 @@ generate_label_for_point <- function(layer, label_key) {
 
   ggrepel::geom_label_repel(mapping, layer$data)
 }
-
-infer_label_key <- function(layer, group_key) {
-  # If the layer has label aes or group_key, use it.
-  key <- layer$mapping$label %||% group_key
-  if (!is.null(key)) {
-    return(key)
-  }
-
-  # If the data has discrete variable, use it.
-  idx <- purrr::map_lgl(layer$data, is.character) | purrr::map_lgl(layer$data, is.factor)
-  if (any(idx)) {
-    col_sym <- rlang::sym(colnames(layer$data)[idx][[1]])
-    return(rlang::quo(!!col_sym))
-  }
-
-  return(NULL)
-}
-
