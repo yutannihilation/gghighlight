@@ -80,6 +80,18 @@ test_that("generate_labelled_layer() geenrates a layer for label.", {
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ], fill = "white"))
   expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo, list(fill = "white")),
                list())
+  # share the same seed of jitter
+  l_jitter <- geom_point(aes(x, y, colour = type), d, position = position_jitter())
+  expect_equal(generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white")),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d, fill = "white",
+                                         position = position_jitter(seed = l_jitter$position$seed)))
+
+  # when the seed is NULL, set it and share it. (c.f. tidyverse/ggplot2#2507)
+  l_jitter <- geom_point(aes(x, y, colour = type), d, position = "jitter")
+  expect_true(is.null(l_jitter$position$seed))
+  l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"))
+  expect_true(!is.null(l_jitter$position$seed))
+  expect_equal(l_label$position$seed, l_jitter$position$seed)
 })
 
 test_that("call_ggrepel_with_params() generates a geom_label_repel()", {
