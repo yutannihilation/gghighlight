@@ -329,6 +329,12 @@ test_that("geom_highlight() works with two layers, grouped", {
                       list(geom_line(data = d, aes(x, y, colour = type)),
                            l_bleached_2, l_sieved_2))
 
+  # if the data is grouped, the result is the same
+  p1$data <- dplyr::group_by(d, .data$type)
+
+  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
+                      list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
+
   # If n is larger than the number of layers, it throws error.
   expect_error(p1 + geom_highlight(mean(value) > 1, n = 3))
 })
