@@ -48,28 +48,14 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
     return(NULL)
   }
 
-  # If there's line geom, use it.
-  idx <- purrr::map_lgl(layers, is_identity_line)
-  if (any(idx)) {
-    label_key <- label_keys[idx][[1]]
-    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
-    return(list(layer = layers[idx][[1]], label_key = label_key))
-  }
-
-  # If there's point geom, use it.
-  idx <- purrr::map_lgl(layers, is_identity_point)
-  if (any(idx)) {
-    label_key <- label_keys[idx][[1]]
-    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
-    return(list(layer = layers[idx][[1]], label_key = label_key))
-  }
-
-  # If there's bar geom, use it.
-  idx <- purrr::map_lgl(layers, is_bar)
-  if (any(idx)) {
-    label_key <- label_keys[idx][[1]]
-    if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
-    return(list(layer = layers[idx][[1]], label_key = label_key))
+  # If there's line, point or bar geom, choose it. (bar geom doesn't generate labels, though).
+  for (fun in list(is_identity_line, is_identity_point, is_bar)) {
+    idx <- purrr::map_lgl(layers, fun)
+    if (any(idx)) {
+      label_key <- label_keys[idx][[1]]
+      if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
+      return(list(layer = layers[idx][[1]], label_key = label_key))
+    }
   }
 
   # Other geoms are currently unsupported.
