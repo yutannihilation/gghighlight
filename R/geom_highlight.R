@@ -7,13 +7,15 @@
 #' @param max_highlight
 #'   Max number of series to highlight.
 #' @param unhighlighted_colour
-#'   Colour for unhighlited lines/points.
+#'   Colour for unhighlited geoms.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label
 #'   If `TRUE`, add labels directly on the plot instead of using a legend.
 #' @param label_key
 #'   Column name for `label` aesthetics.
+#' @param label_params
+#'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
 #' @export
 geom_highlight <- function(...,
                            n = NULL,
@@ -21,7 +23,8 @@ geom_highlight <- function(...,
                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
                            use_group_by = NULL,
                            use_direct_label = NULL,
-                           label_key = NULL) {
+                           label_key = NULL,
+                           label_params = list(fill = "white")) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
@@ -41,7 +44,8 @@ geom_highlight <- function(...,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
-      label_key = rlang::enquo(label_key)
+      label_key = rlang::enquo(label_key),
+      label_params = label_params
     ),
     class = "gg_highlighter"
   )
@@ -112,7 +116,8 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     return(plot)
   }
 
-  layer_labelled <- generate_labelled_layer(layers_sieved, group_infos, object$label_key)
+  layer_labelled <- generate_labelled_layer(layers_sieved, group_infos,
+                                            object$label_key, object$label_params)
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {

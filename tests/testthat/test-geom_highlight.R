@@ -270,7 +270,7 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
-  l_label <- ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d_label)
+  l_label <- ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d_label, fill = "white")
   for (p in list(p1, p2, p3)) {
     p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = TRUE)
     expect_equal(p_highlighted$data, d_sieved)
