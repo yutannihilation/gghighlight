@@ -127,6 +127,8 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
 merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {
   layer$data <- merge_data(layer, plot_data)
+  # since gghighlight does grouped calculations, we want to specify the group key by ourselves.
+  layer$data <- dplyr::ungroup(layer$data)
   layer$mapping <- merge_mapping(layer, plot_mapping)
   layer
 }
@@ -169,7 +171,10 @@ calculate_group_info <- function(data, mapping) {
     list(
       data = data_evaluated,
       # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
-      id = dplyr::group_indices(data_evaluated, !!!rlang::syms(aes_discrete)),
+      id = dplyr::group_indices(
+        data_evaluated,  # group_indices() won't work with grouped_df.
+        !!!rlang::syms(aes_discrete)
+      ),
       # for group key, use symbols only
       key = purrr::keep(mapping[aes_discrete], rlang::quo_is_symbol)
     )
