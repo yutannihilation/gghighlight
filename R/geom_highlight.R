@@ -188,11 +188,15 @@ calculate_group_info <- function(data, mapping) {
 
 bleach_layer <- function(layer, group_info,
                          unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
-  # set colour and fill to grey only when it is included in the mappping
+  # Set colour and fill to grey when it is included in the mappping.
+  # But, if the default_aes is NA, respect it.
   # (Note that this needs to be executed before modifying the layer$mapping)
-  params_bleached <- list()
-  aes_names <- base::intersect(c("colour", "fill"), layer$geom$aesthetics())
-  params_bleached[aes_names] <- unhighlighted_colour
+  params_bleached <- purrr::map(
+    rlang::set_names(c("colour", "fill")),
+    choose_bleached_colour,
+    geom = layer$geom, mapping = layer$mapping, bleached_colour = unhighlighted_colour
+  )
+  params_bleached <- purrr::compact(params_bleached)
   layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
 
   # remove colour and fill from mapping
@@ -217,6 +221,19 @@ bleach_layer <- function(layer, group_info,
   }
 
   layer
+}
+
+choose_bleached_colour <- function(aes_name, geom, mapping, bleached_colour) {
+  if (!aes_name %in% geom$aesthetics()) {
+    return(NULL)
+  }
+  # if aes_name is specified in the mapping, it should be bleached.
+  if (!aes_name %in% names(mapping) &&
+      aes_name %in% names(geom$default_aes) &&
+      is.na(geom$default_aes[aes_name])) {
+    return(NA)
+  }
+  return(bleached_colour)
 }
 
 sieve_layer <- function(layer, group_info, predicates,
