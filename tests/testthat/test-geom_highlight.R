@@ -18,6 +18,16 @@ d_ <- setNames(d[1:3], c("x", "y", "colour"))
 ids <- c(1, 1, 1, 2, 2, 3, 3)
 g_info <- list(data = d_, id = ids, key = aes(colour = type))
 
+expect_equal_layer <- function(x, y) {
+  x$mapping <- x$mapping[sort(names(x$mapping))]
+  y$mapping <- x$mapping[sort(names(y$mapping))]
+  expect_equal(x, y)
+}
+
+expect_equal_layers <- function(x, y) {
+  purrr::walk2(x, y, expect_equal_layer)
+}
+
 test_that("merge_mapping() works", {
   # If both are NULL, throw error
   expect_error(merge_mapping(geom_bar(), NULL))
@@ -60,24 +70,19 @@ test_that("calculate_group_info() works", {
 })
 
 
+d_bleached <- d[1:3]
+d_bleached$ids <- factor(ids)
+prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+names(d_bleached) <- paste0(prefix, c(1:3, "group"))
+
+aes_bleached <- aes_string(x = paste0(prefix, 1),
+                           y = paste0(prefix, 2),
+                           colour = paste0(prefix, 3),
+                           fill = NULL,
+                           group = paste0(prefix, "group"))
+
 test_that("bleach_layer() works", {
-  d_bleached <- d[1:3]
-  d_bleached$ids <- factor(ids)
-  prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-  names(d_bleached) <- paste0(prefix, c(1:3, "group"))
-
-  aes_bleached <- aes_string(x = paste0(prefix, 1),
-                             y = paste0(prefix, 2),
-                             colour = paste0(prefix, 3),
-                             fill = NULL,
-                             group = paste0(prefix, "group"))
-
   # If colour is specified, colour is used as the group key.
-  expect_equal_layer <- function(x, y) {
-    x$mapping <- x$mapping[sort(names(x$mapping))]
-    y$mapping <- x$mapping[sort(names(y$mapping))]
-    expect_equal(x, y)
-  }
   expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, grey07),
                      geom_line(aes_bleached, d_bleached, colour = grey07))
 
@@ -183,18 +188,22 @@ test_that("sieve_layer() works with more than two predicates", {
     sum(val2)            # numerical
   )
 
+  d2_ <- setNames(d2[1], c("colour"))
+  ids2 <- c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5)
+  g_info2 <- list(data = d2_, id = ids2, key = aes(colour = type))
+
+
   # logical predicates only; max_highlight is ignored.
-  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info,
+  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info2,
                            pred_grouped[1:2], max_highlight = 2),
                geom_line(aes(colour = type), d2[!d2$type %in% c("a", "d"), ]))
 
-  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info,
+  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info2,
                            pred_grouped, max_highlight = 2),
                geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
 })
 
 test_that("sieve_layer() works with list columns", {
-  skip("WIP")
   d3 <- tibble::tibble(
     x = 1:4,
     v = 1:4,
@@ -213,7 +222,10 @@ test_that("sieve_layer() works with list columns", {
   expect_identical(sl$data, d3[3:4, ])
 
   # grouped
-  sl <- sieve_layer(geom_line(aes(x, v, colour = z), d3), rlang::quo(z),
+  d3_ <- setNames(d3[3], c("colour"))
+  ids3 <- c(1, 1, 2, 2)
+  group_info3 <- list(data = d3_, id = ids3, key = aes(colour = z))
+  sl <- sieve_layer(geom_line(aes(x, v, colour = z), d3), group_info3,
                     rlang::quos(p1 = list(l), p2 = sum(v)), max_highlight = 1, use_group_by = TRUE)
   expect_identical(sl$mapping, aes(x, v, colour = z))
   expect_identical(sl$data, d3[3:4, ])
@@ -229,12 +241,6 @@ test_that("geom_highlight() does not change the existing layers", {
 })
 
 test_that("geom_highlight() works the plot with one layer, grouped", {
-  skip("WIP")
-  d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_COLUMN_NAME)
-
   d_sieved <- d[d$type != "a", ]
 
   l_bleached <- geom_line(aes_bleached, d_bleached, colour = grey07)
@@ -253,7 +259,7 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
   for (p in list(p1, p2, p3)) {
     p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = FALSE)
     expect_equal(p_highlighted$data, d_sieved)
-    expect_equal(p_highlighted$layers, list(l_bleached, l_sieved))
+    expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved))
     expect_equal(p_highlighted$guides, NULL)
   }
 
@@ -268,40 +274,45 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
   for (p in list(p1, p2, p3)) {
     p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = TRUE)
     expect_equal(p_highlighted$data, d_sieved)
-    expect_equal(p_highlighted$layers, list(l_bleached, l_sieved, l_label))
+    expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved, l_label))
     expect_equal(p_highlighted$guides, list(colour = "none", fill = "none"))
   }
 })
 
 test_that("geom_highlight() works the plot with one layer, ungrouped", {
-  skip("WIP")
-  d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_COLUMN_NAME)
-
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = grey07)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
 
   p1 <- ggplot(d, aes(x, y, colour = type)) +
     geom_point()
 
-  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
-               list(l_bleached, l_sieved))
+  expect_equal_layers((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+                      list(l_bleached, l_sieved))
 })
 
+
+d_bleached <- d[1:3]
+d_bleached$ids <- factor(ids)
+prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+names(d_bleached) <- paste0(prefix, c(1:3, "group"))
+
+aes_bleached <- aes_string(x = paste0(prefix, 1),
+                           y = paste0(prefix, 2),
+                           colour = paste0(prefix, 3),
+                           fill = NULL,
+                           group = paste0(prefix, "group"))
+
 test_that("geom_highlight() works with two layers, grouped", {
-  skip("WIP")
-  d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_COLUMN_NAME)
+  aes_bleached2 <- aes_bleached
+  aes_bleached2$fill <- rlang::quo(!!rlang::sym(paste0(prefix, 4)))
+  d_bleached2 <- d_bleached
+  d_bleached2[paste0(prefix, 4)] <- d[3]
 
   d_sieved <- d[d$type != "a", ]
 
   l_bleached_1 <- geom_line(aes_bleached, d_bleached, colour = grey07)
   l_sieved_1 <- geom_line(aes(x, y, colour = type), d_sieved)
-  l_bleached_2 <- geom_point(aes_bleached, d_bleached,
+  l_bleached_2 <- geom_point(aes_bleached2, d_bleached2,
                              shape = "circle filled", colour = grey07, fill = grey07)
   l_sieved_2 <- geom_point(aes(x, y, colour = type, fill = type), d_sieved,
                            shape = "circle filled")
@@ -310,21 +321,15 @@ test_that("geom_highlight() works with two layers, grouped", {
     geom_line() +
     geom_point(shape = "circle filled")
 
-  expect_equal((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
-               list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
+  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
+                      list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal((p1 + geom_highlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
-               list(geom_line(), l_bleached_2, l_sieved_2))
+  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
+                      list(geom_line(), l_bleached_2, l_sieved_2))
 })
 
 test_that("geom_highlight() works with two layers, ungrouped", {
-  skip("WIP")
-  d_bleached <- d
-  names(d_bleached)[3] <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-  aes_bleached <- aes(x = x, y = y, colour = NULL, fill = NULL,
-                      group = !!VERY_SECRET_COLUMN_NAME)
-
   d_sieved <- d[d$value > 1, ]
 
   l_bleached_1 <- geom_point(aes_bleached, d_bleached, shape = "circle open", size = 5,
@@ -338,10 +343,10 @@ test_that("geom_highlight() works with two layers, ungrouped", {
     geom_point(shape = "circle open", size = 5) +
     geom_point()
 
-  expect_equal((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
-               list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
+  expect_equal_layers((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+                      list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
-               list(geom_point(shape = "circle open", size = 5), l_bleached_2, l_sieved_2))
+  expect_equal_layers((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+                      list(geom_point(shape = "circle open", size = 5), l_bleached_2, l_sieved_2))
 })
