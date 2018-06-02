@@ -67,6 +67,11 @@ test_that("calculate_group_info() works", {
   d2$colour <- factor(d2$colour)
   expect_equal(calculate_group_info(d, aes(x, y, colour = factor(type))),
                list(data = d2, id = ids, key = aes()))
+
+  # if aes contains expressions that cannot be evaluated outside ggplot2 (e.g. stat(count)),
+  # just ignore it.
+  expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = stat(count), alpha = ..count..)),
+               list(data = setNames(d[1:3], c("x", "y", "colour")), id = ids, key = aes(colour = type)))
 })
 
 

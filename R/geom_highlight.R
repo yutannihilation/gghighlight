@@ -166,7 +166,11 @@ clone_layer <- function(layer) {
 
 calculate_group_info <- function(data, mapping) {
   mapping <- purrr::compact(mapping)
-  data_evaluated <- dplyr::transmute(data, !!!mapping)
+  # the calculation may be possible only in the ggplot2 context (e.g. stat()).
+  # So, wrap it with safely() and ignore the failed results.
+  evaluated_result <- purrr::map(mapping, purrr::safely(rlang::eval_tidy), data = data)
+  evaluated_result_success <- purrr::keep(evaluated_result, ~ is.null(.$error))
+  data_evaluated <- purrr::map_dfr(evaluated_result_success, "result")
 
   idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
   if (!any(idx_discrete)) {
