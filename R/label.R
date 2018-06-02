@@ -1,6 +1,6 @@
 # Labels
 
-generate_labelled_layer <- function(layers, group_infos, label_key) {
+generate_labelled_layer <- function(layers, group_infos, label_key, label_params) {
   layer_for_label <- choose_layer_for_label(layers, group_infos, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
@@ -10,8 +10,8 @@ generate_labelled_layer <- function(layers, group_infos, label_key) {
   label_key <- layer_for_label$label_key
 
   switch (class(layer$geom)[1],
-    GeomLine = generate_label_for_line(layer, label_key),
-    GeomPoint = generate_label_for_point(layer, label_key),
+    GeomLine = generate_label_for_line(layer, label_key, label_params),
+    GeomPoint = generate_label_for_point(layer, label_key, label_params),
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
     GeomBar = list(),
@@ -74,7 +74,7 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-generate_label_for_line <- function(layer, label_key) {
+generate_label_for_line <- function(layer, label_key, label_params) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -93,12 +93,18 @@ generate_label_for_line <- function(layer, label_key) {
   # restore the original group
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
-  ggrepel::geom_label_repel(mapping, rightmost_points)
+  call_ggrepel_with_params(mapping, rightmost_points, label_params)
 }
 
-generate_label_for_point <- function(layer, label_key) {
+generate_label_for_point <- function(layer, label_key, label_params) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
-  ggrepel::geom_label_repel(mapping, layer$data)
+  call_ggrepel_with_params(mapping, layer$data, label_params)
+}
+
+
+call_ggrepel_with_params <- function(mapping, data, params) {
+  ggrepel_quo <- rlang::quo(ggrepel::geom_label_repel(mapping, data, !!!params))
+  rlang::eval_tidy(ggrepel_quo)
 }

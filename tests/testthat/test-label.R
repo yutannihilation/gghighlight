@@ -68,16 +68,23 @@ test_that("choose_layer_for_label() chooses a layer properly", {
 })
 
 test_that("generate_labelled_layer() geenrates a layer for label.", {
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo),
-               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d))
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white")),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d, fill = "white"))
   # it accepts call
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(factor(type2))),
-               ggrepel::geom_label_repel(aes(x, y, colour = type, label = factor(type2)), d))
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(factor(type2)), list(fill = "white")),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = factor(type2)), d, fill = "white"))
 
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(no_such_column)),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(no_such_column), list(fill = "white")),
                NULL)
-  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo),
-               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ]))
-  expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo),
+  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white")),
+               ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ], fill = "white"))
+  expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo, list(fill = "white")),
                list())
+})
+
+test_that("call_ggrepel_with_params() generates a geom_label_repel()", {
+  expect_equal(
+    call_ggrepel_with_params(aes(x, y, colour = type, label = type), d, list(fill = "white")),
+    ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d, fill = "white")
+  )
 })
