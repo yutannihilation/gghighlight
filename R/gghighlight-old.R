@@ -3,7 +3,7 @@
 #' `gghiglight_line()` highlights lines ([ggplot2::geom_line()]) and `gghighlight_points()` highlights
 #' points ([ggplot2::geom_point()]) according to the given predicates.
 #'
-#' @name gghighlight
+#' @name gghighlight-old
 #'
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].

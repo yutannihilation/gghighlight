@@ -1,4 +1,6 @@
-#' Clone Other Layers
+#' Highlight Data With Predicate
+#'
+#' @name gghighlight
 #'
 #' @param ...
 #'   Expressions to filter data, which is passed to [dplyr::filter()].
