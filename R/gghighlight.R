@@ -220,8 +220,8 @@ bleach_layer <- function(layer, group_info,
     mapping_names <- names(layer$data)
     secret_names <- paste0(secret_prefix, seq_along(mapping_names))
     secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
-    layer$data <- dplyr::rename(layer$data, !!!setNames(mapping_names, secret_names))
-    layer$mapping <- modifyList(layer$mapping, setNames(secret_quos, mapping_names))
+    layer$data <- dplyr::rename(layer$data, !!!stats::setNames(mapping_names, secret_names))
+    layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
 
     secret_name_group <- paste0(secret_prefix, "group")
     layer$data[secret_name_group] <- factor(group_info$id)
