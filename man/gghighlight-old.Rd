@@ -2,8 +2,28 @@
 % Please edit documentation in R/gghighlight-old.R
 \name{gghighlight-old}
 \alias{gghighlight-old}
+\alias{gghighlight_line}
+\alias{gghighlight_point}
 \title{Highlight Data With Predicate}
+\usage{
+gghighlight_line(data, mapping, predicate, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = TRUE,
+  use_direct_label = TRUE, label_key = NULL, ...,
+  environment = parent.frame())
+
+gghighlight_point(data, mapping, predicate, max_highlight = 5L,
+  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = FALSE,
+  use_direct_label = TRUE, label_key = NULL, ...,
+  environment = parent.frame())
+}
 \arguments{
+\item{data}{Default dataset to use for plot. If not already a data.frame,
+will be converted to one by \code{\link[=fortify]{fortify()}}. If not specified,
+must be supplied in each layer added to the plot.}
+
+\item{mapping}{Default list of aesthetic mappings to use for plot.
+If not specified, must be supplied in each layer added to the plot.}
+
 \item{predicate}{Expression to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
 
 \item{max_highlight}{Max number of series to highlight.}
@@ -17,6 +37,8 @@
 \item{label_key}{Column name for \code{label} aesthetics.}
 
 \item{...}{Arguments passed to the corresponding geometry functions (e.g. \code{geom_line()}).}
+
+\item{environment}{DEPRECATED. Used prior to tidy evaluation.}
 }
 \description{
 \code{gghiglight_line()} highlights lines (\code{\link[ggplot2:geom_line]{ggplot2::geom_line()}}) and \code{gghighlight_points()} highlights

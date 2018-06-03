@@ -119,7 +119,7 @@ infer_group_key_from_aes <- function(mapping) {
 }
 
 
-#' @rdname gghighlight
+#' @rdname gghighlight-old
 #' @export
 gghighlight_line <- function(data,
                              mapping,
@@ -170,7 +170,7 @@ gghighlight_line <- function(data,
 }
 
 
-#' @rdname gghighlight
+#' @rdname gghighlight-old
 #' @export
 gghighlight_point <- function(data,
                               mapping,
