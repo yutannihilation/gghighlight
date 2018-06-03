@@ -17,14 +17,14 @@
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
 #' @export
-geom_highlight <- function(...,
-                           n = NULL,
-                           max_highlight = 5L,
-                           unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                           use_group_by = NULL,
-                           use_direct_label = NULL,
-                           label_key = NULL,
-                           label_params = list(fill = "white")) {
+gghighlight <- function(...,
+                        n = NULL,
+                        max_highlight = 5L,
+                        unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                        use_group_by = NULL,
+                        use_direct_label = NULL,
+                        label_key = NULL,
+                        label_params = list(fill = "white")) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
