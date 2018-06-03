@@ -1,226 +1,346 @@
 #' Highlight Data With Predicate
 #'
-#' `gghiglight_line()` highlights lines ([ggplot2::geom_line()]) and `gghighlight_points()` highlights
-#' points ([ggplot2::geom_point()]) according to the given predicates.
-#'
 #' @name gghighlight
 #'
-#' @inheritParams ggplot2::ggplot
-#' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
-#' @param max_highlight Max number of series to highlight.
-#' @param unhighlighted_colour Colour for unhighlited lines/points.
-#' @param use_group_by If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
-#' @param use_direct_label If `TRUE`, add labels directly on the plot instead of using a legend.
-#' @param label_key Column name for `label` aesthetics.
-#' @param ... Arguments passed to the corresponding geometry functions (e.g. `geom_line()`).
-#'
-#' @details
-#' `gghiglight_lines()` evaluates `predicate` by grouped calculation; You must specify the expression that returns one value
-#'  per group. Aggregate functions (e.g. `max()`, `all()`) are usually needed.
-#'
-#' `gghighlight_points()` evaluates `predicate` by ungrouped calculation; You must specify the expression that returns one value
-#' per row.
-#'
-#' `gghighlight_*()` behaves differently, depending on what type of vector the result of the `predicate` is.
-#'
-#' * If `predicate` is evaluated into a logical vector, the data series/points filtered by the logical vector will
-#'   be highlighted.
-#' * Otherwise, the data series/points are sorted by the result of `predicate` and the top `max_highlight` ones will
-#'   be highlighted.
-#'
-#' @examples
-#' d <- data.frame(
-#'   idx = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'   value = c( 1, 2, 3,10,11,12, 9,10,11),
-#'   category = rep(c("a","b","c"), 3),
-#'   stringsAsFactors = FALSE
-#' )
-#'
-#' gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
-#'
-#' \dontrun{
-#' # This throws an error because the predicate returns multiple values per group.
-#' gghighlight_line(d, aes(idx, value, colour = category), value > 10)
-#' }
-#'
-#' gghighlight_point(d, aes(idx, value), value > 10, label_key = category)
-#'
-NULL
-
-
-gghighlight <- function(data,
-                        mapping,
-                        predicate_quo,
+#' @param ...
+#'   Expressions to filter data, which is passed to [dplyr::filter()].
+#' @param n
+#'   Number of layers to clone.
+#' @param max_highlight
+#'   Max number of series to highlight.
+#' @param unhighlighted_colour
+#'   Colour for unhighlited geoms.
+#' @param use_group_by
+#'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
+#' @param use_direct_label
+#'   If `TRUE`, add labels directly on the plot instead of using a legend.
+#' @param label_key
+#'   Column name for `label` aesthetics.
+#' @param label_params
+#'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
+#' @export
+gghighlight <- function(...,
+                        n = NULL,
                         max_highlight = 5L,
                         unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                        geom_func = ggplot2::geom_blank,
-                        use_group_by = TRUE,
-                        ...,
-                        environment = parent.frame()) {
+                        use_group_by = NULL,
+                        use_direct_label = NULL,
+                        label_key = NULL,
+                        label_params = list(fill = "white")) {
 
-
-  group_key <- if (use_group_by) infer_group_key_from_aes(mapping) else NULL
-
-  if (use_group_by && is.null(group_key)) {
-    warning("Please provide group or colour aes.\n",
-            "Falling back to ungrouped filter operation...")
+  # if use_direct_label is NULL, try to use direct labels but ignore failures
+  # if use_direct_label is TRUE, use direct labels, otherwise stop()
+  # if use_direct_label is FALSE, do not use direct labeys
+  label_key_must_exist <- TRUE
+  if (is.null(use_direct_label)) {
+    use_direct_label <- TRUE
+    label_key_must_exist <- FALSE
   }
 
-  mapping_unhighlitghted <- mapping
-  # https://cran.r-project.org/doc/FAQ/R-FAQ.html#Others
-  aes_null <- intersect(c("colour", "fill"), names(mapping_unhighlitghted))
-  mapping_unhighlitghted[aes_null] <- list(NULL)
+  structure(
+    list(
+      predicates = rlang::enquos(...),
+      n = n,
+      max_highlight = max_highlight,
+      unhighlighted_colour = unhighlighted_colour,
+      use_group_by = use_group_by,
+      use_direct_label = use_direct_label,
+      label_key_must_exist = label_key_must_exist,
+      label_key = rlang::enquo(label_key),
+      label_params = label_params
+    ),
+    class = "gg_highlighter"
+  )
+}
 
-  if (!is.null(group_key)) {
-    data_grouped <- dplyr::group_by(data, !! group_key)
-    # assume that no one use this silly colname :P
-    data_predicated <- dplyr::summarise(data_grouped, predicate.......... = !! predicate_quo)
+VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 
-    groups <- if (is.logical(data_predicated$predicate..........)) {
-      data_predicated[[rlang::quo_text(group_key)]][data_predicated$predicate..........]
-    } else {
-      data_predicated[[rlang::quo_text(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
-    }
+#' @export
+ggplot_add.gg_highlighter <- function(object, plot, object_name) {
+  if (length(plot$layers) == 0) {
+    stop("there is no layer to highlight!")
+  }
 
-    data_filtered <- dplyr::filter(data_grouped, (!! group_key) %in% (!! groups))
-
-    # rename the column for group key in original column so that this cannot be faccetted.
-    # assume that no one use this silly colname :P
-    data <- dplyr::rename(data, group.......... = !! group_key)
-    mapping_unhighlitghted$group  <- rlang::sym("group..........")
+  n_layers <- length(plot$layers)
+  if (is.null(object$n)) {
+    idx_layers <- rep(TRUE, n_layers)
   } else {
-    data_predicated <- dplyr::mutate(data, predicate.......... = !! predicate_quo)
-    data_filtered <- if (is.logical(data_predicated$predicate..........)) {
-      dplyr::filter(data_predicated, .data$predicate..........)
+    if (object$n > n_layers) {
+      stop("n is larger than the actual number of layers!", call. = FALSE)
+    }
+    idx_layers <- rep(FALSE, n_layers)
+    idx_layers[utils::tail(seq_len(n_layers), object$n)] <- TRUE
+  }
+
+  # Layers are environments; if we modify an element of it, it keeps the modified value.
+  # So, we need to clone them first.
+  layers_cloned <- purrr::map(plot$layers, clone_layer)
+
+  # data and group IDs are used commonly both in the bleaching and sieving process.
+  purrr::walk(layers_cloned, merge_plot_to_layer,
+              plot_data = plot$data, plot_mapping = plot$mapping)
+
+  # since the plot data is overwritten later, we need to attach the data to all layers (#31)
+  plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
+  layers_cloned <- layers_cloned[idx_layers]
+
+  group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
+
+  # Clone layers again before we bleach them.
+  layers_bleached <- layers_cloned
+  layers_sieved <- purrr::map(layers_bleached, clone_layer)
+
+  # Bleach the lower layer.
+  purrr::walk2(
+    layers_bleached,
+    group_infos,
+    bleach_layer,
+    unhighlighted_colour = object$unhighlighted_colour
+  )
+
+  # Sieve the upper layer.
+  purrr::walk2(
+    layers_sieved,
+    group_infos,
+    sieve_layer,
+    predicates = object$predicates,
+    max_highlight = object$max_highlight,
+    use_group_by = object$use_group_by
+  )
+
+  # The plot data should also be sieved to deleting facets for unhighlighted levels
+  plot$data <- layers_sieved[[1]]$data
+
+  plot$layers[idx_layers] <- layers_bleached
+  plot <- plot %+% layers_sieved
+
+  if (!object$use_direct_label) {
+    return(plot)
+  }
+
+  layer_labelled <- generate_labelled_layer(layers_sieved, group_infos,
+                                            object$label_key, object$label_params)
+
+  if (is.null(layer_labelled)) {
+    if (object$label_key_must_exist) {
+      stop("No layer can be used for labels", call. = FALSE)
     } else {
-      data_predicated %>%
-      dplyr::arrange(-.data$predicate..........) %>%
-        dplyr::slice(!! 1:max_highlight)
+      return(plot)
     }
   }
 
-  # base plot
-  ggplot2::ggplot(data = data_filtered,
-                  mapping = mapping,
-                  environment = environment) %+%
-    # unhighlighted plot
-    geom_func(data = data,
-              mapping = mapping_unhighlitghted,
-              colour = unhighlighted_colour,
-              ...) %+%
-    # highlighted plot
-    geom_func(data = data_filtered,
-              mapping = mapping,
-              ...)
+  plot %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
 }
 
-infer_group_key_from_aes <- function(mapping) {
-  mapping$group %||% mapping$fill %||% mapping$colour
+merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {
+  layer$data <- merge_data(layer, plot_data)
+  # since gghighlight does grouped calculations, we want to specify the group key by ourselves.
+  layer$data <- dplyr::ungroup(layer$data)
+  layer$mapping <- merge_mapping(layer, plot_mapping)
+  layer
 }
 
+merge_data <- function(layer, plot_data) {
+  # c.f.) https://github.com/tidyverse/ggplot2/blob/54de616213d9811f422f45cf1a6c04d1de6ccaee/R/layer.r#L182
+  layer$layer_data(plot_data)
+}
 
-#' @rdname gghighlight
-#' @export
-gghighlight_line <- function(data,
-                             mapping,
-                             predicate,
-                             max_highlight = 5L,
-                             unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                             use_group_by = TRUE,
-                             use_direct_label = TRUE,
-                             label_key = NULL,
-                             ...,
-                             environment = parent.frame()) {
+merge_mapping <- function(layer, plot_mapping) {
+  # Merge the layer's mapping with the plot's mapping
+  mapping <- utils::modifyList(plot_mapping %||% aes(), layer$mapping %||% aes())
+  # Filter out unused variables (e.g. fill aes for line geom)
+  layer_aes <- base::union(layer$geom$aesthetics(), layer$stat$aesthetics())
+  aes_names <- base::intersect(layer_aes, names(mapping))
+  mapping <- mapping[aes_names]
 
-  p <- gghighlight(data = data,
-                   mapping = mapping,
-                   predicate_quo = rlang::enquo(predicate),
-                   max_highlight = max_highlight,
-                   unhighlighted_colour = unhighlighted_colour,
-                   geom_func = ggplot2::geom_line,
-                   use_group_by = use_group_by,
-                   ...,
-                   environment = environment)
-
-  if (!use_direct_label) return(p)
-
-  layer_highlight <- p$layers[[2]]
-  data_highlight <- layer_highlight$data
-  # data_highlight is a grouped df
-  label_key <- dplyr::groups(data_highlight)[[1]] %||% substitute(label_key)
-
-  if (is.null(label_key)) {
-    warning("No grouped vars or label_key.\n",
-            "Falling back to a usual legend...")
-    return(p)
+  if (length(mapping) == 0) {
+    stop("No mapping found on this layer!")
   }
 
-  mapping_label <- layer_highlight$mapping
-  mapping_label$label <- label_key
-
-  x_key <- mapping_label$x
-
-  leftmost_points <- data_highlight %>%
-    dplyr::filter((!! x_key) == max(!! x_key))
-
-  p %+%
-    ggplot2::guides(colour=FALSE) %+%
-    ggrepel::geom_label_repel(data = leftmost_points,
-                              mapping = mapping_label)
+  mapping
 }
 
+clone_layer <- function(layer) {
+  new_layer <- rlang::env_clone(layer)
+  class(new_layer) <- class(layer)
+  new_layer
+}
 
-#' @rdname gghighlight
-#' @export
-gghighlight_point <- function(data,
-                              mapping,
-                              predicate,
-                              max_highlight = 5L,
-                              unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                              use_group_by = FALSE,
-                              use_direct_label = TRUE,
-                              label_key = NULL,
-                              ...,
-                              environment = parent.frame()) {
+clone_position <- clone_layer
 
-  p <- gghighlight(data = data,
-                   mapping = mapping,
-                   predicate_quo = rlang::enquo(predicate),
-                   max_highlight = max_highlight,
-                   unhighlighted_colour = unhighlighted_colour,
-                   geom_func = ggplot2::geom_point,
-                   use_group_by = use_group_by,
-                   ...,
-                   environment = environment)
+calculate_group_info <- function(data, mapping) {
+  mapping <- purrr::compact(mapping)
+  # the calculation may be possible only in the ggplot2 context (e.g. stat()).
+  # So, wrap it with safely() and ignore the failed results.
+  evaluated_result <- purrr::map(mapping, purrr::safely(rlang::eval_tidy), data = data)
+  evaluated_result_success <- purrr::keep(evaluated_result, ~ is.null(.$error))
+  data_evaluated <- purrr::map_dfr(evaluated_result_success, "result")
 
-  if (!use_direct_label) return(p)
-
-  layer_highlight <- p$layers[[2]]
-  data_highlight <- layer_highlight$data
-  mapping_highlight <- layer_highlight$mapping
-
-  mapping_highlight$label <- substitute(label_key)
-  if (is.null(mapping_highlight$label)) {
-    col_labelable_idx <- which(
-      purrr::map_lgl(data_highlight, is.character) | purrr::map_lgl(data_highlight, is.factor)
+  idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
+  if (!any(idx_discrete)) {
+    return(NULL)
+  } else {
+    aes_discrete <- names(which(idx_discrete))
+    list(
+      data = data_evaluated,
+      # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
+      id = dplyr::group_indices(
+        data_evaluated,  # group_indices() won't work with grouped_df.
+        !!!rlang::syms(aes_discrete)
+      ),
+      # for group key, use symbols only
+      key = purrr::keep(mapping[aes_discrete], rlang::quo_is_symbol)
     )
+  }
+}
 
-    if (length(col_labelable_idx) == 0) {
-      warning("Please provide the proper label_key.\n",
-              "Falling back to a usual legend...")
-      return(p)
+bleach_layer <- function(layer, group_info,
+                         unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
+  # Set colour and fill to grey when it is included in the mappping.
+  # But, if the default_aes is NA, respect it.
+  # (Note that this needs to be executed before modifying the layer$mapping)
+  params_bleached <- purrr::map(
+    rlang::set_names(c("colour", "fill")),
+    choose_bleached_colour,
+    geom = layer$geom, mapping = layer$mapping, bleached_colour = unhighlighted_colour
+  )
+  params_bleached <- purrr::compact(params_bleached)
+  layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
+
+  # remove colour and fill from mapping
+  layer$mapping[c("colour", "fill")] <- list(NULL)
+
+  if (!is.null(group_info$key)) {
+    # In order to prevent the bleached layer to be facetted, we need to rename
+    # columns of group keys to improbable names. But, what happens when the group
+    # column disappears? Other calculations that uses the column fail. So, we need
+    # to use the pre-evaluated values and rename everything to improbable name.
+    layer$data <- group_info$data
+    secret_prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+    mapping_names <- names(layer$data)
+    secret_names <- paste0(secret_prefix, seq_along(mapping_names))
+    secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
+    layer$data <- dplyr::rename(layer$data, !!!stats::setNames(mapping_names, secret_names))
+    layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
+
+    secret_name_group <- paste0(secret_prefix, "group")
+    layer$data[secret_name_group] <- factor(group_info$id)
+    layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
+  }
+
+  layer
+}
+
+choose_bleached_colour <- function(aes_name, geom, mapping, bleached_colour) {
+  if (!aes_name %in% geom$aesthetics()) {
+    return(NULL)
+  }
+  # if aes_name is specified in the mapping, it should be bleached.
+  if (!aes_name %in% names(mapping) &&
+      aes_name %in% names(geom$default_aes) &&
+      is.na(geom$default_aes[aes_name])) {
+    return(NA)
+  }
+  return(bleached_colour)
+}
+
+sieve_layer <- function(layer, group_info, predicates,
+                        max_highlight = 5L,
+                        use_group_by = NULL) {
+  # If there are no predicates, do nothing.
+  if (length(predicates) == 0) return(layer)
+
+  # If use_group_by is NULL, infer it from whether group_key is NULL or not.
+  use_group_by <- use_group_by %||% !is.null(group_info$id)
+
+  # 1) If use_group_by is FALSE, do not use group_by().
+  # 2) If use_group_by is TRUE and group IDs don't exist, use group_by().
+  # 3) If use_group_by is TRUE but group IDs exist, show a warning and do not use group_by().
+  if (use_group_by) {
+    if (is.null(group_info$id)) {
+      warning("You set use_group_by = TRUE, but there seems no groups.\n",
+              "Please provide group, colour or fill aes.\n",
+              "Falling back to ungrouped filter operation...", call. = FALSE)
+      use_group_by <- FALSE
     }
-
-    col_labelable <- colnames(data_highlight)[col_labelable_idx[1]]
-    mapping_highlight$label <- rlang::sym(col_labelable)
-    warning(
-      sprintf("Using %s as label for now, but please provide the label_key explicity!",
-              col_labelable)
-    )
   }
 
-  p %+%
-    ggplot2::guides(colour=FALSE) %+%
-    ggrepel::geom_label_repel(data = data_highlight,
-                              mapping = mapping_highlight)
+  names(predicates) <- paste0("p", seq_along(predicates))
+
+  # If use_group_by is TRUE, try to calculate grouped
+  if (use_group_by) {
+    tryCatch({
+      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
+      # if this succeeds, return the layer
+      return(layer)
+    },
+    error = function(e) {
+      warning("You set use_group_by = TRUE, but grouped calculation failed.\n",
+              "Falling back to ungrouped filter operation...", call. = FALSE)
+    })
+  }
+
+  # the grouped calculation failed or skipped, try ungrouped one.
+  layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
+  layer
+}
+
+calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
+  data_predicated <- data %>%
+    dplyr::group_by(!!VERY_SECRET_COLUMN_NAME := !!group_ids) %>%
+    dplyr::summarise(!!!predicates)
+
+  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
+
+  # Filter by the logical predicates.
+  data_filtered <- data_predicated %>%
+    dplyr::filter(!!!cols$filter)
+
+  # Arrange by the other predicates and slice rows down to max_highlights.
+  if (length(cols$arrange) > 0) {
+    data_filtered <- data_filtered %>%
+      dplyr::arrange(!!!cols$arrange) %>%
+      utils::tail(max_highlight)
+  }
+
+  groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
+
+  data[group_ids %in% groups_filtered, ]
+}
+
+calculate_ungrouped <- function(data, predicates, max_highlight) {
+  data_predicated <- data %>%
+    tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
+    dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
+
+  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
+
+  # Filter by the logical predicates.
+  data_filtered <- data_predicated %>%
+    dplyr::filter(!!!cols$filter)
+
+  # Arrange by the other predicates and slice rows down to max_highlights.
+  if (length(cols$arrange) > 0) {
+    data_filtered <- data_filtered %>%
+      dplyr::arrange(!!!cols$arrange) %>%
+      utils::tail(max_highlight)
+  }
+
+  # sort to preserve the original order
+  rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
+
+  data[rowids_filtered, ]
+}
+
+choose_col_for_filter_and_arrange <- function(data, exclude_col) {
+  # Do not use row IDs or group keys to arrange.
+  data <- dplyr::select(data, -!!exclude_col)
+  col_idx_lgl <- purrr::map_lgl(data, is.logical)
+  col_idx_lst <- purrr::map_lgl(data, is.list)
+  list(
+    # Use logical columns for filter()
+    filter = rlang::syms(names(data)[col_idx_lgl]),
+    # Use other columns but lists for arrange() (arrange doesn't support list columns)
+    arrange = rlang::syms(names(data)[!col_idx_lgl & !col_idx_lst])
+  )
 }

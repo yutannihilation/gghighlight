@@ -1,4 +1,4 @@
-context("test-geom_highlight.R")
+context("test-gghighlight.R")
 library(ggplot2)
 
 grey07 <- ggplot2::alpha("grey", 0.7)
@@ -240,16 +240,16 @@ test_that("sieve_layer() works with list columns", {
   expect_identical(sl$data, d3[3:4, ])
 })
 
-test_that("geom_highlight() does not change the existing layers", {
+test_that("gghighlight() does not change the existing layers", {
   p1 <- ggplot(d, aes(x, y, colour = type)) + geom_line()
   p2 <- ggplot(d, aes(x, y, colour = type)) + geom_line()
 
-  invisible(p1 + geom_highlight(mean(value) > 1))
+  invisible(p1 + gghighlight(mean(value) > 1))
 
   expect_equal(p1, p2)
 })
 
-test_that("geom_highlight() works the plot with one layer, grouped", {
+test_that("gghighlight() works the plot with one layer, grouped", {
   d_sieved <- d[d$type != "a", ]
 
   l_bleached <- geom_line(aes_bleached, d_bleached, colour = grey07)
@@ -266,7 +266,7 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
 
   # without labels
   for (p in list(p1, p2, p3)) {
-    p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = FALSE)
+    p_highlighted <- p + gghighlight(mean(value) > 1, use_direct_label = FALSE)
     expect_equal(p_highlighted$data, d_sieved)
     expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved))
     expect_equal(p_highlighted$guides, NULL)
@@ -281,14 +281,14 @@ test_that("geom_highlight() works the plot with one layer, grouped", {
 
   l_label <- ggrepel::geom_label_repel(aes(x, y, colour = type, label = type), d_label, fill = "white")
   for (p in list(p1, p2, p3)) {
-    p_highlighted <- p + geom_highlight(mean(value) > 1, use_direct_label = TRUE)
+    p_highlighted <- p + gghighlight(mean(value) > 1, use_direct_label = TRUE)
     expect_equal(p_highlighted$data, d_sieved)
     expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved, l_label))
     expect_equal(p_highlighted$guides, list(colour = "none", fill = "none"))
   }
 })
 
-test_that("geom_highlight() works the plot with one layer, ungrouped", {
+test_that("gghighlight() works the plot with one layer, ungrouped", {
   # Note that the default_aes of fill of point is NA
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
@@ -296,7 +296,7 @@ test_that("geom_highlight() works the plot with one layer, ungrouped", {
   p1 <- ggplot(d, aes(x, y, colour = type)) +
     geom_point()
 
-  expect_equal_layers((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                       list(l_bleached, l_sieved))
 })
 
@@ -312,7 +312,7 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
                            fill = NULL,
                            group = paste0(prefix, "group"))
 
-test_that("geom_highlight() works with two layers, grouped", {
+test_that("gghighlight() works with two layers, grouped", {
   aes_bleached2 <- aes_bleached
   aes_bleached2$fill <- rlang::quo(!!rlang::sym(paste0(prefix, 4)))
   d_bleached2 <- d_bleached
@@ -331,25 +331,25 @@ test_that("geom_highlight() works with two layers, grouped", {
     geom_line() +
     geom_point(shape = "circle filled")
 
-  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(mean(value) > 1, use_direct_label = FALSE))$layers,
                       list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(mean(value) > 1, n = 1, use_direct_label = FALSE))$layers,
                       list(geom_line(data = d, aes(x, y, colour = type)),
                            l_bleached_2, l_sieved_2))
 
   # if the data is grouped, the result is the same
   p1$data <- dplyr::group_by(d, .data$type)
 
-  expect_equal_layers((p1 + geom_highlight(mean(value) > 1, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(mean(value) > 1, use_direct_label = FALSE))$layers,
                       list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n is larger than the number of layers, it throws error.
-  expect_error(p1 + geom_highlight(mean(value) > 1, n = 3))
+  expect_error(p1 + gghighlight(mean(value) > 1, n = 3))
 })
 
-test_that("geom_highlight() works with two layers, ungrouped", {
+test_that("gghighlight() works with two layers, ungrouped", {
   d_sieved <- d[d$value > 1, ]
 
   l_bleached_1 <- geom_point(aes_bleached, d_bleached, shape = "circle open", size = 5,
@@ -363,14 +363,14 @@ test_that("geom_highlight() works with two layers, ungrouped", {
     geom_point(shape = "circle open", size = 5) +
     geom_point()
 
-  expect_equal_layers((p1 + geom_highlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                       list(l_bleached_1, l_bleached_2, l_sieved_1, l_sieved_2))
 
   # If n = 1, only one layer above is highlighted.
-  expect_equal_layers((p1 + geom_highlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
+  expect_equal_layers((p1 + gghighlight(value > 1, n = 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                       list(geom_point(data = d, aes(x, y, colour = type), shape = "circle open", size = 5),
                            l_bleached_2, l_sieved_2))
 
   # If n is larger than the number of layers, it throws error.
-  expect_error(p1 + geom_highlight(mean(value) > 1, n = 3))
+  expect_error(p1 + gghighlight(mean(value) > 1, n = 3))
 })
