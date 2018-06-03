@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/yutannihilation/gghighlight.svg?branch=master)](https://travis-ci.org/yutannihilation/gghighlight) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
-
 gghighlight
 ===========
 
-Highlight lines and points in ggplot2.
+[![Travis-CI Build Status](https://travis-ci.org/yutannihilation/gghighlight.svg?branch=master)](https://travis-ci.org/yutannihilation/gghighlight) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
+
+Highlight geoms in ggplot2.
 
 Installation
 ------------
@@ -24,14 +24,13 @@ Example
 Suppose the data has a lot of series.
 
 ``` r
-library(dplyr, warn.conflicts = FALSE)
-
 set.seed(2)
 d <- purrr::map_dfr(
   letters,
   ~ data.frame(idx = 1:400,
                value = cumsum(runif(400, -1, 1)),
                type = .,
+               flag = sample(c(TRUE, FALSE), size = 400, replace = TRUE),
                stringsAsFactors = FALSE))
 ```
 
@@ -51,16 +50,33 @@ So we are motivated to highlight only important series, like this:
 ``` r
 library(gghighlight)
 
-gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 15)
+#> label_key: type
 ```
 
 ![](man/figures/README-gghighlight-line-1.png)
 
-As `gghighlight_*()` returns a ggplot object, it is customizable just as we usually do with ggplot2. (Note that, while gghighlights doesn't require ggplot2 loaded, ggplot2 need to be loaded to customize the plot)
+If you want fewer highlighted lines, you can add multiple predicates.
 
 ``` r
-gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 15, mean(flag) > 0.55)
+#> label_key: type
+```
+
+![](man/figures/README-gghighlight-line2-1.png)
+
+As adding `gghighlight()` results in a ggplot object, it is customizable just as we usually do with ggplot2.
+
+``` r
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 15) +
   theme_minimal()
+#> label_key: type
 ```
 
 ![](man/figures/README-gghighlight-line-theme-1.png)
@@ -68,20 +84,28 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
 The plot also can be facetted:
 
 ``` r
-gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20) +
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 15) +
   facet_wrap(~ type)
+#> label_key: type
 ```
 
 ![](man/figures/README-gghighlight-line-facet-1.png)
 
-### Supported geoms
+### Examples
+
+`gghighlight()` can highlights almost any geoms. Here's some examples:
 
 #### Line
 
 ``` r
 library(gghighlight)
 
-gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 15)
+#> label_key: type
 ```
 
 ![](man/figures/README-unnamed-chunk-2-1.png)
@@ -90,38 +114,18 @@ gghighlight_line(d, aes(idx, value, colour = type), max(value) > 20)
 
 ``` r
 set.seed(10)
-d2 <- sample_n(d, 20)
+d2 <- dplyr::sample_n(d, 20)
 
-gghighlight_point(d2, aes(idx, value), value > 0)
-#> Warning in gghighlight_point(d2, aes(idx, value), value > 0): Using type as
-#> label for now, but please provide the label_key explicity!
+ggplot(d2, aes(idx, value)) +
+  geom_point() +
+  gghighlight(value > 0, label_key = type)
 ```
 
 ![](man/figures/README-gghighlight-point-1.png)
 
 ### Grouped vs ungrouped
 
-You may notice that the `gghighlight_line()` and `gghighlight_point()` has different semantics.
-
-By default, `gghighlight_line()` calculates `predicate` per group, more precisely, `dplyr::group_by()` + `dplyr::summarise()`. So if the predicate expression returns more than one value per group, it ends up with an error like this:
-
-``` r
-gghighlight_line(d, aes(idx, value, colour = type), value > 20)
-#> Error in summarise_impl(.data, dots): Column `predicate..........` must be length 1 (a summary value), not 400
-```
-
-On the other hand, `gghighlight_point()` calculates `predicate` per row by default. This behaviour can be controled via `use_group_by` argument like this:
-
-``` r
-gghighlight_point(d2, aes(idx, value, colour = type), max(value) > 0, use_group_by = TRUE)
-#> Warning in gghighlight_point(d2, aes(idx, value, colour = type), max(value)
-#> > : Using type as label for now, but please provide the label_key
-#> explicity!
-```
-
-![](man/figures/README-grouped_point-1.png)
-
-While `gghighlight_line()` also has `use_group_by` argument, I don't think ungrouped lines can be interesting because data that can be represented as line must have its series, or groups.
+(TBD)
 
 #### Non-logical predicate
 
@@ -131,10 +135,13 @@ To construct a predicate expression like bellow, we need to determine a threshol
 max(value) > 20
 ```
 
-So, `gghighlight_*()` allows predicates that return numeric (or character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
+So, `gghighlight()` allows predicates that return numeric (or character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
 
 ``` r
-gghighlight_line(d, aes(idx, value, colour = type), max(value), max_highlight = 5L)
+ggplot(d, aes(idx, value, colour = type)) +
+  geom_line() +
+  gghighlight(max(value), max_highlight = 5L)
+#> label_key: type
 ```
 
 ![](man/figures/README-numeric-highlight-1.png)
