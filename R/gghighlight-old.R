@@ -48,15 +48,15 @@
 NULL
 
 
-gghighlight <- function(data,
-                        mapping,
-                        predicate_quo,
-                        max_highlight = 5L,
-                        unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-                        geom_func = ggplot2::geom_blank,
-                        use_group_by = TRUE,
-                        ...,
-                        environment = parent.frame()) {
+gghighlight_old <- function(data,
+                            mapping,
+                            predicate_quo,
+                            max_highlight = 5L,
+                            unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                            geom_func = ggplot2::geom_blank,
+                            use_group_by = TRUE,
+                            ...,
+                            environment = parent.frame()) {
 
 
   group_key <- if (use_group_by) infer_group_key_from_aes(mapping) else NULL
@@ -132,15 +132,15 @@ gghighlight_line <- function(data,
                              ...,
                              environment = parent.frame()) {
 
-  p <- gghighlight(data = data,
-                   mapping = mapping,
-                   predicate_quo = rlang::enquo(predicate),
-                   max_highlight = max_highlight,
-                   unhighlighted_colour = unhighlighted_colour,
-                   geom_func = ggplot2::geom_line,
-                   use_group_by = use_group_by,
-                   ...,
-                   environment = environment)
+  p <- gghighlight_old(data = data,
+                       mapping = mapping,
+                       predicate_quo = rlang::enquo(predicate),
+                       max_highlight = max_highlight,
+                       unhighlighted_colour = unhighlighted_colour,
+                       geom_func = ggplot2::geom_line,
+                       use_group_by = use_group_by,
+                       ...,
+                       environment = environment)
 
   if (!use_direct_label) return(p)
 
@@ -183,15 +183,15 @@ gghighlight_point <- function(data,
                               ...,
                               environment = parent.frame()) {
 
-  p <- gghighlight(data = data,
-                   mapping = mapping,
-                   predicate_quo = rlang::enquo(predicate),
-                   max_highlight = max_highlight,
-                   unhighlighted_colour = unhighlighted_colour,
-                   geom_func = ggplot2::geom_point,
-                   use_group_by = use_group_by,
-                   ...,
-                   environment = environment)
+  p <- gghighlight_old(data = data,
+                       mapping = mapping,
+                       predicate_quo = rlang::enquo(predicate),
+                       max_highlight = max_highlight,
+                       unhighlighted_colour = unhighlighted_colour,
+                       geom_func = ggplot2::geom_point,
+                       use_group_by = use_group_by,
+                       ...,
+                       environment = environment)
 
   if (!use_direct_label) return(p)
 
