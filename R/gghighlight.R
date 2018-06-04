@@ -171,10 +171,11 @@ clone_position <- clone_layer
 calculate_group_info <- function(data, mapping) {
   mapping <- purrr::compact(mapping)
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
-  # So, wrap it with safely() and ignore the failed results.
-  evaluated_result <- purrr::map(mapping, purrr::safely(rlang::eval_tidy), data = data)
-  evaluated_result_success <- purrr::keep(evaluated_result, ~ is.null(.$error))
-  data_evaluated <- purrr::map_dfr(evaluated_result_success, "result")
+  # So, wrap it with tryCatch() and remove the failed results, which can be
+  # detected by checking if all elements are NA or not.
+  mapping_wrapped <- purrr::map(mapping, ~ rlang::quo(tryCatch(!!., error = function(e) NA)))
+  data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
+  data_evaluated <- dplyr::select_if(data_evaluated, ~!all(is.na(.)))
 
   idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
   if (!any(idx_discrete)) {
