@@ -28,7 +28,7 @@ If not specified, must be supplied in each layer added to the plot.}
 
 \item{max_highlight}{Max number of series to highlight.}
 
-\item{unhighlighted_colour}{Colour for unhighlited lines/points.}
+\item{unhighlighted_colour}{Colour for unhighlighted lines/points.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 

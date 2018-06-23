@@ -7,7 +7,7 @@
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
 #' @param max_highlight Max number of series to highlight.
-#' @param unhighlighted_colour Colour for unhighlited lines/points.
+#' @param unhighlighted_colour Colour for unhighlighted lines/points.
 #' @param use_group_by If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label If `TRUE`, add labels directly on the plot instead of using a legend.
 #' @param label_key Column name for `label` aesthetics.
