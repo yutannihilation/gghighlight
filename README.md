@@ -63,4 +63,4 @@ p + theme_minimal() + facet_wrap(~ type)
 
 ![](man/figures/README-gghighlight-theme-facets-2.png)
 
-`gghighlight()` can highlight almost any geoms. For more details, please read [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/docs/articles/gghighlight.html).
+`gghighlight()` can highlight almost any geoms. For more details, please read [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/articles/gghighlight.html).
