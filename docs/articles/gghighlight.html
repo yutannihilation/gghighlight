@@ -101,7 +101,7 @@ d &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">
 
 <span class="kw">ggplot</span>(d) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type))</code></pre></div>
-<p><img src="gghighlight_files/figure-html/ggplot2-simple-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/ggplot2-simple-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>To filter the data to the reasonable number of lines, we can use dplyr’s <code>filter()</code> here.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)
 
@@ -112,7 +112,7 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 
 <span class="kw">ggplot</span>(d_filtered) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type))</code></pre></div>
-<p><img src="gghighlight_files/figure-html/ggplot2-filter-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/ggplot2-filter-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>But, it seems not so handy. For example, what if we want to change the threshold in predicate (<code>max(value) &gt; 20</code>) and highlight other series as well? It’s a bit tiresome to type all the code above again every time Ier eplace <code>20</code> with some other value.</p>
 <p>Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot loose its context then.</p>
 <p>Here comes gghighlight package, <code><a href="http://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> equivalent for ggplot2.</p>
@@ -129,13 +129,13 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type)) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>)
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/gghighlight-simple-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/gghighlight-simple-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can specify as many predicates as you like. For example, the following code highlights the data that satisfies both <code>max(value) &gt; 15</code> and <code>mean(flag) &gt; 0.55</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(d) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type)) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">15</span>, <span class="kw">mean</span>(flag) <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.55</span>)
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/gghighlight-two-conds-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/gghighlight-two-conds-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="customization" class="section level2">
 <h2 class="hasAnchor">
@@ -146,7 +146,7 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">19</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_minimal</span>()
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/gghighlight-theme-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/gghighlight-theme-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The plot also can be facetted:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(d) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type)) <span class="op">+</span>
@@ -154,7 +154,7 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>type)
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/gghighlight-facet-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/gghighlight-facet-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="geoms" class="section level2">
 <h2 class="hasAnchor">
@@ -172,12 +172,12 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 p
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span>
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/bar-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/bar-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Are you wondering if this is really highlighted? Yes, it is. But, the unhighlighted bars are all overwritten by the highlighted bars. This seems not so useful, until you see the fecetted version:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>Species)
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span>
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/bar-wrap-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/bar-wrap-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="point" class="section level3">
 <h3 class="hasAnchor">
@@ -189,7 +189,7 @@ d2 &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"
 <span class="kw">ggplot</span>(d2, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="dt">label_key =</span> type)</code></pre></div>
-<p><img src="gghighlight_files/figure-html/point-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/point-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>More precisely, <code><a href="../reference/gghighlight.html">gghighlight()</a></code> takes the following strategy:</p>
 <ol style="list-style-type: decimal">
 <li>Calculate the group IDs from mapping.
@@ -214,7 +214,7 @@ d2 &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"
 <span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value), <span class="dt">max_highlight =</span> 5L)
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/numeric-highlight-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/numeric-highlight-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="labels" class="section level2">
 <h2 class="hasAnchor">
@@ -232,13 +232,13 @@ d2 &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(d) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type)) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, <span class="dt">use_direct_label =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<p><img src="gghighlight_files/figure-html/labels-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/labels-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Labels are drawn by <code>geom_label_repel()</code>. If you want to customize the labels, you can pass parameters to it via <code>label_params</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(d) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type)) <span class="op">+</span>
 <span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw">max</span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, <span class="dt">label_params =</span> <span class="kw">list</span>(<span class="dt">size =</span> <span class="dv">10</span>))
 <span class="co">#&gt; label_key: type</span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/labels2-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/labels2-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can also add labels by yourself. It is easy to add labels on only highlighted data because <code><a href="../reference/gghighlight.html">gghighlight()</a></code> replaces the plot’s data to the filtered one.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(d2, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">4</span>) <span class="op">+</span>
@@ -256,7 +256,7 @@ p<span class="op">$</span>data
 
 p <span class="op">+</span><span class="st"> </span><span class="kw">geom_label</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">label =</span> type),
                <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">vjust =</span> <span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">"purple"</span>, <span class="dt">colour =</span> <span class="st">"white"</span>, <span class="dt">alpha=</span> <span class="fl">0.5</span>)</code></pre></div>
-<p><img src="gghighlight_files/figure-html/labels3-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/labels3-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
   </div>
 

@@ -59,10 +59,22 @@ With `gghighlight()`, we can highlight the lines whose max values are larger tha
 ```{r gghighlight-simple}
 library(gghighlight)
 
-ggplot(d) +
+p <- ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 20)
+  gghighlight(max(value) > 19)
+
+p
 ```
 
-`gghighlight()` can highlight almost any geoms. For more info, please read [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/docs/index.html).
+The result is an usual ggplot object, so it is fully customizable. For example, it can be used with custom themes and facets.
+
+```{r gghighlight-theme-facets}
+p + theme_minimal()
+
+p + theme_minimal() + facet_wrap(~ type)
+```
+
+
+
+`gghighlight()` can highlight almost any geoms. For more details, please read [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/docs/articles/gghighlight.html).
 
