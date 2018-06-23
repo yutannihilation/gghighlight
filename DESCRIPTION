@@ -2,8 +2,9 @@ Package: gghighlight
 Type: Package
 Title: Highlight Lines and Points in 'ggplot2'
 Version: 0.0.1.9000
-Author: Hiroaki Yutani
-Maintainer: Hiroaki Yutani <yutani.ini@gmail.com>
+Authors@R: c(
+    person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
+    )
 Description: Make it easier to explore data with highlights.
 URL: https://github.com/yutannihilation/gghighlight/
 BugReports: https://github.com/yutannihilation/gghighlight/issues
