@@ -41,39 +41,5 @@ If not specified, must be supplied in each layer added to the plot.}
 \item{environment}{DEPRECATED. Used prior to tidy evaluation.}
 }
 \description{
-\code{gghiglight_line()} highlights lines (\code{\link[ggplot2:geom_line]{ggplot2::geom_line()}}) and \code{gghighlight_points()} highlights
-points (\code{\link[ggplot2:geom_point]{ggplot2::geom_point()}}) according to the given predicates.
-}
-\details{
-\code{gghiglight_lines()} evaluates \code{predicate} by grouped calculation; You must specify the expression that returns one value
-per group. Aggregate functions (e.g. \code{max()}, \code{all()}) are usually needed.
-
-\code{gghighlight_points()} evaluates \code{predicate} by ungrouped calculation; You must specify the expression that returns one value
-per row.
-
-\code{gghighlight_*()} behaves differently, depending on what type of vector the result of the \code{predicate} is.
-\itemize{
-\item If \code{predicate} is evaluated into a logical vector, the data series/points filtered by the logical vector will
-be highlighted.
-\item Otherwise, the data series/points are sorted by the result of \code{predicate} and the top \code{max_highlight} ones will
-be highlighted.
-}
-}
-\examples{
-d <- data.frame(
-  idx = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
-  value = c( 1, 2, 3,10,11,12, 9,10,11),
-  category = rep(c("a","b","c"), 3),
-  stringsAsFactors = FALSE
-)
-
-gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
-
-\dontrun{
-# This throws an error because the predicate returns multiple values per group.
-gghighlight_line(d, aes(idx, value, colour = category), value > 10)
-}
-
-gghighlight_point(d, aes(idx, value), value > 10, label_key = category)
-
+\code{gghiglight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
 }
