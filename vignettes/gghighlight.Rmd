@@ -56,7 +56,8 @@ ggplot(d_filtered) +
   geom_line(aes(idx, value, colour = type))
 ```
 
-But, it seems not so handy. For example, what if we want to change the threshold in predicate (`max(value) > 20`) and highlight other series as well? It’s a bit tiresome to type all the code above again every time Ier eplace `20` with some other value.
+But, it seems not so handy. For example, what if we want to change the threshold in predicate (`max(value) > 20`) and highlight other series as well?
+It's a bit tiresome to type all the code above again every time we replace `20` with some other value.
 
 Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot loose its context then.
 

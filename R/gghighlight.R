@@ -11,7 +11,7 @@
 #' @param max_highlight
 #'   Max number of series to highlight.
 #' @param unhighlighted_colour
-#'   Colour for unhighlited geoms.
+#'   Colour for unhighlighted geoms.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label

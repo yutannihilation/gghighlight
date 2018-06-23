@@ -113,7 +113,7 @@ d_filtered &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="kw">ggplot</span>(d_filtered) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(idx, value, <span class="dt">colour =</span> type))</code></pre></div>
 <p><img src="gghighlight_files/figure-html/ggplot2-filter-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>But, it seems not so handy. For example, what if we want to change the threshold in predicate (<code>max(value) &gt; 20</code>) and highlight other series as well? It’s a bit tiresome to type all the code above again every time Ier eplace <code>20</code> with some other value.</p>
+<p>But, it seems not so handy. For example, what if we want to change the threshold in predicate (<code>max(value) &gt; 20</code>) and highlight other series as well? It’s a bit tiresome to type all the code above again every time we replace <code>20</code> with some other value.</p>
 <p>Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot loose its context then.</p>
 <p>Here comes gghighlight package, <code><a href="http://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> equivalent for ggplot2.</p>
 <p>(If you are interested in the more details behind the idea of highlighting, please read this post: <a href="https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/">Anatomy of gghighlight</a>.)</p>

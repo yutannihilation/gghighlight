@@ -16,7 +16,7 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 
 \item{max_highlight}{Max number of series to highlight.}
 
-\item{unhighlighted_colour}{Colour for unhighlited geoms.}
+\item{unhighlighted_colour}{Colour for unhighlighted geoms.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 

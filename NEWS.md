@@ -1,6 +1,7 @@
 # gghighlight 0.0.1.9000
 
-* Fix README
+* Add `gghighlight()`, which replaces the current `gghighlight_line()` and `gghighlight_point()`; these functions are now deprecated.
+* Add a introductory vignette.
 
 # gghighlight 0.0.1
 
