@@ -67,7 +67,7 @@ Here comes gghighlight package, `dplyr::filter()` equivalent for ggplot2.
 ## `gghighlight()`
 
 The main function of gghighlight package is `gghighlight()`.
-For example, we can highlight the lines whose max values are larger than 20 like below:
+For example, by using this function, we can highlight the lines whose max values are larger than 20 like below:
 
 ```{r gghighlight-simple}
 library(gghighlight)
