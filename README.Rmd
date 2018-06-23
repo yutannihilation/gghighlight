@@ -31,100 +31,50 @@ devtools::install_github("yutannihilation/gghighlight")
 
 ## Example
 
-Suppose the data has a lot of series.
+Suppose we have a data that has so many series that it is hard to identify them by their colours as the differences are so subtle.
 
-```{r example-data, message=FALSE}
+```{r data, include=FALSE}
 set.seed(2)
 d <- purrr::map_dfr(
   letters,
-  ~ data.frame(idx = 1:400,
-               value = cumsum(runif(400, -1, 1)),
-               type = .,
-               flag = sample(c(TRUE, FALSE), size = 400, replace = TRUE),
-               stringsAsFactors = FALSE))
+  ~ data.frame(
+      idx = 1:400,
+      value = cumsum(runif(400, -1, 1)),
+      type = .,
+      flag = sample(c(TRUE, FALSE), size = 400, replace = TRUE),
+      stringsAsFactors = FALSE
+    )
+)
 ```
 
-It is difficult to distinguish them by colour.
-
-```{r ggplot-too-many}
+```{r ggplot2-simple}
 library(ggplot2)
 
 ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
 
-So we are motivated to highlight only important series, like this:
+With `gghighlight()`, we can highlight the lines whose max values are larger than 20:
 
-```{r gghighlight-line}
+```{r gghighlight-simple}
 library(gghighlight)
 
-ggplot(d) +
+p <- ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 15)
+  gghighlight(max(value) > 19)
+
+p
 ```
 
-If you want fewer highlighted lines, you can add multiple predicates.
+The result is an usual ggplot object, so it is fully customizable. For example, it can be used with custom themes and facets.
 
-```{r gghighlight-line2}
-ggplot(d) +
-  geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 15, mean(flag) > 0.55)
+```{r gghighlight-theme-facets}
+p + theme_minimal()
+
+p + theme_minimal() + facet_wrap(~ type)
 ```
 
-As adding `gghighlight()` results in a ggplot object, it is customizable just as we usually do with ggplot2.
 
-```{r gghighlight-line-theme}
-ggplot(d) +
-  geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 15) +
-  theme_minimal()
-```
 
-The plot also can be facetted:
+`gghighlight()` can highlight almost any geoms. For more details, please read [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/docs/articles/gghighlight.html).
 
-```{r gghighlight-line-facet}
-ggplot(d) +
-  geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 15) +
-  facet_wrap(~ type)
-```
-
-### Examples
-
-`gghighlight()` can highlights almost any geoms. Here's some examples:
-
-#### Line
-
-```{r ref.label='gghighlight-line'}
-```
-
-#### Point
-
-```{r gghighlight-point}
-set.seed(10)
-d2 <- dplyr::sample_n(d, 20)
-
-ggplot(d2, aes(idx, value)) +
-  geom_point() +
-  gghighlight(value > 0, label_key = type)
-```
-
-### Grouped vs ungrouped
-
-(TBD)
-
-#### Non-logical predicate
-
-To construct a predicate expression like bellow, we need to determine a threshold (in this example, `20`). But it is difficult to choose a nice one before we draw plots.
-
-```{r predicate-example, eval=FALSE}
-max(value) > 20
-```
-
-So, `gghighlight()` allows predicates that return numeric (or character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
-
-```{r numeric-highlight}
-ggplot(d, aes(idx, value, colour = type)) +
-  geom_line() +
-  gghighlight(max(value), max_highlight = 5L)
-```
