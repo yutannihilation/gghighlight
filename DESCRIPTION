@@ -1,7 +1,7 @@
 Package: gghighlight
 Type: Package
 Title: Highlight Lines and Points in 'ggplot2'
-Version: 0.0.1.9000
+Version: 0.1.0
 Authors@R: c(
     person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
     )
@@ -11,7 +11,7 @@ BugReports: https://github.com/yutannihilation/gghighlight/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
-  ggplot2 (> 2.2.0),
+  ggplot2 (>= 3.0.0),
   R (>= 3.1.0)
 Imports:
   dplyr (> 0.7.0),
@@ -20,8 +20,6 @@ Imports:
   magrittr,
   purrr,
   rlang
-Remotes:
-  tidyverse/ggplot2
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1.9000
