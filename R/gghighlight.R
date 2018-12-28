@@ -208,22 +208,29 @@ calculate_group_info <- function(data, mapping) {
   data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
   data_evaluated <- dplyr::select_if(data_evaluated, ~!all(is.na(.)))
 
-  idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
-  if (!any(idx_discrete)) {
-    return(NULL)
+  # Calculate group IDs as ggplot2 does.
+  # (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
+  if ("group" %in% names(data_evaluated)) {
+    group_cols <- "group"
   } else {
-    aes_discrete <- names(which(idx_discrete))
-    list(
-      data = data_evaluated,
-      # Calculate group IDs as ggplot2 does. (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
-      id = dplyr::group_indices(
-        data_evaluated,  # group_indices() won't work with grouped_df.
-        !!!rlang::syms(aes_discrete)
-      ),
-      # for group key, use symbols only
-      key = purrr::keep(mapping[aes_discrete], rlang::quo_is_symbol)
-    )
+    idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
+    group_cols <- names(which(idx_discrete))
   }
+
+  # no group
+  if (length(group_cols) == 0) {
+    return(NULL)
+  }
+
+  list(
+    data = data_evaluated,
+    id = dplyr::group_indices(
+      data_evaluated,  # group_indices() won't work with grouped_df.
+      !!!rlang::syms(group_cols)
+    ),
+    # for group key, use symbols only
+    key = purrr::keep(mapping[group_cols], rlang::quo_is_symbol)
+  )
 }
 
 bleach_layer <- function(layer, group_info, unhighlighted_params) {
