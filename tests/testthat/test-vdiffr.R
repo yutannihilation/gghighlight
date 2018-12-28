@@ -25,4 +25,11 @@ test_that("gghighlight() highlights correctly", {
       geom_line() +
       gghighlight(mean(value) < 10, label_params = list(seed = 1))
   )
+
+  expect_doppelganger_if_not_cran(
+    "simple point chart",
+    ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
+      geom_point() +
+      gghighlight(100 < disp, disp <= 300, use_group_by = FALSE)
+  )
 })
