@@ -72,6 +72,12 @@ test_that("calculate_group_info() works", {
   # just ignore it.
   expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = stat(count), alpha = ..count..)),
                list(data = setNames(d[1:3], c("x", "y", "colour")), id = ids, key = aes(colour = type)))
+
+  # if there is group mapping, use it
+  d_with_group <- setNames(d[1:3], c("x", "y", "colour"))
+  d_with_group$group <- d$type == "a"
+  expect_equal(calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type)),
+               list(data = d_with_group, id = c(2, 2, 2, 1, 1, 1, 1), key = aes()))
 })
 
 
