@@ -4,7 +4,7 @@
 # gghighlight
 
 [![Travis-CI Build
-Status](https://api.travis-ci.com/yutannihilation/gghighlight.svg?branch=master))](https://travis-ci.com/yutannihilation/gghighlight)
+Status](https://api.travis-ci.com/yutannihilation/gghighlight.svg?branch=master)](https://travis-ci.com/yutannihilation/gghighlight)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
 
 Highlight geoms in ggplot2.
