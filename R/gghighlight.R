@@ -228,16 +228,17 @@ calculate_group_info <- function(data, mapping) {
 
 bleach_layer <- function(layer, group_info, unhighlighted_aes) {
 
-  # Set colour and fill to grey when it is included in the mappping.
-  # But, if the default_aes is NA, respect it.
+  # c.f. https://github.com/tidyverse/ggplot2/blob/e9d4e5dd599b9f058cbe9230a6517f85f3587567/R/layer.r#L107-L108
+  aes_params_bleached <- unhighlighted_aes[names(unhighlighted_aes) %in% layer$geom$aesthetics()]
+  geom_params_bleached <- unhighlighted_aes[names(unhighlighted_aes) %in% layer$geom$parameters(TRUE)]
+
+  # Use the colour and fill specified in unhighlighted_aes when it is included in
+  # the mappping. But, if the default_aes is NA, respect it.
   # (Note that this needs to be executed before modifying the layer$mapping)
-  params_bleached <- purrr::map(
-    rlang::set_names(c("colour", "fill")),
-    choose_bleached_colour,
-    geom = layer$geom, mapping = layer$mapping, bleached_aes = unhighlighted_aes
-  )
-  params_bleached <- purrr::compact(params_bleached)
-  layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
+  aes_params_bleached <- fill_unhighlighted_aes_with_na(aes_params_bleached, layer$geom, layer$mapping)
+
+  layer$aes_params <- utils::modifyList(layer$aes_params, aes_params_bleached)
+  layer$geom_params <- utils::modifyList(layer$geom_params, geom_params_bleached)
 
   # remove colour and fill from mapping
   layer$mapping[c("colour", "fill")] <- list(NULL)
@@ -263,17 +264,17 @@ bleach_layer <- function(layer, group_info, unhighlighted_aes) {
   layer
 }
 
-choose_bleached_colour <- function(aes_name, geom, mapping, bleached_aes) {
-  if (!aes_name %in% geom$aesthetics()) {
-    return(NULL)
-  }
-  # if aes_name is specified in the mapping, it should be bleached.
-  if (!aes_name %in% names(mapping) &&
-      aes_name %in% names(geom$default_aes) &&
-      is.na(geom$default_aes[aes_name])) {
-    return(NA)
-  }
-  return(bleached_aes[[aes_name]])
+fill_unhighlighted_aes_with_na <- function(unhighlighted_aes, geom, mapping) {
+  aes_name <- names(unhighlighted_aes)
+
+  # if aes_name is not specified in the mapping and the default_aes is NA, use NA.
+  is_default_na <- !aes_name %in% names(mapping) &
+    aes_name %in% names(geom$default_aes) &
+    is.na(geom$default_aes[aes_name])
+
+  unhighlighted_aes[is_default_na] <- NA
+
+  unhighlighted_aes
 }
 
 sieve_layer <- function(layer, group_info, predicates,
