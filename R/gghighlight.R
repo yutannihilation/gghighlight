@@ -143,6 +143,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     rlang::abort("All calculations failed! Please provide a valid predicate.")
   }
   if (!all(success)) {
+    rlang::warn(
+      sprintf("Could not calculate the predicate for %s; ignored",
+              paste("layer", which(!success), collapse = ", "))
+    )
     # remove failed layers
     layers_sieved[!success] <- list(NULL)
   }
@@ -352,8 +356,8 @@ sieve_layer <- function(layer, group_info, predicates,
       return(TRUE)
     },
     error = function(e) {
-      warning("Tried to calculate without group_by(), but the calculation failed.",
-              call. = FALSE)
+      # do not warn here, but in ggplot_add.gg_highlighter()
+      return(FALSE)
     }
   )
 
