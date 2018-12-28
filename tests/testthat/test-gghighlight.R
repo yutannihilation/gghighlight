@@ -88,7 +88,7 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
                            group = paste0(prefix, "group"))
 
 test_that("bleach_layer() works", {
-  aes_grey07 <- normalize_unhighlighted_aes(list(colour = grey07))
+  aes_grey07 <- normalize_unhighlighted_params(list(colour = grey07))
 
   # If colour is specified, colour is used as the group key.
   expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, aes_grey07),
@@ -117,8 +117,8 @@ test_that("bleach_layer() works", {
   expect_equal_layer(bleach_layer(geom_col(aes(x = type), d), g_info, aes_grey07),
                      geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07))
 
-  # unhighlighted_aes can be more detailed
-  aes_grey07_and_more <- normalize_unhighlighted_aes(list(colour = grey09, fill = grey07, width = 0.5))
+  # unhighlighted_params can be more detailed
+  aes_grey07_and_more <- normalize_unhighlighted_params(list(colour = grey09, fill = grey07, width = 0.5))
 
   expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, aes_grey07_and_more),
                      geom_col(aes_bleached, d_bleached, colour = grey09, fill = grey07, width = 0.5))

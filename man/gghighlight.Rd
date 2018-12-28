@@ -5,7 +5,7 @@
 \title{Highlight Data With Predicate}
 \usage{
 gghighlight(..., n = NULL, max_highlight = 5L,
-  unhighlighted_aes = list(colour = ggplot2::alpha("grey", 0.7)),
+  unhighlighted_params = list(colour = ggplot2::alpha("grey", 0.7)),
   use_group_by = NULL, use_direct_label = NULL, label_key = NULL,
   label_params = list(fill = "white"), unhighlighted_colour = NULL)
 }
@@ -16,7 +16,7 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 
 \item{max_highlight}{Max number of series to highlight.}
 
-\item{unhighlighted_aes}{Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.}
+\item{unhighlighted_params}{Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 
