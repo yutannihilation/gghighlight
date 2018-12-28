@@ -3,6 +3,20 @@
 language: R
 sudo: false
 cache: packages
-r:
-  - release
-  - devel
+
+matrix:
+  include:
+  - r: release
+  - r: devel
+  - r: oldrel
+  # test with the dev version of ggplot2
+  - r: release
+    env: USE_VDIFFR=true
+    r_github_packages:
+    - tidyverse/ggplot2
+    - lionel-/vdiffr
+
+env:
+  global:
+  # switch off vdiffr by default
+  - USE_VDIFFR=false
