@@ -1,0 +1,3 @@
+- vdiffr-svg-engine: 0.9000
+- vdiffr: 0.2.3.9001
+- freetypeharfbuzz: 0.2.5
