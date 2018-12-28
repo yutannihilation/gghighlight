@@ -142,11 +142,16 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (!any(success)) {
     rlang::abort("All calculations failed! Please provide a valid predicate.")
   }
+  if (!all(success)) {
+    # remove failed layers
+    layers_sieved[!success] <- list(NULL)
+  }
 
   # The plot data should also be sieved to deleting facets for unhighlighted levels
   plot$data <- layers_sieved[[1]]$data
 
-  plot$layers[idx_layers] <- layers_bleached
+  # skip failed layers
+  plot$layers[idx_layers][success] <- layers_bleached[success]
   plot <- plot %+% layers_sieved
 
   if (!object$use_direct_label) {
