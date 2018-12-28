@@ -210,8 +210,7 @@ test_that("sieve_layer() works with simple cases", {
 })
 
 test_that("sieve_layer() returns false if all calculation is failed", {
-  expect_warning(res <- sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(no_such_column > 1))))
-  expect_false(res)
+  expect_false(sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(no_such_column > 1))))
 })
 
 test_that("sieve_layer() works with zero predicate", {
