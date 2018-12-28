@@ -146,7 +146,11 @@ test_that("sieve_layer() works with simple cases", {
   d_sieved_grouped <- d[d$type != "a", ]
 
   # Ungrouped.
-  f <- function(...) sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, ...)
+  f <- function(...) {
+    l <- geom_bar(aes(x = x), d)
+    expect_true(sieve_layer(l, NULL, pred_ungrouped, ...))
+    l
+  }
   # Basic usage.
   expect_equal(f(), geom_bar(aes(x = x), d_sieved_ungrouped))
   # Large number of max_highlights doesn't affect the result.
@@ -155,11 +159,16 @@ test_that("sieve_layer() works with simple cases", {
   # the result is not sliced down to the number.
   expect_equal(f(max_highlight = 2L), geom_bar(aes(x = x), d_sieved_ungrouped))
   # When predicate is numerical, the result is sliced.
-  expect_equal(sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(value)), max_highlight = 2L),
-               geom_bar(aes(x = x), d[6:7, ]))
+  l <- geom_bar(aes(x = x), d)
+  expect_true(sieve_layer(l, NULL, list(rlang::quo(value)), max_highlight = 2L))
+  expect_equal(l, geom_bar(aes(x = x), d[6:7, ]))
 
   # Grouped.
-  f <- function(...) sieve_layer(geom_bar(aes(colour = type), d), g_info, pred_grouped, ...)
+  f <- function(...) {
+    l <- geom_bar(aes(colour = type), d)
+    expect_true(sieve_layer(l, g_info, pred_grouped, ...))
+    l
+  }
   # Basic usage.
   expect_equal(f(), geom_bar(aes(colour = type), d_sieved_grouped))
   # Large number of max_highlights doesn't affect the result.
@@ -168,16 +177,18 @@ test_that("sieve_layer() works with simple cases", {
   # the result is not sliced down to the number.
   expect_equal(f(max_highlight = 1L), geom_bar(aes(colour = type), d[d$type != "a", ]))
   # When predicate is numerical, the result is sliced.
-  expect_equal(sieve_layer(geom_bar(aes(colour = type), d), g_info,
-                           list(rlang::quo(mean(value))), max_highlight = 1L),
-               geom_bar(aes(colour = type), d[6:7, ]))
+  l <- geom_bar(aes(colour = type), d)
+  expect_true(sieve_layer(l, g_info, list(rlang::quo(mean(value))), max_highlight = 1L))
+  expect_equal(l, geom_bar(aes(colour = type), d[6:7, ]))
 
   # can be grouped, but intentionally avoid group_by;
   # the result is same no matter group_key is provided or not
   f <- function (key, use_group_by) {
     info <- g_info
     info$key <- key
-    sieve_layer(geom_bar(aes(colour = type), d), info, pred_ungrouped, use_group_by = use_group_by)
+    l <- geom_bar(aes(colour = type), d)
+    expect_true(sieve_layer(l, info, pred_ungrouped, use_group_by = use_group_by))
+    l
   }
   expect_equal(f(rlang::quo(type), use_group_by = FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
   expect_equal(f(NULL, FALSE), geom_bar(aes(colour = type), d_sieved_ungrouped))
@@ -186,19 +197,22 @@ test_that("sieve_layer() works with simple cases", {
   expect_equal(l, geom_bar(aes(colour = type), d_sieved_ungrouped))
 
   # use_group_by=TRUE without group_key generates a warning, and do sieving in ungrouped-manner.
-  expect_warning(l <- sieve_layer(geom_bar(aes(x = x), d), NULL, pred_ungrouped, use_group_by = TRUE))
+  l <- geom_bar(aes(x = x), d)
+  expect_warning(sieve_layer(l, NULL, pred_ungrouped, use_group_by = TRUE))
   expect_equal(l, geom_bar(aes(x = x), d_sieved_ungrouped))
 
   # predicate can contain group key (c.f. #27)
   m <- c(a = 1, b = 100, c = 10)
   pred_use_group_var <- list(rlang::quo(max(value * m[type]) >= 100))
-  l <- sieve_layer(geom_bar(aes(colour = type), d), g_info, pred_use_group_var)
+  l <- geom_bar(aes(colour = type), d)
+  expect_true(sieve_layer(l, g_info, pred_use_group_var))
   expect_equal(l, geom_bar(aes(colour = type), d[d$type != "a", ]))
 })
 
 test_that("sieve_layer() works with zero predicate", {
-  expect_equal(sieve_layer(geom_bar(aes(x = x), d), NULL, list()),
-               geom_bar(aes(x = x), d))
+  l <- geom_bar(aes(x = x), d)
+  expect_true(sieve_layer(l, NULL, list()))
+  expect_equal(l, geom_bar(aes(x = x), d))
 })
 
 test_that("sieve_layer() works with more than two predicates", {
@@ -227,13 +241,13 @@ test_that("sieve_layer() works with more than two predicates", {
 
 
   # logical predicates only; max_highlight is ignored.
-  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info2,
-                           pred_grouped[1:2], max_highlight = 2),
-               geom_line(aes(colour = type), d2[!d2$type %in% c("a", "d"), ]))
+  l <- geom_line(aes(colour = type), d2)
+  expect_true(sieve_layer(l, g_info2, pred_grouped[1:2], max_highlight = 2))
+  expect_equal(l, geom_line(aes(colour = type), d2[!d2$type %in% c("a", "d"), ]))
 
-  expect_equal(sieve_layer(geom_line(aes(colour = type), d2), g_info2,
-                           pred_grouped, max_highlight = 2),
-               geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
+  l <- geom_line(aes(colour = type), d2)
+  expect_true(sieve_layer(l, g_info2, pred_grouped, max_highlight = 2))
+  expect_equal(l, geom_line(aes(colour = type), d2[c(3,4,9,10), ]))
 })
 
 test_that("sieve_layer() works with list columns", {
@@ -250,7 +264,8 @@ test_that("sieve_layer() works with list columns", {
   )
 
   # ungrouped
-  sl <- sieve_layer(geom_bar(aes(x), d3), NULL, rlang::quos(p1 = l, p2 = v), max_highlight = 2)
+  sl <- geom_bar(aes(x), d3)
+  expect_true(sieve_layer(sl, NULL, rlang::quos(p1 = l, p2 = v), max_highlight = 2))
   expect_identical(sl$mapping, aes(x))
   expect_identical(sl$data, d3[3:4, ])
 
@@ -258,8 +273,10 @@ test_that("sieve_layer() works with list columns", {
   d3_ <- setNames(d3[3], c("colour"))
   ids3 <- c(1, 1, 2, 2)
   group_info3 <- list(data = d3_, id = ids3, key = aes(colour = z))
-  sl <- sieve_layer(geom_line(aes(x, v, colour = z), d3), group_info3,
-                    rlang::quos(p1 = list(l), p2 = sum(v)), max_highlight = 1, use_group_by = TRUE)
+  sl <- geom_line(aes(x, v, colour = z), d3)
+  expect_true(
+    sieve_layer(sl, group_info3, rlang::quos(p1 = list(l), p2 = sum(v)), max_highlight = 1, use_group_by = TRUE)
+  )
   expect_identical(sl$mapping, aes(x, v, colour = z))
   expect_identical(sl$data, d3[3:4, ])
 })
