@@ -209,6 +209,11 @@ test_that("sieve_layer() works with simple cases", {
   expect_equal(l, geom_bar(aes(colour = type), d[d$type != "a", ]))
 })
 
+test_that("sieve_layer() returns false if all calculation is failed", {
+  expect_warning(res <- sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(no_such_column > 1))))
+  expect_false(res)
+})
+
 test_that("sieve_layer() works with zero predicate", {
   l <- geom_bar(aes(x = x), d)
   expect_true(sieve_layer(l, NULL, list()))
@@ -414,4 +419,26 @@ test_that("gghighlight() works with two layers, ungrouped", {
 
   # If n is larger than the number of layers, it throws error.
   expect_error(p1 + gghighlight(mean(value) > 1, n = 3))
+})
+
+test_that("gghighlight() works with annotations", {
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
+  l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
+  l_annotate <- annotate("text", x = 1, y = 1, label = "foo")
+
+  p <- ggplot(d, aes(x, y, colour = type)) +
+    geom_point() +
+    l_annotate
+
+  # ignore annotation
+  expect_warning(p1 <- p + gghighlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))
+  expect_equal_layers(p1$layers,
+                      list(l_bleached, l_annotate, l_sieved))
+
+  # raise error
+  expect_error(
+    suppressWarnings(
+      p + gghighlight(no_such_column > 1, use_group_by = FALSE, use_direct_label = FALSE)
+    )
+  )
 })
