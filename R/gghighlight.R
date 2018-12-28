@@ -10,8 +10,8 @@
 #'   Number of layers to clone.
 #' @param max_highlight
 #'   Max number of series to highlight.
-#' @param unhighlighted_colour
-#'   Colour for unhighlighted geoms.
+#' @param unhighlighted_params
+#'   Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label
@@ -20,6 +20,8 @@
 #'   Column name for `label` aesthetics.
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
+#' @param unhighlighted_colour
+#'   (Deprecated) Colour for unhighlighted geoms.
 #'
 #' @examples
 #' d <- data.frame(
@@ -42,11 +44,12 @@
 gghighlight <- function(...,
                         n = NULL,
                         max_highlight = 5L,
-                        unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                        unhighlighted_params = list(),
                         use_group_by = NULL,
                         use_direct_label = NULL,
                         label_key = NULL,
-                        label_params = list(fill = "white")) {
+                        label_params = list(fill = "white"),
+                        unhighlighted_colour = NULL) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
@@ -57,12 +60,20 @@ gghighlight <- function(...,
     label_key_must_exist <- FALSE
   }
 
+  # if fill is not specified, use colour for fill, or vice versa
+  unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
+
+  if (!is.null(unhighlighted_colour)) {
+    rlang::warn("unhighlighted_colour is deprecated. Use unhighlighted_params instead.")
+    unhighlighted_params$colour <- unhighlighted_colour
+  }
+
   structure(
     list(
       predicates = rlang::enquos(...),
       n = n,
       max_highlight = max_highlight,
-      unhighlighted_colour = unhighlighted_colour,
+      unhighlighted_params = unhighlighted_params,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
@@ -115,7 +126,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     layers_bleached,
     group_infos,
     bleach_layer,
-    unhighlighted_colour = object$unhighlighted_colour
+    unhighlighted_params = object$unhighlighted_params
   )
 
   # Sieve the upper layer.
@@ -215,18 +226,20 @@ calculate_group_info <- function(data, mapping) {
   }
 }
 
-bleach_layer <- function(layer, group_info,
-                         unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
-  # Set colour and fill to grey when it is included in the mappping.
-  # But, if the default_aes is NA, respect it.
-  # (Note that this needs to be executed before modifying the layer$mapping)
-  params_bleached <- purrr::map(
-    rlang::set_names(c("colour", "fill")),
-    choose_bleached_colour,
-    geom = layer$geom, mapping = layer$mapping, bleached_colour = unhighlighted_colour
-  )
-  params_bleached <- purrr::compact(params_bleached)
-  layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
+bleach_layer <- function(layer, group_info, unhighlighted_params) {
+  # `colour` and `fill` are special in that they needs to be specified even when
+  # it is not included in unhighlighted_params. But, if the default_aes is NA,
+  # respect it (e.g. geom_bar()'s default colour is NA).
+  # Note that this depends on the mapping, so this needs to be done before modifying the mapping.
+  unhighlighted_params$colour <- unhighlighted_params$colour %||% get_default_aes_param("colour", layer$geom, layer$mapping)
+  unhighlighted_params$fill <- unhighlighted_params$fill %||% get_default_aes_param("fill", layer$geom, layer$mapping)
+
+  # c.f. https://github.com/tidyverse/ggplot2/blob/e9d4e5dd599b9f058cbe9230a6517f85f3587567/R/layer.r#L107-L108
+  aes_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$aesthetics()]
+  geom_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$parameters(TRUE)]
+
+  layer$aes_params <- utils::modifyList(layer$aes_params, aes_params_bleached)
+  layer$geom_params <- utils::modifyList(layer$geom_params, geom_params_bleached)
 
   # remove colour and fill from mapping
   layer$mapping[c("colour", "fill")] <- list(NULL)
@@ -252,17 +265,30 @@ bleach_layer <- function(layer, group_info,
   layer
 }
 
-choose_bleached_colour <- function(aes_name, geom, mapping, bleached_colour) {
-  if (!aes_name %in% geom$aesthetics()) {
+default_unhighlighted_params <- list(
+  colour = ggplot2::alpha("grey", 0.7),
+  fill = ggplot2::alpha("grey", 0.7)
+)
+
+get_default_aes_param <- function(aes_param_name, geom, mapping) {
+  # no default is available
+  if (!aes_param_name %in% names(default_unhighlighted_params)) {
     return(NULL)
   }
-  # if aes_name is specified in the mapping, it should be bleached.
-  if (!aes_name %in% names(mapping) &&
-      aes_name %in% names(geom$default_aes) &&
-      is.na(geom$default_aes[aes_name])) {
-    return(NA)
+
+  # if it is specified in mapping, it needs to be overriden
+  if (aes_param_name %in% names(mapping)) {
+    return(default_unhighlighted_params[[aes_param_name]])
   }
-  return(bleached_colour)
+
+  # if the geom has default value and is NA, use NA
+  if (aes_param_name %in% names(geom$default_aes) &&
+      is.na(geom$default_aes[[aes_param_name]])) {
+      return(NA)
+  }
+
+  # otherwise, use the default grey
+  default_unhighlighted_params[[aes_param_name]]
 }
 
 sieve_layer <- function(layer, group_info, predicates,
@@ -364,4 +390,18 @@ choose_col_for_filter_and_arrange <- function(data, exclude_col) {
     # Use other columns but lists for arrange() (arrange doesn't support list columns)
     arrange = rlang::syms(names(data)[!col_idx_lgl & !col_idx_lst])
   )
+}
+
+normalize_unhighlighted_params <- function(aes_params) {
+  if (!is.list(aes_params)) {
+    rlang::abort("unhighlighted_params must be a list.")
+  }
+
+  # color is an alias of colour
+  if (!is.null(aes_params$color)) {
+    aes_params$colour <- aes_params$colour %||% aes_params$color
+    aes_params$color <- NULL
+  }
+
+  aes_params
 }
