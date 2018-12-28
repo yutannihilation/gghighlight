@@ -130,7 +130,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   )
 
   # Sieve the upper layer.
-  purrr::walk2(
+  success <- purrr::map2_lgl(
     layers_sieved,
     group_infos,
     sieve_layer,
@@ -138,6 +138,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     max_highlight = object$max_highlight,
     use_group_by = object$use_group_by
   )
+
+  if (!any(success)) {
+    rlang::abort("All calculations failed! Please provide a valid predicate.")
+  }
 
   # The plot data should also be sieved to deleting facets for unhighlighted levels
   plot$data <- layers_sieved[[1]]$data
@@ -302,7 +306,7 @@ sieve_layer <- function(layer, group_info, predicates,
                         max_highlight = 5L,
                         use_group_by = NULL) {
   # If there are no predicates, do nothing.
-  if (length(predicates) == 0) return(layer)
+  if (length(predicates) == 0) return(TRUE)
 
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
   use_group_by <- use_group_by %||% !is.null(group_info$id)
@@ -312,7 +316,7 @@ sieve_layer <- function(layer, group_info, predicates,
   # 3) If use_group_by is TRUE but group IDs exist, show a warning and do not use group_by().
   if (use_group_by) {
     if (is.null(group_info$id)) {
-      warning("You set use_group_by = TRUE, but there seems no groups.\n",
+      warning("Tried to calculate with group_by(), but there seems no groups.\n",
               "Please provide group, colour or fill aes.\n",
               "Falling back to ungrouped filter operation...", call. = FALSE)
       use_group_by <- FALSE
@@ -323,20 +327,32 @@ sieve_layer <- function(layer, group_info, predicates,
 
   # If use_group_by is TRUE, try to calculate grouped
   if (use_group_by) {
-    tryCatch({
-      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
-      # if this succeeds, return the layer
-      return(layer)
-    },
-    error = function(e) {
-      warning("You set use_group_by = TRUE, but grouped calculation failed.\n",
-              "Falling back to ungrouped filter operation...", call. = FALSE)
-    })
+    tryCatch(
+      {
+        layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
+        # if this succeeds, return TRUE
+        return(TRUE)
+      },
+      error = function(e) {
+        warning("Tried to calculate with group_by(), but the calculation failed.\n",
+                "Falling back to ungrouped filter operation...", call. = FALSE)
+      }
+    )
   }
 
   # the grouped calculation failed or skipped, try ungrouped one.
-  layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
-  layer
+  tryCatch(
+    {
+      layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
+      return(TRUE)
+    },
+    error = function(e) {
+      warning("Tried to calculate without group_by(), but the calculation failed.",
+              call. = FALSE)
+    }
+  )
+
+  FALSE
 }
 
 calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
