@@ -15,4 +15,14 @@ test_that("gghighlight() highlights correctly", {
       gghighlight() +
       facet_wrap(vars(cyl))
   )
+
+  # to avoid warnings about old format of grouped_df
+  economics_long <- dplyr::group_by(economics_long, add = TRUE)
+
+  expect_doppelganger_if_not_cran(
+    "simple line chart",
+    ggplot(economics_long, aes(date, value01, colour = variable)) +
+      geom_line() +
+      gghighlight(mean(value) < 10, label_params = list(seed = 1))
+  )
 })
