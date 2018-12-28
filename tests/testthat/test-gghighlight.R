@@ -2,7 +2,6 @@ context("test-gghighlight.R")
 library(ggplot2)
 
 grey07 <- ggplot2::alpha("grey", 0.7)
-grey09 <- ggplot2::alpha("grey", 0.9)
 
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
@@ -21,7 +20,7 @@ g_info <- list(data = d_, id = ids, key = aes(colour = type))
 
 expect_equal_layer <- function(x, y) {
   x$mapping <- x$mapping[sort(names(x$mapping))]
-  y$mapping <- x$mapping[sort(names(y$mapping))]
+  y$mapping <- y$mapping[sort(names(y$mapping))]
   expect_equal(x, y)
 }
 
@@ -88,40 +87,50 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
                            group = paste0(prefix, "group"))
 
 test_that("bleach_layer() works", {
-  aes_grey07 <- normalize_unhighlighted_params(list(colour = grey07))
-
   # If colour is specified, colour is used as the group key.
-  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, list()),
                      geom_line(aes_bleached, d_bleached, colour = grey07))
 
   # If colour is specified but group_key is NULL, the result is the same data.
-  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), NULL, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), NULL, list()),
                      geom_line(aes(colour = NULL, fill = NULL), d, colour = grey07))
 
   # If the geom accepts fill, it is sets to grey even when it is not included in the mapping.
-  expect_equal_layer(bleach_layer(geom_col(aes(colour = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_col(aes(colour = type), d), g_info, list()),
                      geom_col(aes_bleached, d_bleached, colour = grey07, fill = grey07))
 
   # If the default of colour of the geom is NA and mapping doesn't specify it, params will be NA.
-  expect_equal_layer(bleach_layer(geom_col(aes(fill = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_col(aes(fill = type), d), g_info, list()),
                      geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07))
 
   # If colour and fill is specified at the same time, fill is used as the group key.
-  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, list()),
                      geom_col(aes_bleached, d_bleached, colour = grey07, fill = grey07))
 
   # If mapping doesn't have colour or fill, group or x aes can be used as group key.
   # c.f. https://github.com/yutannihilation/gghighlight/pull/17#issuecomment-390486101.
-  expect_equal_layer(bleach_layer(geom_col(aes(group = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_col(aes(group = type), d), g_info, list()),
                      geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07))
-  expect_equal_layer(bleach_layer(geom_col(aes(x = type), d), g_info, aes_grey07),
+  expect_equal_layer(bleach_layer(geom_col(aes(x = type), d), g_info, list()),
                      geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07))
 
   # unhighlighted_params can be more detailed
-  aes_grey07_and_more <- normalize_unhighlighted_params(list(colour = grey09, fill = grey07, width = 0.5))
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info,
+                                  list(colour = "blue", size = 3)),
+                     geom_line(aes_bleached, d_bleached, colour = "blue", size = 3))
 
-  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, aes_grey07_and_more),
-                     geom_col(aes_bleached, d_bleached, colour = grey09, fill = grey07, width = 0.5))
+  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
+                                  list(colour = "blue", width = 0.5)),
+                     geom_col(aes_bleached, d_bleached, colour = "blue", fill = grey07, width = 0.5))
+
+  expect_equal_layer(bleach_layer(geom_col(aes(fill = type), d), g_info,
+                                  list(fill = "blue", width = 0.5)),
+                     # TODO: the order of fill and colour matters here...
+                     geom_col(aes_bleached, d_bleached, fill = "blue", colour = NA, width = 0.5))
+
+  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
+                                  list(colour = ggplot2::alpha("grey", 0.9), fill = grey07, width = 0.5)),
+                     geom_col(aes_bleached, d_bleached, colour = ggplot2::alpha("grey", 0.9), fill = grey07, width = 0.5))
 })
 
 test_that("sieve_layer() works with simple cases", {

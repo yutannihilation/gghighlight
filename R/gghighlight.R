@@ -44,7 +44,7 @@
 gghighlight <- function(...,
                         n = NULL,
                         max_highlight = 5L,
-                        unhighlighted_params = list(colour = ggplot2::alpha("grey", 0.7)),
+                        unhighlighted_params = list(),
                         use_group_by = NULL,
                         use_direct_label = NULL,
                         label_key = NULL,
@@ -227,15 +227,16 @@ calculate_group_info <- function(data, mapping) {
 }
 
 bleach_layer <- function(layer, group_info, unhighlighted_params) {
+  # `colour` and `fill` are special in that they needs to be specified even when
+  # it is not included in unhighlighted_params. But, if the default_aes is NA,
+  # respect it (e.g. geom_bar()'s default colour is NA).
+  # Note that this depends on the mapping, so this needs to be done before modifying the mapping.
+  unhighlighted_params$colour <- unhighlighted_params$colour %||% get_default_aes_param("colour", layer$geom, layer$mapping)
+  unhighlighted_params$fill <- unhighlighted_params$fill %||% get_default_aes_param("fill", layer$geom, layer$mapping)
 
   # c.f. https://github.com/tidyverse/ggplot2/blob/e9d4e5dd599b9f058cbe9230a6517f85f3587567/R/layer.r#L107-L108
   aes_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$aesthetics()]
   geom_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$parameters(TRUE)]
-
-  # Use the colour and fill specified in unhighlighted_params when it is included in
-  # the mappping. But, if the default_aes is NA, respect it.
-  # (Note that this needs to be executed before modifying the layer$mapping)
-  aes_params_bleached <- fill_unhighlighted_params_with_na(aes_params_bleached, layer$geom, layer$mapping)
 
   layer$aes_params <- utils::modifyList(layer$aes_params, aes_params_bleached)
   layer$geom_params <- utils::modifyList(layer$geom_params, geom_params_bleached)
@@ -264,17 +265,30 @@ bleach_layer <- function(layer, group_info, unhighlighted_params) {
   layer
 }
 
-fill_unhighlighted_params_with_na <- function(unhighlighted_params, geom, mapping) {
-  aes_name <- names(unhighlighted_params)
+default_unhighlighted_params <- list(
+  colour = ggplot2::alpha("grey", 0.7),
+  fill = ggplot2::alpha("grey", 0.7)
+)
 
-  # if aes_name is not specified in the mapping and the default_aes is NA, use NA.
-  is_default_na <- !aes_name %in% names(mapping) &
-    aes_name %in% names(geom$default_aes) &
-    is.na(geom$default_aes[aes_name])
+get_default_aes_param <- function(aes_param_name, geom, mapping) {
+  # no default is available
+  if (!aes_param_name %in% names(default_unhighlighted_params)) {
+    return(NULL)
+  }
 
-  unhighlighted_params[is_default_na] <- NA
+  # if it is specified in mapping, it needs to be overriden
+  if (aes_param_name %in% names(mapping)) {
+    return(default_unhighlighted_params[[aes_param_name]])
+  }
 
-  unhighlighted_params
+  # if the geom has default value and is NA, use NA
+  if (aes_param_name %in% names(geom$default_aes) &&
+      is.na(geom$default_aes[[aes_param_name]])) {
+      return(NA)
+  }
+
+  # otherwise, use the default grey
+  default_unhighlighted_params[[aes_param_name]]
 }
 
 sieve_layer <- function(layer, group_info, predicates,
@@ -389,15 +403,5 @@ normalize_unhighlighted_params <- function(aes_params) {
     aes_params$color <- NULL
   }
 
-  # if both fill and colour are missing, use the default value
-  if (is.null(aes_params$colour) && is.null(aes_params$fill)) {
-    aes_params$colour <- ggplot2::alpha("grey", 0.7)
-    aes_params$fill <- ggplot2::alpha("grey", 0.7)
-    return(aes_params)
-  }
-
-  # if fill or colour is missing, use the other for it
-  aes_params$colour <- aes_params$colour %||% aes_params$fill
-  aes_params$fill <- aes_params$fill %||% aes_params$colour
   aes_params
 }

@@ -21,24 +21,16 @@ test_that("normalize_unhighlighted_params() works", {
     expect_equal(!!x[sort(names(x))], !!y[sort(names(y))])
   }
 
-  # if fill or colour is missing, use the other for it
-  expect_listequal(normalize_unhighlighted_params(list(colour = "red")),
-                   list(colour = "red", fill = "red"))
-  expect_listequal(normalize_unhighlighted_params(list(fill = "red")),
-                   list(colour = "red", fill = "red"))
   # if fill and colour is specified, respect both
   expect_listequal(normalize_unhighlighted_params(list(colour = "blue", fill = "red")),
                    list(colour = "blue", fill = "red"))
   # other parameters are left as is
   expect_listequal(normalize_unhighlighted_params(list(fill = "red", size = 0.2)),
-                   list(colour = "red", fill = "red", size = 0.2))
+                   list(fill = "red", size = 0.2))
   # color is an alias of colour
   expect_listequal(normalize_unhighlighted_params(list(color = "red")),
-                   list(colour = "red", fill = "red"))
+                   list(colour = "red"))
   # if both colour and color are specified, use colour.
   expect_listequal(normalize_unhighlighted_params(list(colour = "blue", color = "red")),
-                   list(colour = "blue", fill = "blue"))
-  # if both fill and colour are missing, raise error
-  expect_listequal(normalize_unhighlighted_params(list()),
-                   list(colour = ggplot2::alpha("grey", 0.7), fill = ggplot2::alpha("grey", 0.7)))
+                   list(colour = "blue"))
 })
