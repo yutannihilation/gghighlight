@@ -389,11 +389,14 @@ normalize_unhighlighted_aes <- function(aes_params) {
     aes_params$color <- NULL
   }
 
-  # if fill or colour is missing, use the other for it
+  # if both fill and colour are missing, use the default value
   if (is.null(aes_params$colour) && is.null(aes_params$fill)) {
-    rlang::abort("unhighlighted_aes must contain at least either of colour or fill.")
+    aes_params$colour <- ggplot2::alpha("grey", 0.7)
+    aes_params$fill <- ggplot2::alpha("grey", 0.7)
+    return(aes_params)
   }
 
+  # if fill or colour is missing, use the other for it
   aes_params$colour <- aes_params$colour %||% aes_params$fill
   aes_params$fill <- aes_params$fill %||% aes_params$colour
   aes_params

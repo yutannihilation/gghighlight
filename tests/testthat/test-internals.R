@@ -39,5 +39,6 @@ test_that("normalize_unhighlighted_aes() works", {
   expect_listequal(normalize_unhighlighted_aes(list(colour = "blue", color = "red")),
                    list(colour = "blue", fill = "blue"))
   # if both fill and colour are missing, raise error
-  expect_error(normalize_unhighlighted_aes(list()))
+  expect_listequal(normalize_unhighlighted_aes(list()),
+                   list(colour = ggplot2::alpha("grey", 0.7), fill = ggplot2::alpha("grey", 0.7)))
 })
