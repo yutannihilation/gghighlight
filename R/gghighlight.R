@@ -60,6 +60,9 @@ gghighlight <- function(...,
     label_key_must_exist <- FALSE
   }
 
+  # if fill is not specified, use colour for fill, or vice versa
+  unhighlighted_aes <- normalize_unhighlighted_aes(unhighlighted_aes)
+
   if (!is.null(unhighlighted_colour)) {
     rlang::warn("unhighlighted_colour is deprecated. Use unhighlighted_aes instead.")
     unhighlighted_aes$colour <- unhighlighted_colour
@@ -223,8 +226,8 @@ calculate_group_info <- function(data, mapping) {
   }
 }
 
-bleach_layer <- function(layer, group_info,
-                         unhighlighted_aes  = list(colour = ggplot2::alpha("grey", 0.7))) {
+bleach_layer <- function(layer, group_info, unhighlighted_aes) {
+
   # Set colour and fill to grey when it is included in the mappping.
   # But, if the default_aes is NA, respect it.
   # (Note that this needs to be executed before modifying the layer$mapping)
@@ -270,7 +273,7 @@ choose_bleached_colour <- function(aes_name, geom, mapping, bleached_aes) {
       is.na(geom$default_aes[aes_name])) {
     return(NA)
   }
-  return(bleached_aes$colour)
+  return(bleached_aes[[aes_name]])
 }
 
 sieve_layer <- function(layer, group_info, predicates,
@@ -372,4 +375,25 @@ choose_col_for_filter_and_arrange <- function(data, exclude_col) {
     # Use other columns but lists for arrange() (arrange doesn't support list columns)
     arrange = rlang::syms(names(data)[!col_idx_lgl & !col_idx_lst])
   )
+}
+
+normalize_unhighlighted_aes <- function(aes_params) {
+  if (!is.list(aes_params)) {
+    rlang::abort("unhighlighted_aes must be a list.")
+  }
+
+  # color is an alias of colour
+  if (!is.null(aes_params$color)) {
+    aes_params$colour <- aes_params$colour %||% aes_params$color
+    aes_params$color <- NULL
+  }
+
+  # if fill or colour is missing, use the other for it
+  if (is.null(aes_params$colour) && is.null(aes_params$fill)) {
+    rlang::abort("unhighlighted_aes must contain at least either of colour or fill.")
+  }
+
+  aes_params$colour <- aes_params$colour %||% aes_params$fill
+  aes_params$fill <- aes_params$fill %||% aes_params$colour
+  aes_params
 }

@@ -15,3 +15,29 @@ test_that("choose_col_for_filter_and_arrange() works", {
   expect_equal(choose_col_for_filter_and_arrange(d1, rlang::quo(x)),
                !!expected)
 })
+
+test_that("normalize_unhighlighted_aes() works", {
+  expect_listequal <- function(x, y) {
+    expect_equal(!!x[sort(names(x))], !!y[sort(names(y))])
+  }
+
+  # if fill or colour is missing, use the other for it
+  expect_listequal(normalize_unhighlighted_aes(list(colour = "red")),
+                   list(colour = "red", fill = "red"))
+  expect_listequal(normalize_unhighlighted_aes(list(fill = "red")),
+                   list(colour = "red", fill = "red"))
+  # if fill and colour is specified, respect both
+  expect_listequal(normalize_unhighlighted_aes(list(colour = "blue", fill = "red")),
+                   list(colour = "blue", fill = "red"))
+  # other parameters are left as is
+  expect_listequal(normalize_unhighlighted_aes(list(fill = "red", size = 0.2)),
+                   list(colour = "red", fill = "red", size = 0.2))
+  # color is an alias of colour
+  expect_listequal(normalize_unhighlighted_aes(list(color = "red")),
+                   list(colour = "red", fill = "red"))
+  # if both colour and color are specified, use colour.
+  expect_listequal(normalize_unhighlighted_aes(list(colour = "blue", color = "red")),
+                   list(colour = "blue", fill = "blue"))
+  # if both fill and colour are missing, raise error
+  expect_error(normalize_unhighlighted_aes(list()))
+})
