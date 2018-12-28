@@ -88,30 +88,30 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
 
 test_that("bleach_layer() works", {
   # If colour is specified, colour is used as the group key.
-  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, list(colour = grey07)),
                      geom_line(aes_bleached, d_bleached, colour = grey07))
 
   # If colour is specified but group_key is NULL, the result is the same data.
-  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), NULL, grey07),
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), NULL, list(colour = grey07)),
                      geom_line(aes(colour = NULL, fill = NULL), d, colour = grey07))
 
   # If the geom accepts fill, it is sets to grey even when it is not included in the mapping.
-  expect_equal_layer(bleach_layer(geom_bar(aes(colour = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_bar(aes(colour = type), d), g_info, list(colour = grey07)),
                      geom_bar(aes_bleached, d_bleached, colour = grey07, fill = grey07))
 
   # If the default of colour of the geom is NA and mapping doesn't specify it, params will be NA.
-  expect_equal_layer(bleach_layer(geom_bar(aes(fill = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_bar(aes(fill = type), d), g_info, list(colour = grey07)),
                      geom_bar(aes_bleached, d_bleached, colour = NA, fill = grey07))
 
   # If colour and fill is specified at the same time, fill is used as the group key.
-  expect_equal_layer(bleach_layer(geom_bar(aes(colour = type, fill = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_bar(aes(colour = type, fill = type), d), g_info, list(colour = grey07)),
                      geom_bar(aes_bleached, d_bleached, colour = grey07, fill = grey07))
 
   # If mapping doesn't have colour or fill, group or x aes can be used as group key.
   # c.f. https://github.com/yutannihilation/gghighlight/pull/17#issuecomment-390486101.
-  expect_equal_layer(bleach_layer(geom_bar(aes(group = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_bar(aes(group = type), d), g_info, list(colour = grey07)),
                      geom_bar(aes_bleached, d_bleached, colour = NA, fill = grey07))
-  expect_equal_layer(bleach_layer(geom_bar(aes(x = type), d), g_info, grey07),
+  expect_equal_layer(bleach_layer(geom_bar(aes(x = type), d), g_info, list(colour = grey07)),
                      geom_bar(aes_bleached, d_bleached, colour = NA, fill = grey07))
 })
 

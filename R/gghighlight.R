@@ -10,8 +10,8 @@
 #'   Number of layers to clone.
 #' @param max_highlight
 #'   Max number of series to highlight.
-#' @param unhighlighted_colour
-#'   Colour for unhighlighted geoms.
+#' @param unhighlighted_aes
+#'   Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label
@@ -20,6 +20,8 @@
 #'   Column name for `label` aesthetics.
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
+#' @param unhighlighted_colour
+#'   (Deprecated) Colour for unhighlighted geoms.
 #'
 #' @examples
 #' d <- data.frame(
@@ -42,11 +44,12 @@
 gghighlight <- function(...,
                         n = NULL,
                         max_highlight = 5L,
-                        unhighlighted_colour = ggplot2::alpha("grey", 0.7),
+                        unhighlighted_aes = list(colour = ggplot2::alpha("grey", 0.7)),
                         use_group_by = NULL,
                         use_direct_label = NULL,
                         label_key = NULL,
-                        label_params = list(fill = "white")) {
+                        label_params = list(fill = "white"),
+                        unhighlighted_colour = NULL) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
@@ -57,12 +60,17 @@ gghighlight <- function(...,
     label_key_must_exist <- FALSE
   }
 
+  if (!is.null(unhighlighted_colour)) {
+    rlang::warn("unhighlighted_colour is deprecated. Use unhighlighted_aes instead.")
+    unhighlighted_aes$colour <- unhighlighted_colour
+  }
+
   structure(
     list(
       predicates = rlang::enquos(...),
       n = n,
       max_highlight = max_highlight,
-      unhighlighted_colour = unhighlighted_colour,
+      unhighlighted_aes = unhighlighted_aes,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
@@ -115,7 +123,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     layers_bleached,
     group_infos,
     bleach_layer,
-    unhighlighted_colour = object$unhighlighted_colour
+    unhighlighted_aes = object$unhighlighted_aes
   )
 
   # Sieve the upper layer.
@@ -216,14 +224,14 @@ calculate_group_info <- function(data, mapping) {
 }
 
 bleach_layer <- function(layer, group_info,
-                         unhighlighted_colour  = ggplot2::alpha("grey", 0.7)) {
+                         unhighlighted_aes  = list(colour = ggplot2::alpha("grey", 0.7))) {
   # Set colour and fill to grey when it is included in the mappping.
   # But, if the default_aes is NA, respect it.
   # (Note that this needs to be executed before modifying the layer$mapping)
   params_bleached <- purrr::map(
     rlang::set_names(c("colour", "fill")),
     choose_bleached_colour,
-    geom = layer$geom, mapping = layer$mapping, bleached_colour = unhighlighted_colour
+    geom = layer$geom, mapping = layer$mapping, bleached_aes = unhighlighted_aes
   )
   params_bleached <- purrr::compact(params_bleached)
   layer$aes_params <- utils::modifyList(layer$aes_params, params_bleached)
@@ -252,7 +260,7 @@ bleach_layer <- function(layer, group_info,
   layer
 }
 
-choose_bleached_colour <- function(aes_name, geom, mapping, bleached_colour) {
+choose_bleached_colour <- function(aes_name, geom, mapping, bleached_aes) {
   if (!aes_name %in% geom$aesthetics()) {
     return(NULL)
   }
@@ -262,7 +270,7 @@ choose_bleached_colour <- function(aes_name, geom, mapping, bleached_colour) {
       is.na(geom$default_aes[aes_name])) {
     return(NA)
   }
-  return(bleached_colour)
+  return(bleached_aes$colour)
 }
 
 sieve_layer <- function(layer, group_info, predicates,

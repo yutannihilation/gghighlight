@@ -5,9 +5,9 @@
 \title{Highlight Data With Predicate}
 \usage{
 gghighlight(..., n = NULL, max_highlight = 5L,
-  unhighlighted_colour = ggplot2::alpha("grey", 0.7), use_group_by = NULL,
-  use_direct_label = NULL, label_key = NULL, label_params = list(fill =
-  "white"))
+  unhighlighted_aes = list(colour = ggplot2::alpha("grey", 0.7)),
+  use_group_by = NULL, use_direct_label = NULL, label_key = NULL,
+  label_params = list(fill = "white"), unhighlighted_colour = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
@@ -16,7 +16,7 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 
 \item{max_highlight}{Max number of series to highlight.}
 
-\item{unhighlighted_colour}{Colour for unhighlighted geoms.}
+\item{unhighlighted_aes}{Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 
@@ -25,6 +25,8 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 \item{label_key}{Column name for \code{label} aesthetics.}
 
 \item{label_params}{A list of parameters, which is passed to \code{\link[ggrepel:geom_label_repel]{ggrepel::geom_label_repel()}}.}
+
+\item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
 }
 \description{
 \code{gghiglight()} highlights (almost) any geoms according to the given predicates.
