@@ -28,55 +28,8 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
                            fill = NULL,
                            group = paste0(prefix, "group"))
 
-test_that("merge_mapping() works", {
-  # If both are NULL, throw error
-  expect_error(merge_mapping(geom_bar(), NULL))
-  # If one is NULL, return the other one as is.
-  expect_equal(merge_mapping(geom_bar(aes(x = a)), NULL),
-               aes(x = a))
-  expect_equal(merge_mapping(geom_bar(), aes(x = a)),
-               aes(x = a))
-  # If both are not NULL, layer_mapping is used.
-  expect_equal(merge_mapping(geom_bar(aes(x = x, colour = b)), aes(colour = a, fill = c)),
-               aes(x = x, colour = b, fill = c))
-  # If the layer doesn't have fill aes, it is omitted.
-  expect_equal(merge_mapping(geom_line(aes(x = x, colour = b)), aes(colour = a, fill = c)),
-               aes(x = x, colour = b))
 
-  # Aesthetics that are required by stat also stays in mapping (Note that the orders are different)
-  m <- merge_mapping(geom_boxplot(aes(x, y, colour = b)), NULL)
-  expect_equal(m, aes(x, y, colour = b)[names(m)])
-})
-
-test_that("merge_data() works", {
-  # if oneare NULL, return the other one as is
-  expect_equal(merge_data(geom_bar(data = d), waiver()), d)
-  expect_equal(merge_data(geom_bar(), d),                d)
-})
-
-test_that("calculate_group_info() works", {
-  expect_equal(calculate_group_info(d, aes(x, y, colour = type)),
-               list(data = setNames(d[1:3], c("x", "y", "colour")), id = ids, key = aes(colour = type)))
-  # if there's no discrete key, return NULL
-  expect_equal(calculate_group_info(d, aes(x, y, colour = x)),
-               NULL)
-  # if some aes is the call, caluculated result is used. But it's not used for group keys.
-  d2 <- setNames(d[1:3], c("x", "y", "colour"))
-  d2$colour <- factor(d2$colour)
-  expect_equal(calculate_group_info(d, aes(x, y, colour = factor(type))),
-               list(data = d2, id = ids, key = aes()))
-
-  # if aes contains expressions that cannot be evaluated outside ggplot2 (e.g. stat(count)),
-  # just ignore it.
-  expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = stat(count), alpha = ..count..)),
-               list(data = setNames(d[1:3], c("x", "y", "colour")), id = ids, key = aes(colour = type)))
-
-  # if there is group mapping, use it
-  d_with_group <- setNames(d[1:3], c("x", "y", "colour"))
-  d_with_group$group <- d$type == "a"
-  expect_equal(calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type)),
-               list(data = d_with_group, id = c(2, 2, 2, 1, 1, 1, 1), key = aes()))
-})
+# tests -------------------------------------------------------------------
 
 
 test_that("gghighlight() does not change the existing layers", {
