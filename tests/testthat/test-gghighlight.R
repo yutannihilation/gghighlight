@@ -50,10 +50,8 @@ test_that("merge_mapping() works", {
 
 test_that("merge_data() works", {
   # if oneare NULL, return the other one as is
-  expect_equal(merge_data(geom_bar(data = d), waiver()),
-               d)
-  expect_equal(merge_data(geom_bar(), d),
-               d)
+  expect_equal(merge_data(geom_bar(data = d), waiver()), d)
+  expect_equal(merge_data(geom_bar(), d),                d)
 })
 
 test_that("calculate_group_info() works", {
