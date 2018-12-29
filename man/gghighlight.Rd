@@ -48,4 +48,10 @@ ggplot(d, aes(idx, value)) +
   geom_point() +
   gghighlight(value > 10, label_key = category)
 
+# specify the styles for unhighlighted layer
+ggplot(d, aes(idx, value, colour = category)) +
+  geom_line(size = 5) +
+  gghighlight(max(value) > 10,
+              unhighlighted_params(size = 1))
+
 }
