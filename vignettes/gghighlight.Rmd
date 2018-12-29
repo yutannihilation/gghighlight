@@ -108,6 +108,18 @@ ggplot(d) +
   facet_wrap(~ type)
 ```
 
+### `unhighlighted_params`
+
+If you want to change the style of unhighlighted layers, use `unhighlighted_params`.
+
+```{r gghighlight-params}
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type), size = 5) +
+  gghighlight(max(value) > 19,
+              unhighlighted_params = list(size = 1, colour = alpha("pink", 0.4)))
+```
+
+
 ## Geoms
 
 `gghighlight()` can highlight almost every geoms. Here are some examples.
