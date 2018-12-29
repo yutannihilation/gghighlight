@@ -18,16 +18,6 @@ d_ <- setNames(d[1:3], c("x", "y", "colour"))
 ids <- c(1, 1, 1, 2, 2, 3, 3)
 g_info <- list(data = d_, id = ids, key = aes(colour = type))
 
-expect_equal_layer <- function(x, y) {
-  x$mapping <- x$mapping[sort(names(x$mapping))]
-  y$mapping <- y$mapping[sort(names(y$mapping))]
-  expect_equal(x, y)
-}
-
-expect_equal_layers <- function(x, y) {
-  purrr::walk2(x, y, expect_equal_layer)
-}
-
 test_that("merge_mapping() works", {
   # If both are NULL, throw error
   expect_error(merge_mapping(geom_bar(), NULL))
