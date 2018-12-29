@@ -1,5 +1,4 @@
 context("test-gghighlight.R")
-library(ggplot2)
 
 grey07 <- ggplot2::alpha("grey", 0.7)
 
