@@ -44,7 +44,7 @@
 #' ggplot(d, aes(idx, value, colour = category)) +
 #'   geom_line(size = 5) +
 #'   gghighlight(max(value) > 10,
-#'               unhighlighted_params(size = 1))
+#'               unhighlighted_params = list(size = 1))
 #'
 #' @export
 gghighlight <- function(...,
