@@ -309,9 +309,12 @@ get_default_aes_param <- function(aes_param_name, geom, mapping) {
     return(default_unhighlighted_params[[aes_param_name]])
   }
 
+  # remove NULL default_aes (#85)
+  non_null_default_aes <- purrr::compact(geom$default_aes)
+
   # if the geom has default value and is NA, use NA
-  if (aes_param_name %in% names(geom$default_aes) &&
-      is.na(geom$default_aes[[aes_param_name]])) {
+  if (aes_param_name %in% names(non_null_default_aes) &&
+      is.na(non_null_default_aes[[aes_param_name]])) {
       return(NA)
   }
 
