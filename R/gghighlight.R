@@ -267,11 +267,13 @@ bleach_layer <- function(layer, group_info, unhighlighted_params) {
   layer$aes_params <- utils::modifyList(layer$aes_params, aes_params_bleached)
   layer$geom_params <- utils::modifyList(layer$geom_params, geom_params_bleached)
 
+  # FIXME: Is this necessary while aes_params will override these mappings?
   # remove colour and fill from mapping
   layer$mapping[c("colour", "fill")] <- list(NULL)
 
+  # FIXME: Isn't this always necessary?
   if (!is.null(group_info$key)) {
-    # In order to prevent the bleached layer to be facetted, we need to rename
+    # In order to prevent the bleached layer from being facetted, we need to rename
     # columns of group keys to improbable names. But, what happens when the group
     # column disappears? Other calculations that uses the column fail. So, we need
     # to use the pre-evaluated values and rename everything to improbable name.
@@ -307,9 +309,12 @@ get_default_aes_param <- function(aes_param_name, geom, mapping) {
     return(default_unhighlighted_params[[aes_param_name]])
   }
 
+  # remove NULL default_aes (#85)
+  non_null_default_aes <- purrr::compact(geom$default_aes)
+
   # if the geom has default value and is NA, use NA
-  if (aes_param_name %in% names(geom$default_aes) &&
-      is.na(geom$default_aes[[aes_param_name]])) {
+  if (aes_param_name %in% names(non_null_default_aes) &&
+      is.na(non_null_default_aes[[aes_param_name]])) {
       return(NA)
   }
 

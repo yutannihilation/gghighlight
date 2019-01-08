@@ -77,3 +77,20 @@ test_that("bleach_layer() works", {
                                   list(colour = ggplot2::alpha("grey", 0.9), fill = grey07, width = 0.5)),
                      geom_col(aes_bleached, d_bleached, colour = ggplot2::alpha("grey", 0.9), fill = grey07, width = 0.5))
 })
+
+test_that("bleach_layer() works for NULL default aes", {
+  expect_equal_layer(
+    bleach_layer(geom_sf(aes(fill = type), d)[[1]],
+                 list(data = setNames(d[3], c("fill")),
+                      id = ids,
+                      key = aes(fill = type)),
+                 list()),
+    geom_sf(aes_string(fill = paste0(prefix, 1),
+                       colour = NULL,
+                       group = paste0(prefix, "group")),
+            setNames(d_bleached[, 3:4], paste0(prefix, c("1", "group"))),
+            colour = grey07,
+            fill = grey07)[[1]]
+  )
+
+})
