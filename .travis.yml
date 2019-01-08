@@ -16,6 +16,8 @@ matrix:
     - tidyverse/ggplot2
     - lionel-/vdiffr
 
+matrix:
+  fast_finish: true
 
 before_install:
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
