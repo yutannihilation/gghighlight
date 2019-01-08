@@ -19,7 +19,8 @@ Imports:
   ggrepel,
   magrittr,
   purrr,
-  rlang
+  rlang,
+  sf
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
