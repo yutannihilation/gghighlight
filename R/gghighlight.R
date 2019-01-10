@@ -203,10 +203,6 @@ merge_mapping <- function(layer, plot_mapping) {
   aes_names <- base::intersect(layer_aes, names(mapping))
   mapping <- mapping[aes_names]
 
-  if (length(mapping) == 0) {
-    stop("No mapping found on this layer!")
-  }
-
   mapping
 }
 

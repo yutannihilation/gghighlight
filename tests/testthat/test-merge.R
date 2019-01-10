@@ -15,8 +15,8 @@ d <- tibble::tribble(
 
 
 test_that("merge_mapping() works", {
-  # If both are NULL, throw error
-  expect_error(merge_mapping(geom_bar(), NULL))
+  # If both are NULL, return an empty mapping (#84)
+  expect_equal(merge_mapping(geom_bar(), NULL), aes())
   # If one is NULL, return the other one as is.
   expect_equal(merge_mapping(geom_bar(aes(x = a)), NULL),
                aes(x = a))
