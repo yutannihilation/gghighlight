@@ -33,3 +33,16 @@ test_that("gghighlight() highlights correctly", {
       gghighlight(100 < disp, disp <= 300, use_group_by = FALSE)
   )
 })
+test_that("gghighlight() highlights sf correctly", {
+  skip_if_not_installed("sf")
+
+  nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+
+  expect_doppelganger_if_not_cran(
+    "simple sf map",
+    ggplot(nc) +
+      geom_sf(aes(fill = AREA)) +
+      gghighlight(grepl("C", NAME), use_group_by = FALSE)
+  )
+
+})
