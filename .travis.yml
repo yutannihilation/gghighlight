@@ -10,7 +10,9 @@ matrix:
   include:
   - r: release
   - r: devel
+    env: VDIFFR_RUN_TESTS=true
   - r: oldrel
+    env: VDIFFR_RUN_TESTS=true
   # test with the dev version of ggplot2
   - r: release
     r_github_packages:
