@@ -1,14 +1,14 @@
 context("visual tests")
 
 test_that("gghighlight() highlights correctly", {
-  expect_doppelganger_if_not_cran(
+  vdiffr::expect_doppelganger(
     "simple bar chart",
     ggplot(mpg, aes(class, fill = factor(cyl))) +
       geom_bar() +
       gghighlight(cyl >= 8, use_group_by = FALSE)
   )
 
-  expect_doppelganger_if_not_cran(
+  vdiffr::expect_doppelganger(
     "simple bar chart with facet",
     ggplot(mpg, aes(class, fill = factor(cyl))) +
       geom_bar() +
@@ -19,14 +19,14 @@ test_that("gghighlight() highlights correctly", {
   # to avoid warnings about old format of grouped_df
   economics_long <- dplyr::group_by(economics_long, add = TRUE)
 
-  expect_doppelganger_if_not_cran(
+  vdiffr::expect_doppelganger(
     "simple line chart",
     ggplot(economics_long, aes(date, value01, colour = variable)) +
       geom_line() +
       gghighlight(mean(value) < 10, label_params = list(seed = 1))
   )
 
-  expect_doppelganger_if_not_cran(
+  vdiffr::expect_doppelganger(
     "simple point chart",
     ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
       geom_point() +
@@ -38,7 +38,7 @@ test_that("gghighlight() highlights sf correctly", {
 
   nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 
-  expect_doppelganger_if_not_cran(
+  vdiffr::expect_doppelganger(
     "simple sf map",
     ggplot(nc) +
       geom_sf(aes(fill = AREA)) +
