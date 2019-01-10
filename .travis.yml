@@ -10,13 +10,13 @@ matrix:
   include:
   - r: release
   - r: devel
+    env: VDIFFR_RUN_TESTS=false
   - r: oldrel
+    env: VDIFFR_RUN_TESTS=false
   # test with the dev version of ggplot2
   - r: release
     r_github_packages:
     - tidyverse/ggplot2
-    - lionel-/vdiffr
-
 
 before_install:
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
