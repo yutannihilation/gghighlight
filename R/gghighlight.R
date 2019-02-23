@@ -95,7 +95,9 @@ VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (length(plot$layers) == 0) {
-    stop("there is no layer to highlight!")
+    plot$data <- sieve_data(plot$data, plot$mapping, object$predicates,
+                            max_highlight = object$max_highlight, use_group_by = object$use_group_by)
+    return(plot)
   }
 
   n_layers <- length(plot$layers)
@@ -369,6 +371,31 @@ sieve_layer <- function(layer, group_info, predicates,
   )
 
   FALSE
+}
+
+# TODO: integrate with sieve_layer
+sieve_data <- function(data, mapping, predicates, group_info = NULL,
+                       max_highlight = 5L, use_group_by = TRUE) {
+  if (is.null(group_info)) {
+    group_info <- calculate_group_info(data, mapping)
+  }
+
+  # If use_group_by is NULL, infer it from whether group_key is NULL or not.
+  use_group_by <- use_group_by %||% !is.null(group_info$id)
+  
+  if (use_group_by) {
+    tryCatch(
+      {
+        return(calculate_grouped(data, predicates, max_highlight, group_info$id))
+      },
+      error = function(e) {
+        warning("Tried to calculate with group_by(), but the calculation failed.\n",
+                "Falling back to ungrouped filter operation...", call. = FALSE)
+      }
+    )
+  }
+
+  return(calculate_ungrouped(data, predicates, max_highlight))
 }
 
 calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
