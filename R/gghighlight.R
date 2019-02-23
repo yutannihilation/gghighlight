@@ -391,7 +391,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 
   groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
 
-  data[group_ids %in% groups_filtered, ]
+  data[group_ids %in% groups_filtered, , drop = FALSE]
 }
 
 calculate_ungrouped <- function(data, predicates, max_highlight) {
@@ -415,7 +415,7 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   # sort to preserve the original order
   rowids_filtered <- sort(dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME))
 
-  data[rowids_filtered, ]
+  data[rowids_filtered, , drop = FALSE]
 }
 
 choose_col_for_filter_and_arrange <- function(data, exclude_col) {
