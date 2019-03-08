@@ -41,7 +41,7 @@ test_that("gghighlight() does not change the existing layers", {
   expect_equal(p1, p2)
 })
 
-test_that("gghighlight() works the plot with one layer, grouped", {
+test_that("gghighlight() works with the plot with one layer, grouped", {
   d_sieved <- d[d$type != "a", ]
 
   l_bleached <- geom_line(aes_bleached, d_bleached, colour = grey07)
@@ -80,7 +80,14 @@ test_that("gghighlight() works the plot with one layer, grouped", {
   }
 })
 
-test_that("gghighlight() works the plot with one layer, ungrouped", {
+test_that("gghighlight() works with the plot without layers, grouped", {
+  d_sieved <- d[d$type != "a", ]
+
+  p <- ggplot(d, aes(x, y, colour = type)) + gghighlight(mean(value) > 1, use_direct_label = FALSE)
+  expect_equal(p$data, d_sieved)
+})
+
+test_that("gghighlight() works with the plot with one layer, ungrouped", {
   # Note that the default_aes of fill of point is NA
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
@@ -91,6 +98,14 @@ test_that("gghighlight() works the plot with one layer, ungrouped", {
   expect_equal_layers((p1 + gghighlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE))$layers,
                       list(l_bleached, l_sieved))
 })
+
+test_that("gghighlight() works with the plot without layers, grouped", {
+  d_sieved <- d[d$value > 1, ]
+
+  p <- ggplot(d, aes(x, y, colour = type)) + gghighlight(value > 1, use_group_by = FALSE, use_direct_label = FALSE)
+  expect_equal(p$data, d_sieved)
+})
+
 
 
 d_bleached <- d[1:3]
