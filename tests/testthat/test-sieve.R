@@ -259,3 +259,18 @@ test_that("sieve_layer() works with list columns", {
   expect_identical(sl$mapping, aes(x, v, colour = z))
   expect_identical(sl$data, d3[3:4, ])
 })
+
+test_that("sieve_layer() do not count NA for max_highlights", {
+  d4 <- data.frame(x = c(1:3, NA))
+  
+  params <- list(
+    group_info = NULL,
+    predicates = list(rlang::quo(x))
+  )
+  
+  expect_equal_sieved(
+    geom_bar(aes(x = x), d4),
+    params = params, max_highlight = 2L,
+    expect = geom_bar(aes(x = x), d4[2:3, , drop = FALSE])
+  )
+})

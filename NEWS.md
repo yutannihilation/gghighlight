@@ -13,6 +13,8 @@
 * `gghighlight()` now allows to highlight 0-layer plots, which means just
   filtering the plot data (#81).
 
+* `gghighlight()` now ignores `NA`s in numeric predicates (#86).
+
 # gghighlight 0.1.0
 
 * Add `gghighlight()`, which replaces the current `gghighlight_line()` and `gghighlight_point()`; these functions are now deprecated.
