@@ -10,6 +10,8 @@
 * `gghighlight()` now ignores if the calculation fails over some layers. This
   is useful to combine with such layers as `annotate()` (#78).
 
+* `gghighlight()` now ignores `NA`s in numeric predicates (#86).
+
 # gghighlight 0.1.0
 
 * Add `gghighlight()`, which replaces the current `gghighlight_line()` and `gghighlight_point()`; these functions are now deprecated.
