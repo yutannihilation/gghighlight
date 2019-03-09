@@ -60,7 +60,13 @@ gghighlight <- function(...,
                         label_params = list(fill = "white"),
                         keep_scale = FALSE,
                         unhighlighted_colour = NULL) {
-
+  
+  predicates <- rlang::enquos(...)
+  label_key <- rlang::enquo(label_key)
+  
+  check_bad_predicates(predicates)
+  check_bad_label_key(label_key)
+  
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
   # if use_direct_label is FALSE, do not use direct labeys
@@ -80,14 +86,14 @@ gghighlight <- function(...,
 
   structure(
     list(
-      predicates = rlang::enquos(...),
+      predicates = predicates,
       n = n,
       max_highlight = max_highlight,
       unhighlighted_params = unhighlighted_params,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
-      label_key = rlang::enquo(label_key),
+      label_key = label_key,
       label_params = label_params,
       keep_scale = keep_scale
     ),
