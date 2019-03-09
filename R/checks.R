@@ -9,7 +9,7 @@ check_bad_predicates <- function(x) {
     )
 
     rlang::abort(
-      sprintf("Did you mistyped `==` as `=`?: %s",
+      sprintf("Did you mistyped some argument name? Or, you meant `==`?: %s",
               paste(bad_x_deparsed, collapse = ","))
     )
   }
