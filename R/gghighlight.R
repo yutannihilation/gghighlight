@@ -20,6 +20,9 @@
 #'   Column name for `label` aesthetics.
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
+#' @param keep_scale
+#'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
+#'   highlighted plot has the same scale with the data.
 #' @param unhighlighted_colour
 #'   (Deprecated) Colour for unhighlighted geoms.
 #'
@@ -55,6 +58,7 @@ gghighlight <- function(...,
                         use_direct_label = NULL,
                         label_key = NULL,
                         label_params = list(fill = "white"),
+                        keep_scale = FALSE,
                         unhighlighted_colour = NULL) {
 
   # if use_direct_label is NULL, try to use direct labels but ignore failures
@@ -84,7 +88,8 @@ gghighlight <- function(...,
       use_direct_label = use_direct_label,
       label_key_must_exist = label_key_must_exist,
       label_key = rlang::enquo(label_key),
-      label_params = label_params
+      label_params = label_params,
+      keep_scale = keep_scale
     ),
     class = "gg_highlighter"
   )
@@ -127,9 +132,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
 
-  # Clone layers again before we bleach them.
-  layers_bleached <- layers_cloned
-  layers_sieved <- purrr::map(layers_bleached, clone_layer)
+  # Clone layers again seperately (layers_cloned will be used later for keeping 
+  # the original scale)
+  layers_bleached <- purrr::map(layers_cloned, clone_layer)
+  layers_sieved <- purrr::map(layers_cloned, clone_layer)
 
   # Bleach the lower layer.
   purrr::walk2(
@@ -167,6 +173,11 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   # skip failed layers
   plot$layers[idx_layers][success] <- layers_bleached[success]
   plot <- plot %+% layers_sieved
+
+  # Add dummy layers (geom_blank()) to keep the original scales
+  if (object$keep_scale) {
+    plot <- plot %+% purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
+  }
 
   if (!object$use_direct_label) {
     return(plot)

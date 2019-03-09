@@ -7,7 +7,7 @@
 gghighlight(..., n = NULL, max_highlight = 5L,
   unhighlighted_params = list(), use_group_by = NULL,
   use_direct_label = NULL, label_key = NULL, label_params = list(fill
-  = "white"), unhighlighted_colour = NULL)
+  = "white"), keep_scale = FALSE, unhighlighted_colour = NULL)
 }
 \arguments{
 \item{...}{Expressions to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
@@ -25,6 +25,9 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 \item{label_key}{Column name for \code{label} aesthetics.}
 
 \item{label_params}{A list of parameters, which is passed to \code{\link[ggrepel:geom_label_repel]{ggrepel::geom_label_repel()}}.}
+
+\item{keep_scale}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
+highlighted plot has the same scale with the data.}
 
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
 }
