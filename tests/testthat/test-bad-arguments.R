@@ -1,8 +1,9 @@
 context("test-bad-arguments")
 
 test_that("mistype of `==` is detected", {
-  expect_error(check_bad_predicates(rlang::quos(a = b)), "Did you mistyped some argument name? Or, you meant `==`?: a = b", fixed = TRUE)
-  expect_error(gghighlight(a = b), "Did you mistyped some argument name? Or, you meant `==`?: a = b", fixed = TRUE)
+  expect <- "Did you mistype some argument name? Or, did you mean `==`?: a = b"
+  expect_error(check_bad_predicates(rlang::quos(a = b)), expect, fixed = TRUE)
+  expect_error(gghighlight(a = b), expect, fixed = TRUE)
 })
 
 test_that("label_key must be a symbol", {
