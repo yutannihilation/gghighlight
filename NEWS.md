@@ -15,6 +15,9 @@
 
 * `gghighlight()` now ignores `NA`s in numeric predicates (#86).
 
+* `gghighlight()` gets a new argument `keep_scale` to choose keep the original
+  scale with the shadowed data (#72).
+
 # gghighlight 0.1.0
 
 * Add `gghighlight()`, which replaces the current `gghighlight_line()` and `gghighlight_point()`; these functions are now deprecated.
