@@ -111,15 +111,17 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     idx_layers[utils::tail(seq_len(n_layers), object$n)] <- TRUE
   }
 
-  # Layers are environments; if we modify an element of it, it keeps the modified value.
-  # So, we need to clone them first.
+  # Layers are environments; if we modify an element in an environment, the
+  # modified value is kept. So, we need to clone them before modifying.
+  # Note that, since the plot data is overwritten later, we need to attach
+  # the data to all layers and then assign back (#31).
   layers_cloned <- purrr::map(plot$layers, clone_layer)
 
-  # data and group IDs are used commonly both in the bleaching and sieving process.
+  # Data and group IDs are used commonly both in the bleaching and sieving process
   purrr::walk(layers_cloned, merge_plot_to_layer,
               plot_data = plot$data, plot_mapping = plot$mapping)
 
-  # since the plot data is overwritten later, we need to attach the data to all layers (#31)
+  # Assign back layers that are not get bleached or sieved
   plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
   layers_cloned <- layers_cloned[idx_layers]
 
