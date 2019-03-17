@@ -9,7 +9,7 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
   layer <- layer_for_label$layer
   label_key <- layer_for_label$label_key
 
-  switch (class(layer$geom)[1],
+  switch(class(layer$geom)[1],
     GeomLine = generate_label_for_line(layer, label_key, label_params),
     GeomPoint = generate_label_for_point(layer, label_key, label_params),
     # TODO: To distinguish NULL, return list() to hide guides here.

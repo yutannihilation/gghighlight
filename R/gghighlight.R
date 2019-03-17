@@ -31,27 +31,27 @@
 #'
 #' @examples
 #' d <- data.frame(
-#'   idx = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'   value = c( 1, 2, 3,10,11,12, 9,10,11),
-#'   category = rep(c("a","b","c"), 3),
+#'   idx = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+#'   value = c(1, 2, 3, 10, 11, 12, 9, 10, 11),
+#'   category = rep(c("a", "b", "c"), 3),
 #'   stringsAsFactors = FALSE
 #' )
-#'
+#' 
 #' # highlight the lines whose max values are larger than 10
 #' ggplot(d, aes(idx, value, colour = category)) +
 #'   geom_line() + gghighlight(max(value) > 10)
-#'
+#' 
 #' # highlight the points whose values are larger than 10
 #' ggplot(d, aes(idx, value)) +
 #'   geom_point() +
 #'   gghighlight(value > 10, label_key = category)
-#'
+#' 
 #' # specify the styles for unhighlighted layer
 #' ggplot(d, aes(idx, value, colour = category)) +
 #'   geom_line(size = 5) +
 #'   gghighlight(max(value) > 10,
-#'               unhighlighted_params = list(size = 1))
-#'
+#'     unhighlighted_params = list(size = 1)
+#'   )
 #' @export
 gghighlight <- function(...,
                         n = NULL,
@@ -64,13 +64,12 @@ gghighlight <- function(...,
                         keep_scale = FALSE,
                         use_facet_vars = FALSE,
                         unhighlighted_colour = NULL) {
-  
   predicates <- rlang::enquos(...)
   label_key <- rlang::enquo(label_key)
-  
+
   check_bad_predicates(predicates)
   check_bad_label_key(label_key)
-  
+
   # if use_direct_label is NULL, try to use direct labels but ignore failures
   # if use_direct_label is TRUE, use direct labels, otherwise stop()
   # if use_direct_label is FALSE, do not use direct labeys
@@ -112,7 +111,8 @@ VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (length(plot$layers) == 0) {
     plot$data <- sieve_data(plot$data, plot$mapping, object$predicates,
-                            max_highlight = object$max_highlight, use_group_by = object$use_group_by)
+      max_highlight = object$max_highlight, use_group_by = object$use_group_by
+    )
     return(plot)
   }
 
@@ -135,7 +135,8 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   # Data and group IDs are used commonly both in the bleaching and sieving process
   purrr::walk(layers_cloned, merge_plot_to_layer,
-              plot_data = plot$data, plot_mapping = plot$mapping)
+    plot_data = plot$data, plot_mapping = plot$mapping
+  )
 
   # Assign back layers that are not get bleached or sieved
   plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
@@ -147,7 +148,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     ~ calculate_group_info(.$data, .$mapping, extra_vars = facet_vars)
   )
 
-  # Clone layers again seperately (layers_cloned will be used later for keeping 
+  # Clone layers again seperately (layers_cloned will be used later for keeping
   # the original scale)
   layers_bleached <- purrr::map(layers_cloned, clone_layer)
   layers_sieved <- purrr::map(layers_cloned, clone_layer)
@@ -176,8 +177,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   }
   if (!all(success)) {
     rlang::warn(
-      sprintf("Could not calculate the predicate for %s; ignored",
-              paste("layer", which(!success), collapse = ", "))
+      sprintf(
+        "Could not calculate the predicate for %s; ignored",
+        paste("layer", which(!success), collapse = ", ")
+      )
     )
     # remove failed layers
     layers_sieved[!success] <- list(NULL)
@@ -199,8 +202,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     return(plot)
   }
 
-  layer_labelled <- generate_labelled_layer(layers_sieved, group_infos,
-                                            object$label_key, object$label_params)
+  layer_labelled <- generate_labelled_layer(
+    layers_sieved, group_infos,
+    object$label_key, object$label_params
+  )
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {
@@ -252,7 +257,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   # detected by checking if all elements are NA or not.
   mapping_wrapped <- purrr::map(mapping, ~ rlang::quo(tryCatch(!!., error = function(e) NA)))
   data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
-  data_evaluated <- dplyr::select_if(data_evaluated, ~!all(is.na(.)))
+  data_evaluated <- dplyr::select_if(data_evaluated, ~ !all(is.na(.)))
 
   # Calculate group IDs as ggplot2 does.
   # (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
@@ -265,7 +270,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
 
   # for group key, use symbols only, and don't include extra_vars
   group_keys <- purrr::keep(mapping[group_cols], rlang::quo_is_symbol)
-  
+
   # if extra variables (e.g. facet specs) are specified, use them.
   if (!is.null(extra_vars)) {
     if (!rlang::is_quosures(extra_vars) || !all(rlang::have_name(extra_vars))) {
@@ -317,7 +322,7 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars
   if (is.null(group_info$key)) {
     return(layer)
   }
-  
+
   # In order to prevent the bleached layer from being facetted, we need to rename
   # columns of group keys to improbable names. But, what happens when the group
   # column disappears? Other calculations that uses the column fail. So, we need
@@ -329,7 +334,7 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars
   secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
   bleached_data <- dplyr::rename(bleached_data, !!!stats::setNames(mapping_names, secret_names))
   layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
-  
+
   secret_name_group <- paste0(secret_prefix, "group")
   bleached_data[secret_name_group] <- factor(group_info$id)
   layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
@@ -367,8 +372,8 @@ get_default_aes_param <- function(aes_param_name, geom, mapping) {
 
   # if the geom has default value and is NA, use NA
   if (aes_param_name %in% names(non_null_default_aes) &&
-      is.na(non_null_default_aes[[aes_param_name]])) {
-      return(NA)
+    is.na(non_null_default_aes[[aes_param_name]])) {
+    return(NA)
   }
 
   # otherwise, use the default grey
@@ -390,8 +395,10 @@ sieve_layer <- function(layer, group_info, predicates,
   if (use_group_by) {
     if (is.null(group_info$id)) {
       warning("Tried to calculate with group_by(), but there seems no groups.\n",
-              "Please provide group, colour or fill aes.\n",
-              "Falling back to ungrouped filter operation...", call. = FALSE)
+        "Please provide group, colour or fill aes.\n",
+        "Falling back to ungrouped filter operation...",
+        call. = FALSE
+      )
       use_group_by <- FALSE
     }
   }
@@ -400,29 +407,29 @@ sieve_layer <- function(layer, group_info, predicates,
 
   # If use_group_by is TRUE, try to calculate grouped
   if (use_group_by) {
-    tryCatch(
-      {
-        layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
-        # if this succeeds, return TRUE
-        return(TRUE)
-      },
-      error = function(e) {
-        warning("Tried to calculate with group_by(), but the calculation failed.\n",
-                "Falling back to ungrouped filter operation...", call. = FALSE)
-      }
+    tryCatch({
+      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
+      # if this succeeds, return TRUE
+      return(TRUE)
+    },
+    error = function(e) {
+      warning("Tried to calculate with group_by(), but the calculation failed.\n",
+        "Falling back to ungrouped filter operation...",
+        call. = FALSE
+      )
+    }
     )
   }
 
   # the grouped calculation failed or skipped, try ungrouped one.
-  tryCatch(
-    {
-      layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
-      return(TRUE)
-    },
-    error = function(e) {
-      # do not warn here, but in ggplot_add.gg_highlighter()
-      return(FALSE)
-    }
+  tryCatch({
+    layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
+    return(TRUE)
+  },
+  error = function(e) {
+    # do not warn here, but in ggplot_add.gg_highlighter()
+    return(FALSE)
+  }
   )
 
   FALSE
@@ -437,16 +444,17 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
 
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
   use_group_by <- use_group_by %||% !is.null(group_info$id)
-  
+
   if (use_group_by) {
-    tryCatch(
-      {
-        return(calculate_grouped(data, predicates, max_highlight, group_info$id))
-      },
-      error = function(e) {
-        warning("Tried to calculate with group_by(), but the calculation failed.\n",
-                "Falling back to ungrouped filter operation...", call. = FALSE)
-      }
+    tryCatch({
+      return(calculate_grouped(data, predicates, max_highlight, group_info$id))
+    },
+    error = function(e) {
+      warning("Tried to calculate with group_by(), but the calculation failed.\n",
+        "Falling back to ungrouped filter operation...",
+        call. = FALSE
+      )
+    }
     )
   }
 
@@ -479,7 +487,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data %>%
     tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
-    dplyr::transmute(!!! predicates, !!VERY_SECRET_COLUMN_NAME)
+    dplyr::transmute(!!!predicates, !!VERY_SECRET_COLUMN_NAME)
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
