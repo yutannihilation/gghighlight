@@ -108,16 +108,7 @@ ggplot(d) +
   facet_wrap(~ type)
 ```
 
-### `unhighlighted_params`
-
-If you want to change the style of unhighlighted layers, use `unhighlighted_params`.
-
-```{r gghighlight-params}
-ggplot(d) +
-  geom_line(aes(idx, value, colour = type), size = 5) +
-  gghighlight(max(value) > 19,
-              unhighlighted_params = list(size = 1, colour = alpha("pink", 0.4)))
-```
+There are also some options to control the way of highlighting. See "Options" section below.
 
 
 ## Geoms
@@ -221,4 +212,56 @@ p$data
 
 p + geom_label(aes(label = type),
                hjust = 1, vjust = 1, fill = "purple", colour = "white", alpha= 0.5)
+```
+
+## Options
+
+### `unhighlighted_params`
+
+If you want to change the style of unhighlighted layers, use `unhighlighted_params`.
+
+```{r gghighlight-params}
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type), size = 5) +
+  gghighlight(max(value) > 19,
+              unhighlighted_params = list(size = 1, colour = alpha("pink", 0.4)))
+```
+
+### `keep_scales`
+
+If you want to keep the original scales, set `keep_scales` to `TRUE`.
+
+```{r keep_scales, results='hold', out.width='40%'}
+p <- ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
+  geom_point()
+
+p + gghighlight(cyl == 6)
+
+p + gghighlight(cyl == 6, keep_scales = TRUE) + ggtitle("keep_scale = TRUE")
+```
+
+### `use_facet_vars`
+
+If you want to highlight each facet individually, set `use_facet_vars` to `TRUE`.
+Note that `gghighlight()` affects the plot *before* `gghighlight()`. If you add `facet_*()` after adding `gghighlight()`, this option doesn't work.
+
+```{r use_facet_vars, results='hold', out.width='40%'}
+d <- data.frame(
+  idx =   c(1, 2, 3, 4, 1, 2, 3, 4),
+  value = c(10, 11, 12, 13, 4, 8, 16, 32),
+  cat1 =  rep(c("a", "b"), each = 4),
+  cat2 =  rep(rep(c("1-2", "3-4"), each = 2), 2),
+  stringsAsFactors = FALSE
+)
+
+p <- ggplot(d, aes(idx, value, colour = cat1)) +
+  geom_line() +
+  facet_wrap(vars(cat2))
+
+p +
+  gghighlight(max(value) > 10)
+
+p +
+  gghighlight(max(value) > 10, use_facet_vars = TRUE) +
+  ggtitle("use_facet_vars = TRUE")
 ```
