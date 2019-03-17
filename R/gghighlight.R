@@ -20,7 +20,7 @@
 #'   Column name for `label` aesthetics.
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
-#' @param keep_scale
+#' @param keep_scales
 #'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
 #'   highlighted plot has the same scale with the data.
 #' @param use_facet_vars
@@ -36,16 +36,16 @@
 #'   category = rep(c("a", "b", "c"), 3),
 #'   stringsAsFactors = FALSE
 #' )
-#' 
+#'
 #' # highlight the lines whose max values are larger than 10
 #' ggplot(d, aes(idx, value, colour = category)) +
 #'   geom_line() + gghighlight(max(value) > 10)
-#' 
+#'
 #' # highlight the points whose values are larger than 10
 #' ggplot(d, aes(idx, value)) +
 #'   geom_point() +
 #'   gghighlight(value > 10, label_key = category)
-#' 
+#'
 #' # specify the styles for unhighlighted layer
 #' ggplot(d, aes(idx, value, colour = category)) +
 #'   geom_line(size = 5) +
@@ -61,7 +61,7 @@ gghighlight <- function(...,
                         use_direct_label = NULL,
                         label_key = NULL,
                         label_params = list(fill = "white"),
-                        keep_scale = FALSE,
+                        keep_scales = FALSE,
                         use_facet_vars = FALSE,
                         unhighlighted_colour = NULL) {
   predicates <- rlang::enquos(...)
@@ -98,7 +98,7 @@ gghighlight <- function(...,
       label_key_must_exist = label_key_must_exist,
       label_key = label_key,
       label_params = label_params,
-      keep_scale = keep_scale,
+      keep_scales = keep_scales,
       use_facet_vars = use_facet_vars
     ),
     class = "gg_highlighter"
@@ -194,7 +194,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot <- plot %+% layers_sieved
 
   # Add dummy layers (geom_blank()) to keep the original scales
-  if (object$keep_scale) {
+  if (object$keep_scales) {
     plot <- plot %+% purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
   }
 
@@ -463,7 +463,7 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
 
 calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   data_predicated <- data
-  
+
   data_predicated <- dplyr::group_by(data_predicated, !!VERY_SECRET_COLUMN_NAME := !!group_ids)
   data_predicated <- dplyr::summarise(data_predicated, !!!predicates)
 
@@ -485,7 +485,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 
 calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data
-  
+
   data_predicated <- tibble::rowid_to_column(data_predicated, var = rlang::expr_text(VERY_SECRET_COLUMN_NAME))
   data_predicated <- dplyr::transmute(data_predicated, !!! predicates, !!VERY_SECRET_COLUMN_NAME)
 

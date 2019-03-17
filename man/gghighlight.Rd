@@ -7,7 +7,7 @@
 gghighlight(..., n = NULL, max_highlight = 5L,
   unhighlighted_params = list(), use_group_by = NULL,
   use_direct_label = NULL, label_key = NULL, label_params = list(fill
-  = "white"), keep_scale = FALSE, use_facet_vars = FALSE,
+  = "white"), keep_scales = FALSE, use_facet_vars = FALSE,
   unhighlighted_colour = NULL)
 }
 \arguments{
@@ -27,7 +27,7 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 
 \item{label_params}{A list of parameters, which is passed to \code{\link[ggrepel:geom_label_repel]{ggrepel::geom_label_repel()}}.}
 
-\item{keep_scale}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
+\item{keep_scales}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
 highlighted plot has the same scale with the data.}
 
 \item{use_facet_vars}{(Experimental) If \code{TRUE}, include the facet variables to calculate the
