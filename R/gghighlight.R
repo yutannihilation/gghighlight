@@ -24,7 +24,8 @@
 #'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
 #'   highlighted plot has the same scale with the data.
 #' @param use_facet_vars
-#'   If `TRUE`, calculate the predicates per facet.
+#'   (Experimental) If `TRUE`, include the facet variables to calculate the
+#'   grouping; in other words, highlighting is done on each facet individually.
 #' @param unhighlighted_colour
 #'   (Deprecated) Colour for unhighlighted geoms.
 #'

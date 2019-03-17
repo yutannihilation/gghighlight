@@ -30,7 +30,8 @@ gghighlight(..., n = NULL, max_highlight = 5L,
 \item{keep_scale}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
 highlighted plot has the same scale with the data.}
 
-\item{use_facet_vars}{If \code{TRUE}, calculate the predicates per facet.}
+\item{use_facet_vars}{(Experimental) If \code{TRUE}, include the facet variables to calculate the
+grouping; in other words, highlighting is done on each facet individually.}
 
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
 }
