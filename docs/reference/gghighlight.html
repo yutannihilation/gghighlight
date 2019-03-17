@@ -119,14 +119,15 @@
     <pre class="usage"><span class='fu'>gghighlight</span>(<span class='no'>...</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_highlight</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
   <span class='kw'>unhighlighted_params</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>use_group_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>use_direct_label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>label_params</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>fill</span>
-  <span class='kw'>=</span> <span class='st'>"white"</span>), <span class='kw'>unhighlighted_colour</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>=</span> <span class='st'>"white"</span>), <span class='kw'>keep_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>use_facet_vars</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>unhighlighted_colour</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>...</th>
-      <td><p>Expressions to filter data, which is passed to <code><a href='http://dplyr.tidyverse.org/reference/filter.html'>dplyr::filter()</a></code>.</p></td>
+      <td><p>Expressions to filter data, which is passed to <code><a href='https://dplyr.tidyverse.org/reference/filter.html'>dplyr::filter()</a></code>.</p></td>
     </tr>
     <tr>
       <th>n</th>
@@ -142,7 +143,7 @@
     </tr>
     <tr>
       <th>use_group_by</th>
-      <td><p>If <code>TRUE</code>, use <code><a href='http://dplyr.tidyverse.org/reference/group_by.html'>dplyr::group_by()</a></code> to evaluate <code>predicate</code>.</p></td>
+      <td><p>If <code>TRUE</code>, use <code><a href='https://dplyr.tidyverse.org/reference/group_by.html'>dplyr::group_by()</a></code> to evaluate <code>predicate</code>.</p></td>
     </tr>
     <tr>
       <th>use_direct_label</th>
@@ -155,6 +156,16 @@
     <tr>
       <th>label_params</th>
       <td><p>A list of parameters, which is passed to <code><a href='https://www.rdocumentation.org/packages/ggrepel/topics/geom_text_repel'>ggrepel::geom_label_repel()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>keep_scale</th>
+      <td><p>If <code>TRUE</code>, keep the original data with <code><a href='https://ggplot2.tidyverse.org/reference/geom_blank.html'>ggplot2::geom_blank()</a></code> so that the
+highlighted plot has the same scale with the data.</p></td>
+    </tr>
+    <tr>
+      <th>use_facet_vars</th>
+      <td><p>(Experimental) If <code>TRUE</code>, include the facet variables to calculate the
+grouping; in other words, highlighting is done on each facet individually.</p></td>
     </tr>
     <tr>
       <th>unhighlighted_colour</th>

@@ -106,28 +106,32 @@
       <small>Source: <a href='https://github.com/yutannihilation/gghighlight/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="gghighlight-0-1-0-9000" class="section level1">
+    <div id="gghighlight-0109000" class="section level1">
 <h1 class="page-header">
-<a href="#gghighlight-0-1-0-9000" class="anchor"></a>gghighlight 0.1.0.9000<small> Unreleased </small>
+<a href="#gghighlight-0109000" class="anchor"></a>gghighlight 0.1.0.9000<small> Unreleased </small>
 </h1>
 <ul>
-<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> gets a new argument <code>unhighlighted_params</code>, which accepts a list of parameters for the unhighlighted layer (e.g. <code>colour</code>, <code>fill</code>, <code>shape</code>, and <code>size</code>). Accordingly, <code>unhighlighted_colour</code> is deprecated (<a href='https://github.com/yutannihilation/gghighlight/issues/76'>#76</a>).</p></li>
+<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> gets a new argument <code>unhighlighted_params</code>, which accepts a list of parameters for the unhighlighted layer (e.g. <code>colour</code>, <code>fill</code>, <code>shape</code>, and <code>size</code>). Accordingly, <code>unhighlighted_colour</code> is deprecated (<a href='https://github.com/yutannihilation/gghighlight/issues/76'>#76</a>).</p></li>
 <li><p>If the mapping has <code>group</code>, use it as grouping variable, which is consistent with the logic of ggplot2 (<a href='https://github.com/yutannihilation/gghighlight/issues/77'>#77</a>).</p></li>
 <li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> now ignores if the calculation fails over some layers. This is useful to combine with such layers as <code>annotate()</code> (<a href='https://github.com/yutannihilation/gghighlight/issues/78'>#78</a>).</p></li>
+<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> now allows to highlight 0-layer plots, which means just filtering the plot data (<a href='https://github.com/yutannihilation/gghighlight/issues/81'>#81</a>).</p></li>
+<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> now ignores <code>NA</code>s in numeric predicates (<a href='https://github.com/yutannihilation/gghighlight/issues/86'>#86</a>).</p></li>
+<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> gets a new argument <code>keep_scale</code> to choose whether to keep the original scale with the shadowed data (<a href='https://github.com/yutannihilation/gghighlight/issues/72'>#72</a>).</p></li>
+<li><p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> gets an experimental argument <code>use_facet_vars</code> to choose whether to calculate highlighting per facet (<a href='https://github.com/yutannihilation/gghighlight/issues/14'>#14</a>).</p></li>
 </ul>
 </div>
-    <div id="gghighlight-0-1-0" class="section level1">
+    <div id="gghighlight-010" class="section level1">
 <h1 class="page-header">
-<a href="#gghighlight-0-1-0" class="anchor"></a>gghighlight 0.1.0<small> 2018-07-04 </small>
+<a href="#gghighlight-010" class="anchor"></a>gghighlight 0.1.0<small> 2018-07-04 </small>
 </h1>
 <ul>
 <li>Add <code><a href="../reference/gghighlight.html">gghighlight()</a></code>, which replaces the current <code><a href="../reference/gghighlight-old.html">gghighlight_line()</a></code> and <code><a href="../reference/gghighlight-old.html">gghighlight_point()</a></code>; these functions are now deprecated.</li>
 <li>Add a introductory vignette.</li>
 </ul>
 </div>
-    <div id="gghighlight-0-0-1" class="section level1">
+    <div id="gghighlight-001" class="section level1">
 <h1 class="page-header">
-<a href="#gghighlight-0-0-1" class="anchor"></a>gghighlight 0.0.1<small> 2017-10-05 </small>
+<a href="#gghighlight-001" class="anchor"></a>gghighlight 0.0.1<small> 2017-10-05 </small>
 </h1>
 <ul>
 <li>First release</li>
@@ -139,9 +143,9 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#gghighlight-0-1-0-9000">0.1.0.9000</a></li>
-        <li><a href="#gghighlight-0-1-0">0.1.0</a></li>
-        <li><a href="#gghighlight-0-0-1">0.0.1</a></li>
+        <li><a href="#gghighlight-0109000">0.1.0.9000</a></li>
+        <li><a href="#gghighlight-010">0.1.0</a></li>
+        <li><a href="#gghighlight-001">0.0.1</a></li>
       </ul>
     </div>
   </div>
