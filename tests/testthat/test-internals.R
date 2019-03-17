@@ -49,3 +49,16 @@ test_that("calculate_ungrouped() and calculate_grouped() don't drop data.frames"
                d[6:10, , drop = FALSE])
 
 })
+
+test_that("get_facet_vars() extract facet specs", {
+  p <- ggplot()
+  v <- rlang::quos(A = a, B = b)
+  
+  expect_identical(get_facet_vars(p$facet), NULL)
+  expect_identical(get_facet_vars((p + facet_wrap(v))$facet), v)
+  expect_identical(get_facet_vars((p + facet_grid(v))$facet), v)
+  expect_identical(get_facet_vars((p + facet_grid(v[1], v[2]))$facet), v)
+
+  class(p$facet) <- c("FacetUnknown", class(p$facet))
+  expect_error(get_facet_vars(p$facet))
+})
