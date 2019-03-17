@@ -231,7 +231,7 @@ ggplot(d) +
 
 If you want to keep the original scales, set `keep_scales` to `TRUE`.
 
-```{r keep_scales, fig.show='hold', out.width='40%'}
+```{r keep_scales, fig.show='hold'}
 p <- ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
   geom_point()
 
@@ -245,7 +245,7 @@ p + gghighlight(cyl == 6, keep_scales = TRUE) + ggtitle("keep_scale = TRUE")
 If you want to highlight each facet individually, set `use_facet_vars` to `TRUE`.
 Note that `gghighlight()` affects the plot *before* `gghighlight()`. If you add `facet_*()` after adding `gghighlight()`, this option doesn't work.
 
-```{r use_facet_vars, fig.show='hold', out.width='40%'}
+```{r use_facet_vars, fig.show='hold'}
 d <- data.frame(
   idx =   c(1, 2, 3, 4, 1, 2, 3, 4),
   value = c(10, 11, 12, 13, 4, 8, 16, 32),
