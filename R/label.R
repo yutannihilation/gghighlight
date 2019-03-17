@@ -9,7 +9,7 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
   layer <- layer_for_label$layer
   label_key <- layer_for_label$label_key
 
-  switch (class(layer$geom)[1],
+  switch(class(layer$geom)[1],
     GeomLine = generate_label_for_line(layer, label_key, label_params),
     GeomPoint = generate_label_for_point(layer, label_key, label_params),
     # TODO: To distinguish NULL, return list() to hide guides here.
@@ -84,11 +84,10 @@ generate_label_for_line <- function(layer, label_key, label_params) {
   # To restore the original group, extract group keys (I don't know this is really necessary, though...)
   group_key_orig <- dplyr::groups(layer$data)
 
-  rightmost_points <- layer$data %>%
-    dplyr::group_by(!!group_key) %>%
-    dplyr::filter(!!x_key == max(!!x_key)) %>%
-    # max value can appear multiple times, so ensure only one row per group
-    dplyr::slice(1)
+  data <- dplyr::group_by(layer$data, !!group_key)
+  rightmost_points <- dplyr::filter(data, !!x_key == max(!!x_key))
+  # max value can appear multiple times, so ensure only one row per group
+  rightmost_points <- dplyr::slice(rightmost_points, 1)
 
   # restore the original group
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)

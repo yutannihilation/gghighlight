@@ -40,9 +40,9 @@ grouping; in other words, highlighting is done on each facet individually.}
 }
 \examples{
 d <- data.frame(
-  idx = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
-  value = c( 1, 2, 3,10,11,12, 9,10,11),
-  category = rep(c("a","b","c"), 3),
+  idx = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+  value = c(1, 2, 3, 10, 11, 12, 9, 10, 11),
+  category = rep(c("a", "b", "c"), 3),
   stringsAsFactors = FALSE
 )
 
@@ -59,6 +59,6 @@ ggplot(d, aes(idx, value)) +
 ggplot(d, aes(idx, value, colour = category)) +
   geom_line(size = 5) +
   gghighlight(max(value) > 10,
-              unhighlighted_params = list(size = 1))
-
+    unhighlighted_params = list(size = 1)
+  )
 }

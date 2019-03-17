@@ -58,12 +58,11 @@ gghighlight_old <- function(data,
     mapping_unhighlitghted$group  <- rlang::sym("group..........")
   } else {
     data_predicated <- dplyr::mutate(data, predicate.......... = !! predicate_quo)
-    data_filtered <- if (is.logical(data_predicated$predicate..........)) {
-      dplyr::filter(data_predicated, .data$predicate..........)
+    if (is.logical(data_predicated$predicate..........)) {
+      data_filtered <- dplyr::filter(data_predicated, .data$predicate..........)
     } else {
-      data_predicated %>%
-      dplyr::arrange(-.data$predicate..........) %>%
-        dplyr::slice(!! 1:max_highlight)
+      data_predicated <- dplyr::arrange(data_predicated, -.data$predicate..........)
+      data_filtered <- dplyr::slice(data_predicated, !! 1:max_highlight)
     }
   }
 
