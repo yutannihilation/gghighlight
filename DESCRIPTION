@@ -11,16 +11,16 @@ BugReports: https://github.com/yutannihilation/gghighlight/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
-  ggplot2 (>= 3.0.0),
-  R (>= 3.1.0)
+    ggplot2 (>= 3.0.0),
+    R (>= 3.1.0)
 Imports:
-  dplyr (> 0.7.0),
-  tibble,
-  ggrepel,
-  magrittr,
-  purrr,
-  rlang,
-  sf
+    dplyr (> 0.7.0),
+    tibble,
+    ggrepel,
+    magrittr,
+    purrr,
+    rlang,
+    sf
 Suggests: 
     testthat,
     knitr,
