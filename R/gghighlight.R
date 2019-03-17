@@ -20,7 +20,7 @@
 #'   Column name for `label` aesthetics.
 #' @param label_params
 #'   A list of parameters, which is passed to [ggrepel::geom_label_repel()].
-#' @param keep_scale
+#' @param keep_scales
 #'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
 #'   highlighted plot has the same scale with the data.
 #' @param use_facet_vars
@@ -61,7 +61,7 @@ gghighlight <- function(...,
                         use_direct_label = NULL,
                         label_key = NULL,
                         label_params = list(fill = "white"),
-                        keep_scale = FALSE,
+                        keep_scales = FALSE,
                         use_facet_vars = FALSE,
                         unhighlighted_colour = NULL) {
   
@@ -191,7 +191,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot <- plot %+% layers_sieved
 
   # Add dummy layers (geom_blank()) to keep the original scales
-  if (object$keep_scale) {
+  if (object$keep_scales) {
     plot <- plot %+% purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
   }
 
