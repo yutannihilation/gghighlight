@@ -1,8 +1,18 @@
 # gghighlight 0.1.0.9000
 
+## New features
+
 * `gghighlight()` gets a new argument `unhighlighted_params`, which accepts a
   list of parameters for the unhighlighted layer (e.g. `colour`, `fill`, `shape`,
   and `size`). Accordingly, `unhighlighted_colour` is deprecated (#76).
+
+* `gghighlight()` gets a new argument `keep_scales` to choose whether to keep the
+  original scale with the shadowed data (#72).
+
+* `gghighlight()` gets a new (experimental) argument `use_facet_vars` to choose
+  whether to calculate highlighting per facet or not (#14).
+
+## Bug fixes
 
 * If the mapping has `group`, use it as grouping variable, which is consistent
   with the logic of ggplot2 (#77).
@@ -14,12 +24,6 @@
   filtering the plot data (#81).
 
 * `gghighlight()` now ignores `NA`s in numeric predicates (#86).
-
-* `gghighlight()` gets a new argument `keep_scale` to choose whether to keep the
-  original scale with the shadowed data (#72).
-
-* `gghighlight()` gets an experimental argument `use_facet_vars` to choose whether
-  to calculate highlighting per facet (#14).
 
 # gghighlight 0.1.0
 
