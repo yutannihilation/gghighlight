@@ -23,6 +23,9 @@
 #' @param keep_scale
 #'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
 #'   highlighted plot has the same scale with the data.
+#' @param use_facet_vars
+#'   (Experimental) If `TRUE`, include the facet variables to calculate the
+#'   grouping; in other words, highlighting is done on each facet individually.
 #' @param unhighlighted_colour
 #'   (Deprecated) Colour for unhighlighted geoms.
 #'
@@ -59,6 +62,7 @@ gghighlight <- function(...,
                         label_key = NULL,
                         label_params = list(fill = "white"),
                         keep_scale = FALSE,
+                        use_facet_vars = FALSE,
                         unhighlighted_colour = NULL) {
   
   predicates <- rlang::enquos(...)
@@ -95,7 +99,8 @@ gghighlight <- function(...,
       label_key_must_exist = label_key_must_exist,
       label_key = label_key,
       label_params = label_params,
-      keep_scale = keep_scale
+      keep_scale = keep_scale,
+      use_facet_vars = use_facet_vars
     ),
     class = "gg_highlighter"
   )
@@ -136,7 +141,11 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
   layers_cloned <- layers_cloned[idx_layers]
 
-  group_infos <- purrr::map(layers_cloned, ~ calculate_group_info(.$data, .$mapping))
+  facet_vars <- if (object$use_facet_vars) get_facet_vars(plot$facet) else NULL
+  group_infos <- purrr::map(
+    layers_cloned,
+    ~ calculate_group_info(.$data, .$mapping, extra_vars = facet_vars)
+  )
 
   # Clone layers again seperately (layers_cloned will be used later for keeping 
   # the original scale)
@@ -148,7 +157,8 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     layers_bleached,
     group_infos,
     bleach_layer,
-    unhighlighted_params = object$unhighlighted_params
+    unhighlighted_params = object$unhighlighted_params,
+    use_facet_vars = object$use_facet_vars
   )
 
   # Sieve the upper layer.
@@ -235,7 +245,7 @@ clone_layer <- function(layer) {
 
 clone_position <- clone_layer
 
-calculate_group_info <- function(data, mapping) {
+calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   mapping <- purrr::compact(mapping)
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
   # So, wrap it with tryCatch() and remove the failed results, which can be
@@ -253,23 +263,38 @@ calculate_group_info <- function(data, mapping) {
     group_cols <- names(which(idx_discrete))
   }
 
+  # for group key, use symbols only, and don't include extra_vars
+  group_keys <- purrr::keep(mapping[group_cols], rlang::quo_is_symbol)
+  
+  # if extra variables (e.g. facet specs) are specified, use them.
+  if (!is.null(extra_vars)) {
+    if (!rlang::is_quosures(extra_vars) || !all(rlang::have_name(extra_vars))) {
+      rlang::abort("extra_vars must be a named quosures object.")
+    }
+    extra_data <- dplyr::transmute(data, !!!extra_vars)
+  } else {
+    extra_data <- NULL
+  }
+
   # no group
-  if (length(group_cols) == 0) {
+  if (length(group_cols) == 0 && rlang::is_empty(extra_data)) {
     return(NULL)
   }
 
+  # calculate group IDs with extra_data
+  group_ids <- dplyr::group_indices(
+    dplyr::bind_cols(data_evaluated, extra_data),
+    !!!rlang::syms(c(group_cols, names(extra_data)))
+  )
+
   list(
     data = data_evaluated,
-    id = dplyr::group_indices(
-      data_evaluated,  # group_indices() won't work with grouped_df.
-      !!!rlang::syms(group_cols)
-    ),
-    # for group key, use symbols only
-    key = purrr::keep(mapping[group_cols], rlang::quo_is_symbol)
+    id = group_ids,
+    key = group_keys
   )
 }
 
-bleach_layer <- function(layer, group_info, unhighlighted_params) {
+bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars = FALSE) {
   # `colour` and `fill` are special in that they needs to be specified even when
   # it is not included in unhighlighted_params. But, if the default_aes is NA,
   # respect it (e.g. geom_bar()'s default colour is NA).
@@ -288,23 +313,34 @@ bleach_layer <- function(layer, group_info, unhighlighted_params) {
   # remove colour and fill from mapping
   layer$mapping[c("colour", "fill")] <- list(NULL)
 
-  # FIXME: Isn't this always necessary?
-  if (!is.null(group_info$key)) {
-    # In order to prevent the bleached layer from being facetted, we need to rename
-    # columns of group keys to improbable names. But, what happens when the group
-    # column disappears? Other calculations that uses the column fail. So, we need
-    # to use the pre-evaluated values and rename everything to improbable name.
-    layer$data <- group_info$data
-    secret_prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
-    mapping_names <- names(layer$data)
-    secret_names <- paste0(secret_prefix, seq_along(mapping_names))
-    secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
-    layer$data <- dplyr::rename(layer$data, !!!stats::setNames(mapping_names, secret_names))
-    layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
+  # FIXME: can this be removed?
+  if (is.null(group_info$key)) {
+    return(layer)
+  }
+  
+  # In order to prevent the bleached layer from being facetted, we need to rename
+  # columns of group keys to improbable names. But, what happens when the group
+  # column disappears? Other calculations that uses the column fail. So, we need
+  # to use the pre-evaluated values and rename everything to improbable name.
+  bleached_data <- group_info$data
+  secret_prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+  mapping_names <- names(bleached_data)
+  secret_names <- paste0(secret_prefix, seq_along(mapping_names))
+  secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
+  bleached_data <- dplyr::rename(bleached_data, !!!stats::setNames(mapping_names, secret_names))
+  layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
+  
+  secret_name_group <- paste0(secret_prefix, "group")
+  bleached_data[secret_name_group] <- factor(group_info$id)
+  layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
 
-    secret_name_group <- paste0(secret_prefix, "group")
-    layer$data[secret_name_group] <- factor(group_info$id)
-    layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
+  # FIXME:
+  # Contradictorily to the comment above, we need the original data to let the
+  # layer be facetted. Probably, we can make here more efficient...
+  if (use_facet_vars) {
+    layer$data <- dplyr::bind_cols(bleached_data, layer$data)
+  } else {
+    layer$data <- bleached_data
   }
 
   layer

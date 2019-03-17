@@ -15,8 +15,11 @@
 
 * `gghighlight()` now ignores `NA`s in numeric predicates (#86).
 
-* `gghighlight()` gets a new argument `keep_scale` to choose keep the original
-  scale with the shadowed data (#72).
+* `gghighlight()` gets a new argument `keep_scale` to choose whether to keep the
+  original scale with the shadowed data (#72).
+
+* `gghighlight()` gets an experimental argument `use_facet_vars` to choose whether
+  to calculate highlighting per facet (#14).
 
 # gghighlight 0.1.0
 
