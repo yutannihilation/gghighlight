@@ -276,11 +276,11 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   }
 
   # no group
-  if (length(group_cols) == 0) {
+  if (length(group_cols) == 0 && rlang::is_empty(extra_data)) {
     return(NULL)
   }
 
-  # calculate group IDs with extra_vars
+  # calculate group IDs with extra_data
   group_ids <- dplyr::group_indices(
     dplyr::bind_cols(data_evaluated, extra_data),
     !!!rlang::syms(c(group_cols, names(extra_data)))
