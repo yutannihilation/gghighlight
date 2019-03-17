@@ -1,3 +1,5 @@
+`%>%` <- magrittr::`%>%`
+
 expect_equal_layer <- function(x, y) {
   x$mapping <- x$mapping[sort(names(x$mapping))]
   y$mapping <- y$mapping[sort(names(y$mapping))]
