@@ -13,9 +13,9 @@ d <- tibble::tribble(
    3,  3,   "c",     10
 )
 
-d_ <- setNames(d[1:3], c("x", "y", "colour"))
+d_expect <- setNames(d[1:3], c("x", "y", "colour"))
 ids <- c(1, 1, 1, 2, 2, 3, 3)
-g_info <- list(data = d_, id = ids, key = aes(colour = type))
+g_info <- list(data = d_expect, id = ids, key = aes(colour = type))
 
 d_bleached <- d[1:3]
 d_bleached$ids <- factor(ids)
@@ -202,4 +202,54 @@ test_that("gghighlight() works with annotations", {
       p + gghighlight(no_such_column > 1, use_group_by = FALSE, use_direct_label = FALSE)
     )
   )
+})
+
+test_that("gghighlight() works with facets", {
+  d <- tibble::tribble(
+    ~idx, ~value, ~cat1, ~cat2,
+       1,     10,   "a", "1-2",
+       2,     11,   "a", "1-2",
+       3,     12,   "a", "3-4",
+       4,     13,   "a", "3-4",
+       1,      4,   "b", "1-2",
+       2,      8,   "b", "1-2",
+       3,     16,   "b", "3-4",
+       4,     32,   "b", "3-4"
+  )
+
+  d_expect <- setNames(d[1:3], c("x", "y", "colour"))
+  ids <- c(1, 1, 2, 2, 3, 3, 4, 4)
+  g_info <- list(data = d_expect, id = ids, key = aes(colour = cat1))
+
+  d_bleached <- d[1:3]
+  d_bleached$ids <- factor(ids)
+  prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+  names(d_bleached) <- paste0(prefix, c(1:3, "group"))
+  d_bleached <- dplyr::bind_cols(d_bleached, d)
+  
+  aes_bleached <- aes_string(x = paste0(prefix, 1),
+                             y = paste0(prefix, 2),
+                             colour = paste0(prefix, 3),
+                             fill = NULL,
+                             group = paste0(prefix, "group"))
+
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
+  l_sieved <- geom_point(aes(idx, value, colour = cat1), d[-(5:6), ])
+
+  # grouped
+  p1 <- ggplot(d, aes(idx, value, colour = cat1)) +
+    geom_point() +
+    facet_wrap(vars(cat2)) +
+    gghighlight(max(value) > 10, use_group_by = TRUE, use_direct_label = FALSE, use_facet_vars = TRUE)
+
+  expect_equal_layers(p1$layers, list(l_bleached, l_sieved))
+
+  # ungrouped
+  p2 <- ggplot(d, aes(idx, value, colour = cat1)) +
+    geom_point() +
+    facet_wrap(vars(cat2)) +
+    gghighlight(value > 10, use_group_by = FALSE, use_direct_label = FALSE, use_facet_vars = TRUE)
+
+  l_sieved2 <- geom_point(aes(idx, value, colour = cat1), d[d$value > 10, ])
+  expect_equal_layers(p2$layers, list(l_bleached, l_sieved2))
 })
