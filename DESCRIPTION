@@ -3,7 +3,7 @@ Type: Package
 Title: Highlight Lines and Points in 'ggplot2'
 Version: 0.1.0.9000
 Authors@R: c(
-    person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
+    person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"), comment = c(ORCID = "0000-0002-3385-7233"))
     )
 Description: Make it easier to explore data with highlights.
 URL: https://github.com/yutannihilation/gghighlight/
