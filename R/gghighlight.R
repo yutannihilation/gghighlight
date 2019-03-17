@@ -462,21 +462,20 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
 }
 
 calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
-  data_predicated <- data %>%
-    dplyr::group_by(!!VERY_SECRET_COLUMN_NAME := !!group_ids) %>%
-    dplyr::summarise(!!!predicates)
+  data_predicated <- data
+  
+  data_predicated <- dplyr::group_by(data_predicated, !!VERY_SECRET_COLUMN_NAME := !!group_ids)
+  data_predicated <- dplyr::summarise(data_predicated, !!!predicates)
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- data_predicated %>%
-    dplyr::filter(!!!cols$filter)
+  data_filtered <- dplyr::filter(data_predicated, !!!cols$filter)
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- data_filtered %>%
-      dplyr::arrange(!!!cols$arrange) %>%
-      utils::tail(max_highlight)
+    data_filtered <- dplyr::arrange(data_filtered, !!!cols$arrange)
+    data_filtered <- utils::tail(data_filtered, max_highlight)
   }
 
   groups_filtered <- dplyr::pull(data_filtered, !!VERY_SECRET_COLUMN_NAME)
@@ -485,22 +484,21 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 }
 
 calculate_ungrouped <- function(data, predicates, max_highlight) {
-  data_predicated <- data %>%
-    tibble::rowid_to_column(var = rlang::expr_text(VERY_SECRET_COLUMN_NAME)) %>%
-    dplyr::transmute(!!!predicates, !!VERY_SECRET_COLUMN_NAME)
+  data_predicated <- data
+  
+  data_predicated <- tibble::rowid_to_column(data_predicated, var = rlang::expr_text(VERY_SECRET_COLUMN_NAME))
+  data_predicated <- dplyr::transmute(data_predicated, !!! predicates, !!VERY_SECRET_COLUMN_NAME)
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- data_predicated %>%
-    dplyr::filter(!!!cols$filter)
+  data_filtered <- dplyr::filter(data_predicated, !!!cols$filter)
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- data_filtered %>%
-      dplyr::filter_at(dplyr::vars(!!!cols$arrange), ~ !is.na(.)) %>%
-      dplyr::arrange(!!!cols$arrange) %>%
-      utils::tail(max_highlight)
+    data_filtered <- dplyr::filter_at(data_filtered, dplyr::vars(!!!cols$arrange), ~ !is.na(.))
+    data_filtered <- dplyr::arrange(data_filtered, !!!cols$arrange)
+    data_filtered <- utils::tail(data_filtered, max_highlight)
   }
 
   # sort to preserve the original order
