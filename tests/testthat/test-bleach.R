@@ -13,9 +13,9 @@ d <- tibble::tribble(
    3,  3,   "c",     10
 )
 
-d_ <- setNames(d[1:3], c("x", "y", "colour"))
+d_expect <- setNames(d[1:3], c("x", "y", "colour"))
 ids <- c(1, 1, 1, 2, 2, 3, 3)
-g_info <- list(data = d_, id = ids, key = aes(colour = type))
+g_info <- list(data = d_expect, id = ids, key = aes(colour = type))
 
 d_bleached <- d[1:3]
 d_bleached$ids <- factor(ids)
@@ -92,5 +92,12 @@ test_that("bleach_layer() works for NULL default aes", {
             colour = grey07,
             fill = grey07)[[1]]
   )
+
+})
+
+test_that("bleach_layer(use_facet_vars = TRUE) adds the original data", {
+  # If colour is specified, colour is used as the group key.
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, list(), use_facet_vars = TRUE),
+                     geom_line(aes_bleached, dplyr::bind_cols(d_bleached, d), colour = grey07))
 
 })
