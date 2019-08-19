@@ -243,9 +243,7 @@ merge_mapping <- function(layer, plot_mapping) {
 }
 
 clone_layer <- function(layer) {
-  new_layer <- rlang::env_clone(layer)
-  class(new_layer) <- class(layer)
-  new_layer
+  ggplot2::ggproto(NULL, layer)
 }
 
 clone_position <- clone_layer
