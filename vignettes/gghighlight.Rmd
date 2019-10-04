@@ -129,7 +129,7 @@ p
 
 Are you wondering if this is really highlighted? Yes, it is.
 But, the unhighlighted bars are all overwritten by the highlighted bars.
-This seems not so useful, until you see the fecetted version:
+This seems not so useful, until you see the facetted version:
 
 ```{r bar-wrap}
 p + facet_wrap(~ Species)
