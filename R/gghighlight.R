@@ -121,7 +121,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     idx_layers <- rep(TRUE, n_layers)
   } else {
     if (object$n > n_layers) {
-      stop("n is larger than the actual number of layers!", call. = FALSE)
+      abort("n is larger than the actual number of layers!")
     }
     idx_layers <- rep(FALSE, n_layers)
     idx_layers[utils::tail(seq_len(n_layers), object$n)] <- TRUE
@@ -209,7 +209,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   if (is.null(layer_labelled)) {
     if (object$label_key_must_exist) {
-      stop("No layer can be used for labels", call. = FALSE)
+      abort("No layer can be used for labels")
     } else {
       return(plot)
     }
@@ -394,11 +394,13 @@ sieve_layer <- function(layer, group_info, predicates,
   # 3) If use_group_by is TRUE but group IDs exist, show a warning and do not use group_by().
   if (use_group_by) {
     if (is.null(group_info$id)) {
-      warning("Tried to calculate with group_by(), but there seems no groups.\n",
+      msg <- paste0(
+        "Tried to calculate with group_by(), but there seems no groups.\n",
         "Please provide group, colour or fill aes.\n",
-        "Falling back to ungrouped filter operation...",
-        call. = FALSE
+        "Falling back to ungrouped filter operation..."
       )
+      warn(msg)
+
       use_group_by <- FALSE
     }
   }
@@ -413,10 +415,11 @@ sieve_layer <- function(layer, group_info, predicates,
       return(TRUE)
     },
     error = function(e) {
-      warning("Tried to calculate with group_by(), but the calculation failed.\n",
-        "Falling back to ungrouped filter operation...",
-        call. = FALSE
+      msg <- paste0(
+        "Tried to calculate with group_by(), but the calculation failed.\n",
+        "Falling back to ungrouped filter operation..."
       )
+      warn(msg)
     }
     )
   }
@@ -450,12 +453,12 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
       return(calculate_grouped(data, predicates, max_highlight, group_info$id))
     },
     error = function(e) {
-      warning("Tried to calculate with group_by(), but the calculation failed.\n",
-        "Falling back to ungrouped filter operation...",
-        call. = FALSE
+      msg <- paste0(
+        "Tried to calculate with group_by(), but the calculation failed.\n",
+        "Falling back to ungrouped filter operation..."
       )
-    }
-    )
+      warn(msg)
+    })
   }
 
   return(calculate_ungrouped(data, predicates, max_highlight))

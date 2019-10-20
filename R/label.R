@@ -15,7 +15,7 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
     GeomBar = list(),
-    stop("Unsupported geom!", call. = FALSE)
+    abort("Unsupported geom!")
   )
 }
 
@@ -40,7 +40,7 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
     # display which key was chosen for label
     show_label_key <- TRUE
   } else {
-    stop("Invalid label_key!", call. = FALSE)
+    abort("Invalid label_key!")
   }
 
   # If no layer has labellable variable, give up labelling
