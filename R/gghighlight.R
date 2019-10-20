@@ -64,8 +64,8 @@ gghighlight <- function(...,
                         keep_scales = FALSE,
                         use_facet_vars = FALSE,
                         unhighlighted_colour = NULL) {
-  predicates <- rlang::enquos(...)
-  label_key <- rlang::enquo(label_key)
+  predicates <- enquos(...)
+  label_key <- enquo(label_key)
 
   check_bad_predicates(predicates)
   check_bad_label_key(label_key)
@@ -83,7 +83,7 @@ gghighlight <- function(...,
   unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
 
   if (!is.null(unhighlighted_colour)) {
-    rlang::warn("unhighlighted_colour is deprecated. Use unhighlighted_params instead.")
+    warn("unhighlighted_colour is deprecated. Use unhighlighted_params instead.")
     unhighlighted_params$colour <- unhighlighted_colour
   }
 
@@ -105,7 +105,7 @@ gghighlight <- function(...,
   )
 }
 
-VERY_SECRET_COLUMN_NAME <- rlang::sym("highlight..........")
+VERY_SECRET_COLUMN_NAME <- sym("highlight..........")
 
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
@@ -173,10 +173,10 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   )
 
   if (!any(success)) {
-    rlang::abort("All calculations failed! Please provide a valid predicate.")
+    abort("All calculations failed! Please provide a valid predicate.")
   }
   if (!all(success)) {
-    rlang::warn(
+    warn(
       sprintf(
         "Could not calculate the predicate for %s; ignored",
         paste("layer", which(!success), collapse = ", ")
@@ -243,7 +243,7 @@ merge_mapping <- function(layer, plot_mapping) {
 }
 
 clone_layer <- function(layer) {
-  new_layer <- rlang::env_clone(layer)
+  new_layer <- env_clone(layer)
   class(new_layer) <- class(layer)
   new_layer
 }
@@ -255,7 +255,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
   # So, wrap it with tryCatch() and remove the failed results, which can be
   # detected by checking if all elements are NA or not.
-  mapping_wrapped <- purrr::map(mapping, ~ rlang::quo(tryCatch(!!., error = function(e) NA)))
+  mapping_wrapped <- purrr::map(mapping, ~ quo(tryCatch(!!., error = function(e) NA)))
   data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
   data_evaluated <- dplyr::select_if(data_evaluated, ~ !all(is.na(.)))
 
@@ -269,12 +269,12 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   }
 
   # for group key, use symbols only, and don't include extra_vars
-  group_keys <- purrr::keep(mapping[group_cols], rlang::quo_is_symbol)
+  group_keys <- purrr::keep(mapping[group_cols], quo_is_symbol)
 
   # if extra variables (e.g. facet specs) are specified, use them.
   if (!is.null(extra_vars)) {
-    if (!rlang::is_quosures(extra_vars) || !all(rlang::have_name(extra_vars))) {
-      rlang::abort("extra_vars must be a named quosures object.")
+    if (!is_quosures(extra_vars) || !all(have_name(extra_vars))) {
+      abort("extra_vars must be a named quosures object.")
     }
     extra_data <- dplyr::transmute(data, !!!extra_vars)
   } else {
@@ -282,14 +282,14 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   }
 
   # no group
-  if (length(group_cols) == 0 && rlang::is_empty(extra_data)) {
+  if (length(group_cols) == 0 && is_empty(extra_data)) {
     return(NULL)
   }
 
   # calculate group IDs with extra_data
   group_ids <- dplyr::group_indices(
     dplyr::bind_cols(data_evaluated, extra_data),
-    !!!rlang::syms(c(group_cols, names(extra_data)))
+    !!!syms(c(group_cols, names(extra_data)))
   )
 
   list(
@@ -328,16 +328,16 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars
   # column disappears? Other calculations that uses the column fail. So, we need
   # to use the pre-evaluated values and rename everything to improbable name.
   bleached_data <- group_info$data
-  secret_prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+  secret_prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
   mapping_names <- names(bleached_data)
   secret_names <- paste0(secret_prefix, seq_along(mapping_names))
-  secret_quos <- rlang::quos(!!!rlang::syms(secret_names))
+  secret_quos <- quos(!!!syms(secret_names))
   bleached_data <- dplyr::rename(bleached_data, !!!stats::setNames(mapping_names, secret_names))
   layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
 
   secret_name_group <- paste0(secret_prefix, "group")
   bleached_data[secret_name_group] <- factor(group_info$id)
-  layer$mapping$group <- rlang::quo(!!rlang::sym(secret_name_group))
+  layer$mapping$group <- quo(!!sym(secret_name_group))
 
   # FIXME:
   # Contradictorily to the comment above, we need the original data to let the
@@ -486,7 +486,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data
 
-  data_predicated <- tibble::rowid_to_column(data_predicated, var = rlang::expr_text(VERY_SECRET_COLUMN_NAME))
+  data_predicated <- tibble::rowid_to_column(data_predicated, var = expr_text(VERY_SECRET_COLUMN_NAME))
   data_predicated <- dplyr::transmute(data_predicated, !!! predicates, !!VERY_SECRET_COLUMN_NAME)
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
@@ -514,15 +514,15 @@ choose_col_for_filter_and_arrange <- function(data, exclude_col) {
   col_idx_lst <- purrr::map_lgl(data, is.list)
   list(
     # Use logical columns for filter()
-    filter = rlang::syms(names(data)[col_idx_lgl]),
+    filter = syms(names(data)[col_idx_lgl]),
     # Use other columns but lists for arrange() (arrange doesn't support list columns)
-    arrange = rlang::syms(names(data)[!col_idx_lgl & !col_idx_lst])
+    arrange = syms(names(data)[!col_idx_lgl & !col_idx_lst])
   )
 }
 
 normalize_unhighlighted_params <- function(aes_params) {
   if (!is.list(aes_params)) {
-    rlang::abort("unhighlighted_params must be a list.")
+    abort("unhighlighted_params must be a list.")
   }
 
   # color is an alias of colour

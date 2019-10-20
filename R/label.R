@@ -21,16 +21,16 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
 
 choose_layer_for_label <- function(layers, group_infos, label_key) {
   show_label_key <- FALSE
-  if (rlang::quo_is_call(label_key)) {
+  if (quo_is_call(label_key)) {
     # if label_key is a call we can't check if the necessary variables exist in
     # the data. Just pray that the proper layer will be choosed... :pray:
     label_keys <- purrr::rerun(length(layers), label_key)
-  } else if (rlang::quo_is_symbol(label_key)) {
+  } else if (quo_is_symbol(label_key)) {
     # If label_key is a symbol, some layer must have the key in their data.
-    label_key_text <- rlang::quo_text(label_key)
+    label_key_text <- quo_text(label_key)
     layers <- purrr::keep(layers, ~ label_key_text %in% names(.$data))
     label_keys <- purrr::rerun(length(layers), label_key)
-  } else if (rlang::quo_is_null(label_key)) {
+  } else if (quo_is_null(label_key)) {
     # If label_key is not specified, some key might be usable for label.
     group_keys <- purrr::map(group_infos, "key")
     idx <- !purrr::map_lgl(group_keys, is.null)
@@ -53,7 +53,7 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
     idx <- purrr::map_lgl(layers, fun)
     if (any(idx)) {
       label_key <- label_keys[idx][[1]]
-      if (show_label_key) message("label_key: ", rlang::quo_text(label_key))
+      if (show_label_key) message("label_key: ", quo_text(label_key))
       return(list(layer = layers[idx][[1]], label_key = label_key))
     }
   }
@@ -112,6 +112,6 @@ generate_label_for_point <- function(layer, label_key, label_params) {
 
 
 call_ggrepel_with_params <- function(mapping, data, params) {
-  ggrepel_quo <- rlang::quo(ggrepel::geom_label_repel(mapping, data, !!!params))
-  rlang::eval_tidy(ggrepel_quo)
+  ggrepel_quo <- quo(ggrepel::geom_label_repel(mapping, data, !!!params))
+  eval_tidy(ggrepel_quo)
 }

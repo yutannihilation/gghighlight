@@ -13,9 +13,9 @@ l_line <- geom_line(aes(x, y, colour = type), d)
 l_bar <- geom_bar(aes(x, fill = type), d)
 l_text <- geom_text(aes(x, y, label = type), d)
 
-type_quo <- rlang::quo(type)
-type2_quo <- rlang::quo(type2)
-null_quo <- rlang::quo(NULL)
+type_quo <- quo(type)
+type2_quo <- quo(type2)
+null_quo <- quo(NULL)
 
 g_info <- list(data = d_, id = ids, key = aes(colour = type))
 
@@ -63,7 +63,7 @@ test_that("choose_layer_for_label() chooses a layer properly", {
   expect_equal(choose_layer_for_label(list(l_text, l_point), list(g_info, g_info), type2_quo),
                list(layer = l_point, label_key = type2_quo))
   # if label_key is specified but no layer contains it, NULL is returned.
-  expect_equal(choose_layer_for_label(list(l_text, l_point), list(g_info, g_ingo), rlang::quo(no_such_column)),
+  expect_equal(choose_layer_for_label(list(l_text, l_point), list(g_info, g_ingo), quo(no_such_column)),
                NULL)
 })
 
@@ -71,10 +71,10 @@ test_that("generate_labelled_layer() geenrates a layer for label.", {
   expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white")),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d, fill = "white"))
   # it accepts call
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(factor(type2)), list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(factor(type2)), list(fill = "white")),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = factor(type2)), d, fill = "white"))
 
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), rlang::quo(no_such_column), list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(no_such_column), list(fill = "white")),
                NULL)
   expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white")),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ], fill = "white"))

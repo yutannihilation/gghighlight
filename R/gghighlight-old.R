@@ -45,9 +45,9 @@ gghighlight_old <- function(data,
     data_predicated <- dplyr::summarise(data_grouped, predicate.......... = !! predicate_quo)
 
     groups <- if (is.logical(data_predicated$predicate..........)) {
-      data_predicated[[rlang::quo_text(group_key)]][data_predicated$predicate..........]
+      data_predicated[[quo_text(group_key)]][data_predicated$predicate..........]
     } else {
-      data_predicated[[rlang::quo_text(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
+      data_predicated[[quo_text(group_key)]][order(data_predicated$predicate.........., decreasing = TRUE)][1:max_highlight]
     }
 
     data_filtered <- dplyr::filter(data_grouped, (!! group_key) %in% (!! groups))
@@ -55,7 +55,7 @@ gghighlight_old <- function(data,
     # rename the column for group key in original column so that this cannot be faccetted.
     # assume that no one use this silly colname :P
     data <- dplyr::rename(data, group.......... = !! group_key)
-    mapping_unhighlitghted$group  <- rlang::sym("group..........")
+    mapping_unhighlitghted$group  <- sym("group..........")
   } else {
     data_predicated <- dplyr::mutate(data, predicate.......... = !! predicate_quo)
     if (is.logical(data_predicated$predicate..........)) {
@@ -101,7 +101,7 @@ gghighlight_line <- function(data,
 
   p <- gghighlight_old(data = data,
                        mapping = mapping,
-                       predicate_quo = rlang::enquo(predicate),
+                       predicate_quo = enquo(predicate),
                        max_highlight = max_highlight,
                        unhighlighted_colour = unhighlighted_colour,
                        geom_func = ggplot2::geom_line,
@@ -152,7 +152,7 @@ gghighlight_point <- function(data,
 
   p <- gghighlight_old(data = data,
                        mapping = mapping,
-                       predicate_quo = rlang::enquo(predicate),
+                       predicate_quo = enquo(predicate),
                        max_highlight = max_highlight,
                        unhighlighted_colour = unhighlighted_colour,
                        geom_func = ggplot2::geom_point,
@@ -179,7 +179,7 @@ gghighlight_point <- function(data,
     }
 
     col_labelable <- colnames(data_highlight)[col_labelable_idx[1]]
-    mapping_highlight$label <- rlang::sym(col_labelable)
+    mapping_highlight$label <- sym(col_labelable)
     warning(
       sprintf("Using %s as label for now, but please provide the label_key explicity!",
               col_labelable)
