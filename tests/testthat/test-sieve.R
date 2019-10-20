@@ -28,7 +28,7 @@ expect_equal_sieved <- function(layer, params, ..., expect) {
 test_that("sieve_layer() works with simple ungrouped cases", {
   params <- list(
     group_info = NULL,
-    predicates = list(rlang::quo(value > 1))
+    predicates = list(quo(value > 1))
   )
 
   # Basic usage
@@ -57,7 +57,7 @@ test_that("sieve_layer() works with simple ungrouped cases", {
   expect_equal_sieved(
     geom_bar(aes(x = x), d),
     params = params,
-    predicates = list(rlang::quo(value)),
+    predicates = list(quo(value)),
     max_highlight = 2L,
     expect = geom_bar(aes(x = x), d[6:7, ])
   )
@@ -66,7 +66,7 @@ test_that("sieve_layer() works with simple ungrouped cases", {
 test_that("sieve_layer() works with simple grouped cases", {
   params <- list(
     group_info = list(data = d_, id = ids, key = aes(colour = type)),
-    predicates = list(rlang::quo(mean(value) > 1))
+    predicates = list(quo(mean(value) > 1))
   )
 
   # Basic usage.
@@ -95,7 +95,7 @@ test_that("sieve_layer() works with simple grouped cases", {
   expect_equal_sieved(
     geom_bar(aes(colour = type), d),
     params = params,
-    predicates = list(rlang::quo(mean(value))),
+    predicates = list(quo(mean(value))),
     max_highlight = 1L,
     expect = geom_bar(aes(colour = type), d[6:7, ])
   )
@@ -104,8 +104,8 @@ test_that("sieve_layer() works with simple grouped cases", {
 test_that("sieve_layer() works with intentionally ungrouped cases", {
   # cases where data can be grouped, but intentionally avoid group_by;
   params <- list(
-    group_info = list(data = d_, id = ids, key = rlang::quo(type)),
-    predicates = list(rlang::quo(value > 1)),
+    group_info = list(data = d_, id = ids, key = quo(type)),
+    predicates = list(quo(value > 1)),
     use_group_by = FALSE
   )
 
@@ -147,7 +147,7 @@ test_that("sieve_layer() can handle predicates that contains the group key (c.f.
   m <- c(a = 1, b = 100, c = 10)
   params <- list(
     group_info = list(data = d_, id = ids, key = aes(colour = type)),
-    predicates = list(rlang::quo(max(value * m[type]) >= 100))
+    predicates = list(quo(max(value * m[type]) >= 100))
   )
 
   expect_equal_sieved(
@@ -158,7 +158,7 @@ test_that("sieve_layer() can handle predicates that contains the group key (c.f.
 })
 
 test_that("sieve_layer() returns false if all calculation is failed", {
-  expect_false(sieve_layer(geom_bar(aes(x = x), d), NULL, list(rlang::quo(no_such_column > 1))))
+  expect_false(sieve_layer(geom_bar(aes(x = x), d), NULL, list(quo(no_such_column > 1))))
 })
 
 test_that("sieve_layer() works with zero predicate", {
@@ -185,7 +185,7 @@ test_that("sieve_layer() works with more than two predicates", {
       "e",    11,    10,
       "e",    12,    30
   )
-  pred_grouped <- rlang::quos(
+  pred_grouped <- quos(
     mean(val1) > 2,      # logical to filter out "a"
     any(val2 %% 2 == 0), # logical to filter out "d"
     sum(val2)            # numerical
@@ -236,7 +236,7 @@ test_that("sieve_layer() works with list columns", {
     sieve_layer(
       sl,
       group_info = NULL,
-      predicates = rlang::quos(p1 = l, p2 = v),
+      predicates = quos(p1 = l, p2 = v),
       max_highlight = 2L
     )
   )
@@ -251,7 +251,7 @@ test_that("sieve_layer() works with list columns", {
       group_info = list(data = setNames(d3[3], c("colour")),
                         id = c(1, 1, 2, 2),
                         key = aes(colour = z)),
-      predicates = rlang::quos(p1 = list(l), p2 = sum(v)),
+      predicates = quos(p1 = list(l), p2 = sum(v)),
       max_highlight = 1L,
       use_group_by = TRUE
     )
@@ -265,7 +265,7 @@ test_that("sieve_layer() do not count NA for max_highlights", {
   
   params <- list(
     group_info = NULL,
-    predicates = list(rlang::quo(x))
+    predicates = list(quo(x))
   )
   
   expect_equal_sieved(

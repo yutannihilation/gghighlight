@@ -35,7 +35,7 @@ test_that("gghighlight_point() without label_key works", {
   expect_warning(p <- gghighlight_point(d, aes(x, y), value > 5))
   d_built <- ggplot2::ggplot_build(p)
 
-  expect_equal(d_built$plot$layers[[3]]$mapping$label, rlang::quo(category))
+  expect_equal(d_built$plot$layers[[3]]$mapping$label, quo(category))
 
   expect_equal(length(d_built$data), 3L)
 })

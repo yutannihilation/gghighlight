@@ -19,7 +19,7 @@ g_info <- list(data = d_expect, id = ids, key = aes(colour = type))
 
 d_bleached <- d[1:3]
 d_bleached$ids <- factor(ids)
-prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
 aes_bleached <- aes_string(x = paste0(prefix, 1),

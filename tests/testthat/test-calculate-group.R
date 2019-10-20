@@ -56,16 +56,16 @@ test_that("calculate_group_info() works with facets", {
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
   ids <- c(1, 1, 2, 2, 3, 3, 4, 4)
   
-  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = rlang::quos(cat2 = cat2)),
+  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos(cat2 = cat2)),
                list(data = d_expect, id = ids, key = aes(colour = cat1)))
   
   # Even if there's no discrete key, return a group info if there's an extra_vars
-  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = rlang::quos(cat2 = cat2)),
+  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos(cat2 = cat2)),
                list(data = d_expect[, c("x", "y")], id = ids[c(1:4, 1:4)], key = aes()))
   
   # If extra_vars is empty, it doesn't affect on grouping
-  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = rlang::quos()),
+  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos()),
                NULL)
-  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = rlang::quos()),
+  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos()),
                list(data = d_expect, id = rep(1:2, each = 4), key = aes(colour = cat1)))
 })

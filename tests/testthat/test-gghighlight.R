@@ -19,7 +19,7 @@ g_info <- list(data = d_expect, id = ids, key = aes(colour = type))
 
 d_bleached <- d[1:3]
 d_bleached$ids <- factor(ids)
-prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
 aes_bleached <- aes_string(x = paste0(prefix, 1),
@@ -110,7 +110,7 @@ test_that("gghighlight() works with the plot without layers, grouped", {
 
 d_bleached <- d[1:3]
 d_bleached$ids <- factor(ids)
-prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
 aes_bleached <- aes_string(x = paste0(prefix, 1),
@@ -121,7 +121,7 @@ aes_bleached <- aes_string(x = paste0(prefix, 1),
 
 test_that("gghighlight() works with two layers, grouped", {
   aes_bleached2 <- aes_bleached
-  aes_bleached2$fill <- rlang::quo(!!rlang::sym(paste0(prefix, 4)))
+  aes_bleached2$fill <- quo(!!sym(paste0(prefix, 4)))
   d_bleached2 <- d_bleached
   d_bleached2[paste0(prefix, 4)] <- d[3]
 
@@ -223,7 +223,7 @@ test_that("gghighlight() works with facets", {
 
   d_bleached <- d[1:3]
   d_bleached$ids <- factor(ids)
-  prefix <- rlang::expr_text(VERY_SECRET_COLUMN_NAME)
+  prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
   names(d_bleached) <- paste0(prefix, c(1:3, "group"))
   d_bleached <- dplyr::bind_cols(d_bleached, d)
   

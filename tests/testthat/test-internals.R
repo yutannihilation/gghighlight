@@ -7,12 +7,12 @@ test_that("choose_col_for_filter_and_arrange() works", {
                        p1 = TRUE,
                        lst = list(1, 2))
 
-  expected <- list(filter = rlang::syms(c("p1")),
-                   arrange = rlang::syms(c("y", "z")))
-  expect_equal(choose_col_for_filter_and_arrange(d1, rlang::sym("x")),
+  expected <- list(filter = syms(c("p1")),
+                   arrange = syms(c("y", "z")))
+  expect_equal(choose_col_for_filter_and_arrange(d1, sym("x")),
                !!expected)
 
-  expect_equal(choose_col_for_filter_and_arrange(d1, rlang::quo(x)),
+  expect_equal(choose_col_for_filter_and_arrange(d1, quo(x)),
                !!expected)
 })
 
@@ -38,21 +38,21 @@ test_that("normalize_unhighlighted_params() works", {
 
 test_that("calculate_ungrouped() and calculate_grouped() don't drop data.frames", {
   d <- data.frame(x = 1:10)
-  expect_equal(calculate_ungrouped(d, rlang::quos(p1 = x > 0), Inf),
+  expect_equal(calculate_ungrouped(d, quos(p1 = x > 0), Inf),
                d)
-  expect_equal(calculate_ungrouped(d, rlang::quos(p1 = x > 5), Inf),
+  expect_equal(calculate_ungrouped(d, quos(p1 = x > 5), Inf),
                d[6:10, , drop = FALSE])
 
-  expect_equal(calculate_grouped(d, rlang::quos(p1 = max(x) > 0), Inf, rep(1:2, each = 5)),
+  expect_equal(calculate_grouped(d, quos(p1 = max(x) > 0), Inf, rep(1:2, each = 5)),
                d)
-  expect_equal(calculate_grouped(d, rlang::quos(p1 = max(x) > 5), Inf, rep(1:2, each = 5)),
+  expect_equal(calculate_grouped(d, quos(p1 = max(x) > 5), Inf, rep(1:2, each = 5)),
                d[6:10, , drop = FALSE])
 
 })
 
 test_that("get_facet_vars() extract facet specs", {
   p <- ggplot()
-  v <- rlang::quos(A = a, B = b)
+  v <- quos(A = a, B = b)
   
   expect_identical(get_facet_vars(p$facet), NULL)
   expect_identical(get_facet_vars((p + facet_wrap(v))$facet), v)
