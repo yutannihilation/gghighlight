@@ -19,12 +19,12 @@ Imports:
     ggrepel,
     magrittr,
     purrr,
-    rlang,
-    sf
+    rlang
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
+    sf,
     vdiffr (>= 0.3.0)
 LazyData: true
 Roxygen: list(markdown = TRUE)
