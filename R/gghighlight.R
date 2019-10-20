@@ -512,7 +512,11 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
 
 choose_col_for_filter_and_arrange <- function(data, exclude_col) {
   # Do not use row IDs or group keys to arrange.
-  data <- dplyr::select(data, -!!exclude_col)
+  include_col <- tidyselect::vars_select(names(data), -!!exclude_col)
+
+  # TODO: `[` can handle most of the cases because it returns e.g. sf for sf, and data.frame for invalid tsibble
+  # We need to reconsider this when we find some cases `[` won't work.
+  data <- data[, include_col, drop = FALSE]
   col_idx_lgl <- purrr::map_lgl(data, is.logical)
   col_idx_lst <- purrr::map_lgl(data, is.list)
   list(
