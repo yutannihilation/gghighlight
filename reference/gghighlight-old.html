@@ -120,15 +120,31 @@
     <p><code>gghiglight_line()</code> and <code>gghighlight_point()</code> are deprecated. Please use <code><a href='gghighlight.html'>gghighlight()</a></code> instead.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gghighlight_line</span>(<span class='no'>data</span>, <span class='no'>mapping</span>, <span class='no'>predicate</span>, <span class='kw'>max_highlight</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
+    <pre class="usage"><span class='fu'>gghighlight_line</span>(
+  <span class='no'>data</span>,
+  <span class='no'>mapping</span>,
+  <span class='no'>predicate</span>,
+  <span class='kw'>max_highlight</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
   <span class='kw'>unhighlighted_colour</span> <span class='kw'>=</span> <span class='kw pkg'>ggplot2</span><span class='kw ns'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/reexports.html'>alpha</a></span>(<span class='st'>"grey"</span>, <span class='fl'>0.7</span>),
-  <span class='kw'>use_group_by</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>use_direct_label</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>...</span>, <span class='kw'>environment</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())
+  <span class='kw'>use_group_by</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>use_direct_label</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>environment</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)
 
-<span class='fu'>gghighlight_point</span>(<span class='no'>data</span>, <span class='no'>mapping</span>, <span class='no'>predicate</span>, <span class='kw'>max_highlight</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
+<span class='fu'>gghighlight_point</span>(
+  <span class='no'>data</span>,
+  <span class='no'>mapping</span>,
+  <span class='no'>predicate</span>,
+  <span class='kw'>max_highlight</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
   <span class='kw'>unhighlighted_colour</span> <span class='kw'>=</span> <span class='kw pkg'>ggplot2</span><span class='kw ns'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/reexports.html'>alpha</a></span>(<span class='st'>"grey"</span>, <span class='fl'>0.7</span>),
-  <span class='kw'>use_group_by</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>use_direct_label</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>...</span>, <span class='kw'>environment</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+  <span class='kw'>use_group_by</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>use_direct_label</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>environment</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -136,7 +152,7 @@
     <tr>
       <th>data</th>
       <td><p>Default dataset to use for plot. If not already a data.frame,
-will be converted to one by <code>fortify()</code>. If not specified,
+will be converted to one by <code><a href='https://ggplot2.tidyverse.org/reference/fortify.html'>fortify()</a></code>. If not specified,
 must be supplied in each layer added to the plot.</p></td>
     </tr>
     <tr>
