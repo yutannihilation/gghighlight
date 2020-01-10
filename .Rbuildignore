@@ -4,3 +4,4 @@
 ^\.travis\.yml$
 ^cran-comments\.md$
 ^docs$
+^\.github/workflows/R-CMD-check\.yaml$
