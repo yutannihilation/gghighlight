@@ -4,6 +4,7 @@
 #'
 #' @name gghighlight-old
 #'
+#' @importFrom magrittr %>%
 #' @inheritParams ggplot2::ggplot
 #' @param predicate Expression to filter data, which is passed to [dplyr::filter()].
 #' @param max_highlight Max number of series to highlight.
