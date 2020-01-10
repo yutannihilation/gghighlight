@@ -6,19 +6,35 @@
 \alias{gghighlight_point}
 \title{Highlight Data With Predicate}
 \usage{
-gghighlight_line(data, mapping, predicate, max_highlight = 5L,
+gghighlight_line(
+  data,
+  mapping,
+  predicate,
+  max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-  use_group_by = TRUE, use_direct_label = TRUE, label_key = NULL,
-  ..., environment = parent.frame())
+  use_group_by = TRUE,
+  use_direct_label = TRUE,
+  label_key = NULL,
+  ...,
+  environment = parent.frame()
+)
 
-gghighlight_point(data, mapping, predicate, max_highlight = 5L,
+gghighlight_point(
+  data,
+  mapping,
+  predicate,
+  max_highlight = 5L,
   unhighlighted_colour = ggplot2::alpha("grey", 0.7),
-  use_group_by = FALSE, use_direct_label = TRUE, label_key = NULL,
-  ..., environment = parent.frame())
+  use_group_by = FALSE,
+  use_direct_label = TRUE,
+  label_key = NULL,
+  ...,
+  environment = parent.frame()
+)
 }
 \arguments{
 \item{data}{Default dataset to use for plot. If not already a data.frame,
-will be converted to one by \code{\link[=fortify]{fortify()}}. If not specified,
+will be converted to one by \code{\link[ggplot2:fortify]{fortify()}}. If not specified,
 must be supplied in each layer added to the plot.}
 
 \item{mapping}{Default list of aesthetic mappings to use for plot.
