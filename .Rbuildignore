@@ -4,6 +4,4 @@
 ^\.travis\.yml$
 ^cran-comments\.md$
 ^docs$
-^\.github/workflows/R-CMD-check\.yaml$
-^\.github/workflows/pkgdown\.yaml$
-^\.github/workflows/render-readme\.yaml$
+^\.github$
