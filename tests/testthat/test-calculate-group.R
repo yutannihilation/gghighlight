@@ -12,7 +12,7 @@ test_that("calculate_group_info() works", {
      1,  4,   "c",     10,
      3,  3,   "c",     10
   )
-  
+
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
   ids <- c(1, 1, 1, 2, 2, 3, 3)
 
@@ -27,9 +27,9 @@ test_that("calculate_group_info() works", {
   expect_equal(calculate_group_info(d, aes(x, y, colour = factor(type))),
                list(data = d_expect_factor, id = ids, key = aes()))
 
-  # if aes contains expressions that cannot be evaluated outside ggplot2 (e.g. stat(count)),
+  # if aes contains expressions that cannot be evaluated outside ggplot2 (e.g. after_stat(count)),
   # just ignore it.
-  expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = stat(count), alpha = ..count..)),
+  expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = after_stat(count), alpha = ..count..)),
                list(data = d_expect, id = ids, key = aes(colour = type)))
 
   # if there is group mapping, use it
@@ -55,14 +55,14 @@ test_that("calculate_group_info() works with facets", {
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
   ids <- c(1, 1, 2, 2, 3, 3, 4, 4)
-  
+
   expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos(cat2 = cat2)),
                list(data = d_expect, id = ids, key = aes(colour = cat1)))
-  
+
   # Even if there's no discrete key, return a group info if there's an extra_vars
   expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos(cat2 = cat2)),
                list(data = d_expect[, c("x", "y")], id = ids[c(1:4, 1:4)], key = aes()))
-  
+
   # If extra_vars is empty, it doesn't affect on grouping
   expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos()),
                NULL)
