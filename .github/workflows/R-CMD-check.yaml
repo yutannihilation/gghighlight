@@ -4,7 +4,7 @@ name: R-CMD-check
 
 jobs:
   R-CMD-check:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     env:
       VDIFFR_RUN_TESTS: false
     steps:
