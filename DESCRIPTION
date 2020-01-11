@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
     ggplot2 (>= 3.0.0),
-    R (>= 3.1.0)
+    R (>= 3.2.0)
 Imports:
     dplyr (> 0.7.0),
     tibble,
