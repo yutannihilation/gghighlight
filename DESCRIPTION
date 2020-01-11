@@ -20,6 +20,7 @@ Imports:
     magrittr,
     purrr,
     rlang,
+    scales,
     sf
 Suggests: 
     testthat,

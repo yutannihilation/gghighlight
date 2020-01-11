@@ -1,6 +1,6 @@
 context("test-gghighlight.R")
 
-grey07 <- ggplot2::alpha("grey", 0.7)
+grey07 <- scales::alpha("grey", 0.7)
 
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,

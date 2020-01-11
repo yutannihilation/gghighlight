@@ -352,8 +352,8 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars
 }
 
 default_unhighlighted_params <- list(
-  colour = ggplot2::alpha("grey", 0.7),
-  fill = ggplot2::alpha("grey", 0.7)
+  colour = scales::alpha("grey", 0.7),
+  fill = scales::alpha("grey", 0.7)
 )
 
 get_default_aes_param <- function(aes_param_name, geom, mapping) {
