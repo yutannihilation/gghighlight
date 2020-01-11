@@ -59,3 +59,4 @@ If not specified, must be supplied in each layer added to the plot.}
 \description{
 \code{gghiglight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
 }
+\keyword{internal}

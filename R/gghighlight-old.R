@@ -14,6 +14,7 @@
 #' @param label_key Column name for `label` aesthetics.
 #' @param ... Arguments passed to the corresponding geometry functions (e.g. `geom_line()`).
 #'
+#' @keywords internal
 NULL
 
 
@@ -100,6 +101,7 @@ gghighlight_line <- function(data,
                              ...,
                              environment = parent.frame()) {
 
+  .Deprecated(new = "gghighlight")
   p <- gghighlight_old(data = data,
                        mapping = mapping,
                        predicate_quo = enquo(predicate),
@@ -151,6 +153,8 @@ gghighlight_point <- function(data,
                               ...,
                               environment = parent.frame()) {
 
+  .Deprecated(new = "gghighlight")
+  
   p <- gghighlight_old(data = data,
                        mapping = mapping,
                        predicate_quo = enquo(predicate),
