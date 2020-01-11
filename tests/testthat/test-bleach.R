@@ -79,6 +79,8 @@ test_that("bleach_layer() works", {
 })
 
 test_that("bleach_layer() works for NULL default aes", {
+  skip_if_not_installed("sf")
+  
   expect_equal_layer(
     bleach_layer(geom_sf(aes(fill = type), d)[[1]],
                  list(data = setNames(d[3], c("fill")),
