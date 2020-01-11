@@ -7,9 +7,10 @@ matrix:
   fast_finish: true
   include:
   - r: release
+    # TODO: remove this when the new version of ggplot2 will be released
+    env: VDIFFR_RUN_TESTS=false
   - r: devel
-    env:
-    - VDIFFR_RUN_TESTS=false
+    env: VDIFFR_RUN_TESTS=false
   - r: oldrel
     env: VDIFFR_RUN_TESTS=false
   # test with the dev version of ggplot2
