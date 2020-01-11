@@ -108,8 +108,14 @@ test_that("gghighligt_line() works with facets", {
 })
 
 test_that("gghighligt_line() raises error if use_group_by = TRUE but predicate returns multiple values per group", {
-  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value))
-  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0))
+  expect_warning(
+    expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value)),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
+  expect_warning(
+    expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0)),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
 })
 
 test_that("gghighligt_line() works with numerical predicate", {
