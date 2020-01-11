@@ -9,7 +9,10 @@ d <- data.frame(
 
 
 test_that("gghighligt_line() with usual arguments works", {
-  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10))
+  expect_warning(
+    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
@@ -32,8 +35,11 @@ test_that("gghighligt_line() with usual arguments works", {
 })
 
 test_that("gghighligt_line() without direct labeling works", {
-  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10,
-                                      use_direct_label = FALSE))
+  expect_warning(
+    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10,
+                                      use_direct_label = FALSE),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 2L)
@@ -73,7 +79,10 @@ test_that("gghighligt_line() without colour mapping works", {
 library(ggplot2)
 
 test_that("gghighligt_line() works with facets", {
-  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category))
+  expect_warning(
+    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
@@ -104,7 +113,10 @@ test_that("gghighligt_line() raises error if use_group_by = TRUE but predicate r
 })
 
 test_that("gghighligt_line() works with numerical predicate", {
-  expect_silent(p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L))
+  expect_warning(
+    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L),
+    "'gghighlight_line' is deprecated.", fixed = TRUE
+  )
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
