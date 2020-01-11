@@ -10,7 +10,6 @@ matrix:
   - r: devel
     env:
     - VDIFFR_RUN_TESTS=false
-    - _R_CHECK_SYSTEM_CLOCK_=false
   - r: oldrel
     env: VDIFFR_RUN_TESTS=false
   # test with the dev version of ggplot2
