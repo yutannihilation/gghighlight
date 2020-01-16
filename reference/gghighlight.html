@@ -194,14 +194,14 @@ grouping; in other words, highlighting is done on each facet individually.</p></
   <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )
 
-<span class='co'># highlight the lines whose max values are larger than 10</span>
+<span class='co'># Highlight the lines whose max values are larger than 10</span>
 <span class='fu'>ggplot</span>(<span class='no'>d</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='no'>idx</span>, <span class='no'>value</span>, <span class='kw'>colour</span> <span class='kw'>=</span> <span class='no'>category</span>)) +
   <span class='fu'>geom_line</span>() + <span class='fu'>gghighlight</span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='no'>value</span>) <span class='kw'>&gt;</span> <span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='message'>label_key: category</span></div><div class='img'><img src='gghighlight-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'># highlight the points whose values are larger than 10</span>
+<span class='co'># Highlight the points whose values are larger than 10</span>
 <span class='fu'>ggplot</span>(<span class='no'>d</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='no'>idx</span>, <span class='no'>value</span>)) +
   <span class='fu'>geom_point</span>() +
   <span class='fu'>gghighlight</span>(<span class='no'>value</span> <span class='kw'>&gt;</span> <span class='fl'>10</span>, <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='no'>category</span>)</div><div class='img'><img src='gghighlight-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'># specify the styles for unhighlighted layer</span>
+<span class='co'># Specify the styles for unhighlighted layer</span>
 <span class='fu'>ggplot</span>(<span class='no'>d</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='no'>idx</span>, <span class='no'>value</span>, <span class='kw'>colour</span> <span class='kw'>=</span> <span class='no'>category</span>)) +
   <span class='fu'>geom_line</span>(<span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>5</span>) +
   <span class='fu'>gghighlight</span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='no'>value</span>) <span class='kw'>&gt;</span> <span class='fl'>10</span>,
