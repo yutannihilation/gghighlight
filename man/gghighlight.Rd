@@ -54,16 +54,16 @@ d <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# highlight the lines whose max values are larger than 10
+# Highlight the lines whose max values are larger than 10
 ggplot(d, aes(idx, value, colour = category)) +
   geom_line() + gghighlight(max(value) > 10)
 
-# highlight the points whose values are larger than 10
+# Highlight the points whose values are larger than 10
 ggplot(d, aes(idx, value)) +
   geom_point() +
   gghighlight(value > 10, label_key = category)
 
-# specify the styles for unhighlighted layer
+# Specify the styles for unhighlighted layer
 ggplot(d, aes(idx, value, colour = category)) +
   geom_line(size = 5) +
   gghighlight(max(value) > 10,
