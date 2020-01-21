@@ -1,5 +1,3 @@
-context("test-merge")
-
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
    1,  2,   "a",      0,

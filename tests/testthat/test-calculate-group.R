@@ -1,6 +1,3 @@
-context("test-calculate-group")
-
-
 test_that("calculate_group_info() works", {
   d <- tibble::tribble(
     ~x, ~y, ~type, ~value,

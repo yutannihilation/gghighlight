@@ -1,5 +1,3 @@
-context("test-internals.R")
-
 test_that("choose_col_for_filter_and_arrange() works", {
   d1 <- tibble::tibble(x = 1,
                        y = "a",
