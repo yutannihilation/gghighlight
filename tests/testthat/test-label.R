@@ -1,5 +1,3 @@
-context("test-label.R")
-
 type_chr <- c("a", "a", "b", "b")
 d <- data.frame(x = 1:4, y = 1:4, type = type_chr, type2 = type_chr, stringsAsFactors = FALSE)
 d2 <- data.frame(x = 1, y = 2, type = "a")

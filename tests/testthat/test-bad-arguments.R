@@ -1,5 +1,3 @@
-context("test-bad-arguments")
-
 test_that("mistype of `==` is detected", {
   expect <- "Did you mistype some argument name? Or, did you mean `==`?: a = b"
   expect_error(check_bad_predicates(quos(a = b)), expect, fixed = TRUE)

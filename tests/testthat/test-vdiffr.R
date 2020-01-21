@@ -1,5 +1,3 @@
-context("visual tests")
-
 test_that("gghighlight() highlights correctly", {
   vdiffr::expect_doppelganger(
     "simple bar chart",

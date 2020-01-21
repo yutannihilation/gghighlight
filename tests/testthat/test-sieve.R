@@ -1,5 +1,3 @@
-context("test-sieve")
-
 grey07 <- scales::alpha("grey", 0.7)
 
 d <- tibble::tribble(
