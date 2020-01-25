@@ -9,7 +9,7 @@ d <- data.frame(
 test_that("gghighlight_point() works", {
   expect_warning(
     p <- gghighlight_point(d, aes(x, y), value > 5, label_key = category),
-    "'gghighlight_point' is deprecated.", fixed = TRUE
+    "`gghighlight_point()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 
@@ -44,7 +44,7 @@ test_that("gghighlight_point() without label_key works", {
 test_that("gghighligt_point() works with numerical predicate", {
   expect_warning(
     p <- gghighlight_point(d, aes(x, y), value, max_highlight = 3L, label_key = category),
-    "'gghighlight_point' is deprecated.", fixed = TRUE
+    "`gghighlight_point()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 

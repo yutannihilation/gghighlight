@@ -6,10 +6,10 @@ d <- data.frame(
 )
 
 
-test_that("gghighligt_line() with usual arguments works", {
+test_that("gghighlight_line() with usual arguments works", {
   expect_warning(
     p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 
@@ -36,7 +36,7 @@ test_that("gghighligt_line() without direct labeling works", {
   expect_warning(
     p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10,
                                       use_direct_label = FALSE),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 
@@ -79,7 +79,7 @@ library(ggplot2)
 test_that("gghighligt_line() works with facets", {
   expect_warning(
     p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 
@@ -108,18 +108,18 @@ test_that("gghighligt_line() works with facets", {
 test_that("gghighligt_line() raises error if use_group_by = TRUE but predicate returns multiple values per group", {
   expect_warning(
     expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value)),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
   expect_warning(
     expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0)),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
 })
 
 test_that("gghighligt_line() works with numerical predicate", {
   expect_warning(
     p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L),
-    "'gghighlight_line' is deprecated.", fixed = TRUE
+    "`gghighlight_line()` is deprecated", fixed = TRUE
   )
   d_built <- ggplot2::ggplot_build(p)
 

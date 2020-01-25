@@ -1,5 +1,8 @@
 #' Highlight Data With Predicate
 #'
+#' @description
+#' \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+#'
 #' `gghiglight()` highlights (almost) any geoms according to the given predicates.
 #'
 #' @name gghighlight
@@ -74,7 +77,11 @@ gghighlight <- function(...,
   unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
 
   if (!is.null(unhighlighted_colour)) {
-    warn("unhighlighted_colour is deprecated. Use unhighlighted_params instead.")
+    lifecycle::deprecate_warn(
+      "0.2.0",
+      "gghighlight(unhighlighted_colour = )",
+      "gghighlight(unhighlighted_params = )"
+    )
     unhighlighted_params$colour <- unhighlighted_colour
   }
 

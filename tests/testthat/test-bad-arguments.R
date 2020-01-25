@@ -10,3 +10,10 @@ test_that("label_key must be a symbol", {
   foo <- quo(foo)
   expect_error(gghighlight(label_key = !!foo), NA)
 })
+
+test_that("use of unhighlighted_colour is warned", {
+  expect_warning(
+    gghighlight(unhighlighted_colour = 1),
+    "The `unhighlighted_colour` argument of `gghighlight()` is deprecated", fixed = TRUE
+  )
+})

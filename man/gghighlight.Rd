@@ -44,6 +44,8 @@ grouping; in other words, highlighting is done on each facet individually.}
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
 }
 \description{
+\Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+
 \code{gghiglight()} highlights (almost) any geoms according to the given predicates.
 }
 \examples{
