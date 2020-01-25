@@ -85,7 +85,7 @@ generate_label_for_line <- function(layer, label_key, label_params, max_labels) 
   group_key_orig <- dplyr::groups(layer$data)
 
   data <- dplyr::group_by(layer$data, !!group_key)
-  if (nrow(data) > max_labels) {
+  if (dplyr::n_groups(data) > max_labels) {
     inform("Too many data series, skip labeling")
     return(list())
   }
