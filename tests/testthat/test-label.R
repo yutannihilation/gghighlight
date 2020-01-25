@@ -66,28 +66,33 @@ test_that("choose_layer_for_label() chooses a layer properly", {
 })
 
 test_that("generate_labelled_layer() geenrates a layer for label.", {
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white"), nrow(d)),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d, fill = "white"))
   # it accepts call
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(factor(type2)), list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(factor(type2)), list(fill = "white"), nrow(d)),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = factor(type2)), d, fill = "white"))
 
-  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(no_such_column), list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), quo(no_such_column), list(fill = "white"), nrow(d)),
                NULL)
-  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white"), 2),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ], fill = "white"))
-  expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo, list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo, list(fill = "white"), nrow(d)),
+               list())
+  # Do not generate labels when the data is more than max_labels
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white"), nrow(d) - 1),
+               list())
+  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white"), 1),
                list())
   # share the same seed of jitter
   l_jitter <- geom_point(aes(x, y, colour = type), d, position = position_jitter())
-  expect_equal(generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white")),
+  expect_equal(generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf),
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d, fill = "white",
                                          position = position_jitter(seed = l_jitter$position$seed)))
 
   # when the seed is NULL, set it and share it. (c.f. tidyverse/ggplot2#2507)
   l_jitter <- geom_point(aes(x, y, colour = type), d, position = "jitter")
   expect_true(is.null(l_jitter$position$seed))
-  l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"))
+  l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf)
   expect_true(!is.null(l_jitter$position$seed))
   expect_equal(l_label$position$seed, l_jitter$position$seed)
 })

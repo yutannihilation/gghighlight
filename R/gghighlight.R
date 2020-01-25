@@ -70,15 +70,6 @@ gghighlight <- function(...,
   check_bad_predicates(predicates)
   check_bad_label_key(label_key)
 
-  # if use_direct_label is NULL, try to use direct labels but ignore failures
-  # if use_direct_label is TRUE, use direct labels, otherwise stop()
-  # if use_direct_label is FALSE, do not use direct labeys
-  label_key_must_exist <- TRUE
-  if (is.null(use_direct_label)) {
-    use_direct_label <- TRUE
-    label_key_must_exist <- FALSE
-  }
-
   # if fill is not specified, use colour for fill, or vice versa
   unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
 
@@ -95,7 +86,6 @@ gghighlight <- function(...,
       unhighlighted_params = unhighlighted_params,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
-      label_key_must_exist = label_key_must_exist,
       label_key = label_key,
       label_params = label_params,
       keep_scales = keep_scales,
@@ -198,17 +188,29 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     plot <- plot %+% purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
   }
 
-  if (!object$use_direct_label) {
+  # 1) use_direct_label is NULL
+  #   - try to use direct labels but ignore failures
+  #   - when the labels would be too many, do not add labels
+  # 2) use_direct_label is TRUE
+  #   - use direct labels, otherwise abort()
+  #   - even when the labels would be too many, do add labels
+  # 3) use_direct_label is FALSE
+  #   - do not use direct labeys
+  if (is_false(object$use_direct_label)) {
     return(plot)
   }
 
+  must_add_labels <- is_true(object$use_direct_label)
+  max_labels <- ifelse(must_add_labels, Inf, getOption("gghighlight_max_labels", 20))
+
   layer_labelled <- generate_labelled_layer(
     layers_sieved, group_infos,
-    object$label_key, object$label_params
+    object$label_key, object$label_params,
+    max_labels = max_labels
   )
 
   if (is.null(layer_labelled)) {
-    if (object$label_key_must_exist) {
+    if (must_add_labels) {
       abort("No layer can be used for labels")
     } else {
       return(plot)

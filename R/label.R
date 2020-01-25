@@ -1,6 +1,6 @@
 # Labels
 
-generate_labelled_layer <- function(layers, group_infos, label_key, label_params) {
+generate_labelled_layer <- function(layers, group_infos, label_key, label_params, max_labels) {
   layer_for_label <- choose_layer_for_label(layers, group_infos, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
@@ -10,8 +10,8 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
   label_key <- layer_for_label$label_key
 
   switch(class(layer$geom)[1],
-    GeomLine = generate_label_for_line(layer, label_key, label_params),
-    GeomPoint = generate_label_for_point(layer, label_key, label_params),
+    GeomLine = generate_label_for_line(layer, label_key, label_params, max_labels = max_labels),
+    GeomPoint = generate_label_for_point(layer, label_key, label_params, max_labels = max_labels),
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
     GeomBar = list(),
@@ -74,7 +74,7 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-generate_label_for_line <- function(layer, label_key, label_params) {
+generate_label_for_line <- function(layer, label_key, label_params, max_labels) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -85,6 +85,11 @@ generate_label_for_line <- function(layer, label_key, label_params) {
   group_key_orig <- dplyr::groups(layer$data)
 
   data <- dplyr::group_by(layer$data, !!group_key)
+  if (dplyr::n_groups(data) > max_labels) {
+    inform("Too many data series, skip labeling")
+    return(list())
+  }
+  
   rightmost_points <- dplyr::filter(data, !!x_key == max(!!x_key))
   # max value can appear multiple times, so ensure only one row per group
   rightmost_points <- dplyr::slice(rightmost_points, 1)
@@ -95,7 +100,12 @@ generate_label_for_line <- function(layer, label_key, label_params) {
   call_ggrepel_with_params(mapping, rightmost_points, label_params)
 }
 
-generate_label_for_point <- function(layer, label_key, label_params) {
+generate_label_for_point <- function(layer, label_key, label_params, max_labels) {
+  if (nrow(layer$data) > max_labels) {
+    inform("Too many data points, skip labeling")
+    return(list())
+  }
+  
   mapping <- layer$mapping
   mapping$label <- label_key
 
