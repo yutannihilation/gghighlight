@@ -36,7 +36,7 @@ test_that("gghighligt_line() without direct labeling works", {
   p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
   d_built <- ggplot2::ggplot_build(p)
 
-  expect_equal(length(d_built$data), 2L)
+  expect_equal(length(d_built$data), 3L)
 
   data_unhighlighted <- d_built$data[[1]]
   data_highlighted_line <- d_built$data[[2]]
