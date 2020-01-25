@@ -90,6 +90,9 @@ test_that("generate_labelled_layer() geenrates a layer for label.", {
   l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"))
   expect_true(!is.null(l_jitter$position$seed))
   expect_equal(l_label$position$seed, l_jitter$position$seed)
+
+  # Do not modify the original env
+  expect_true(is.null(ggplot2::PositionJitter$seed))
 })
 
 test_that("call_ggrepel_with_params() generates a geom_label_repel()", {
