@@ -1,3 +1,6 @@
+setup(options(lifecycle_verbosity = "quiet"))
+teardown(options(lifecycle_verbosity = NULL))
+
 d <- data.frame(
   idx   = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
   value = c( 1, 2, 3,10,11,12, 9,10,11),
@@ -7,10 +10,7 @@ d <- data.frame(
 
 
 test_that("gghighlight_line() with usual arguments works", {
-  expect_warning(
-    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
@@ -33,11 +33,7 @@ test_that("gghighlight_line() with usual arguments works", {
 })
 
 test_that("gghighligt_line() without direct labeling works", {
-  expect_warning(
-    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10,
-                                      use_direct_label = FALSE),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 2L)
@@ -77,10 +73,7 @@ test_that("gghighligt_line() without colour mapping works", {
 library(ggplot2)
 
 test_that("gghighligt_line() works with facets", {
-  expect_warning(
-    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_line(d, aes(idx, value, colour = category), max(value) > 10) + facet_wrap(~category)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
@@ -106,21 +99,12 @@ test_that("gghighligt_line() works with facets", {
 })
 
 test_that("gghighligt_line() raises error if use_group_by = TRUE but predicate returns multiple values per group", {
-  expect_warning(
-    expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value)),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
-  expect_warning(
-    expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0)),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
+  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value))
+  expect_error(p <- gghighlight_line(d, aes(idx, value, colour = category), value > 0))
 })
 
 test_that("gghighligt_line() works with numerical predicate", {
-  expect_warning(
-    p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L),
-    "`gghighlight_line()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_line(d, aes(idx, value, colour = category), max(value), max_highlight = 2L)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
