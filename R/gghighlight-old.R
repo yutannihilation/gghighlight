@@ -1,5 +1,8 @@
 #' Highlight Data With Predicate
 #'
+#' @description
+#' \Sexpr[results=rd, stage=render]{lifecycle::badge("deprecated")}
+#'
 #' `gghiglight_line()` and `gghighlight_point()` are deprecated. Please use [gghighlight()] instead.
 #'
 #' @name gghighlight-old
@@ -101,7 +104,8 @@ gghighlight_line <- function(data,
                              ...,
                              environment = parent.frame()) {
 
-  .Deprecated(new = "gghighlight")
+  lifecycle::deprecate_warn("0.1.0", "gghighlight_line()", with = "gghighlight()")
+
   p <- gghighlight_old(data = data,
                        mapping = mapping,
                        predicate_quo = enquo(predicate),
@@ -153,8 +157,8 @@ gghighlight_point <- function(data,
                               ...,
                               environment = parent.frame()) {
 
-  .Deprecated(new = "gghighlight")
-  
+  lifecycle::deprecate_warn("0.1.0", "gghighlight_point()", with = "gghighlight()")
+
   p <- gghighlight_old(data = data,
                        mapping = mapping,
                        predicate_quo = enquo(predicate),
