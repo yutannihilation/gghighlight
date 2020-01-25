@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gghighlight</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -298,11 +298,11 @@
 <span id="cb17-10"><a href="#cb17-10"></a><span class="co">#&gt; Falling back to ungrouped filter operation...</span></span></code></pre></div>
 <p><img src="gghighlight_files/figure-html/keep_scales-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/keep_scales-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
-<div id="use_facet_vars" class="section level3">
+<div id="calculate_per_facet" class="section level3">
 <h3 class="hasAnchor">
-<a href="#use_facet_vars" class="anchor"></a><code>use_facet_vars</code>
+<a href="#calculate_per_facet" class="anchor"></a><code>calculate_per_facet</code>
 </h3>
-<p>If you want to highlight each facet individually, set <code>use_facet_vars</code> to <code>TRUE</code>. Note that <code><a href="../reference/gghighlight.html">gghighlight()</a></code> affects the plot <em>before</em> <code><a href="../reference/gghighlight.html">gghighlight()</a></code>. If you add <code>facet_*()</code> after adding <code><a href="../reference/gghighlight.html">gghighlight()</a></code>, this option doesn’t work.</p>
+<p>If you want to highlight each facet individually, set <code>calculate_per_facet</code> to <code>TRUE</code>. Note that <code><a href="../reference/gghighlight.html">gghighlight()</a></code> affects the plot <em>before</em> <code><a href="../reference/gghighlight.html">gghighlight()</a></code>. If you add <code>facet_*()</code> after adding <code><a href="../reference/gghighlight.html">gghighlight()</a></code>, this option doesn’t work.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>d &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</span>
 <span id="cb18-2"><a href="#cb18-2"></a>  <span class="dt">idx =</span>   <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
 <span id="cb18-3"><a href="#cb18-3"></a>  <span class="dt">value =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>, <span class="dv">13</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">16</span>, <span class="dv">32</span>),</span>
@@ -320,10 +320,10 @@
 <span id="cb18-15"><a href="#cb18-15"></a><span class="co">#&gt; label_key: cat1</span></span>
 <span id="cb18-16"><a href="#cb18-16"></a></span>
 <span id="cb18-17"><a href="#cb18-17"></a>p <span class="op">+</span></span>
-<span id="cb18-18"><a href="#cb18-18"></a><span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>, <span class="dt">use_facet_vars =</span> <span class="ot">TRUE</span>) <span class="op">+</span></span>
-<span id="cb18-19"><a href="#cb18-19"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"use_facet_vars = TRUE"</span>)</span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="st">  </span><span class="kw"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(value) <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>, <span class="dt">calculate_per_facet =</span> <span class="ot">TRUE</span>) <span class="op">+</span></span>
+<span id="cb18-19"><a href="#cb18-19"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"calculate_per_facet = TRUE"</span>)</span>
 <span id="cb18-20"><a href="#cb18-20"></a><span class="co">#&gt; label_key: cat1</span></span></code></pre></div>
-<p><img src="gghighlight_files/figure-html/use_facet_vars-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/use_facet_vars-2.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="gghighlight_files/figure-html/calculate_per_facet-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/calculate_per_facet-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </div>

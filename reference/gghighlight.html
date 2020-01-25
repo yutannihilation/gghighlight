@@ -70,7 +70,7 @@ gghiglight() highlights (almost) any geoms according to the given predicates." /
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gghighlight</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ gghiglight() highlights (almost) any geoms according to the given predicates." /
   <span class='kw'>label_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>label_params</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"white"</span>),
   <span class='kw'>keep_scales</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>use_facet_vars</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>calculate_per_facet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>unhighlighted_colour</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
@@ -177,7 +177,7 @@ gghiglight() highlights (almost) any geoms according to the given predicates." /
 highlighted plot has the same scale with the data.</p></td>
     </tr>
     <tr>
-      <th>use_facet_vars</th>
+      <th>calculate_per_facet</th>
       <td><p>(Experimental) If <code>TRUE</code>, include the facet variables to calculate the
 grouping; in other words, highlighting is done on each facet individually.</p></td>
     </tr>
