@@ -78,6 +78,11 @@ test_that("generate_labelled_layer() geenrates a layer for label.", {
                ggrepel::geom_label_repel(aes(x, y, colour = type, label = type2), d[c(2, 4), ], fill = "white"))
   expect_equal(generate_labelled_layer(list(l_bar), list(g_info), type2_quo, list(fill = "white"), Inf),
                list())
+  # Do not generate labels when the data is more than max_labels
+  expect_equal(generate_labelled_layer(list(l_point), list(g_info), type2_quo, list(fill = "white"), 1),
+               list())
+  expect_equal(generate_labelled_layer(list(l_line), list(g_info), type2_quo, list(fill = "white"), 1),
+               list())
   # share the same seed of jitter
   l_jitter <- geom_point(aes(x, y, colour = type), d, position = position_jitter())
   expect_equal(generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf),
