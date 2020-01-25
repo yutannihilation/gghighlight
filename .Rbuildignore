@@ -6,3 +6,4 @@
 ^docs$
 ^\.github$
 ^revdep$
+^CRAN-RELEASE$
