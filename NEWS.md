@@ -1,4 +1,4 @@
-# gghighlight 0.1.0.9000
+# gghighlight 0.2.0
 
 ## New features
 
@@ -9,8 +9,8 @@
 * `gghighlight()` gets a new argument `keep_scales` to choose whether to keep the
   original scale with the shadowed data (#72).
 
-* `gghighlight()` gets a new (experimental) argument `use_facet_vars` to choose
-  whether to calculate highlighting per facet or not (#14).
+* `gghighlight()` gets a new (experimental) argument `calculate_per_facet` to
+  choose whether to calculate highlighting per facet or not (#14).
 
 ## Bug fixes
 

@@ -1,3 +1,6 @@
+setup(options(lifecycle_verbosity = "quiet"))
+teardown(options(lifecycle_verbosity = NULL))
+
 d <- data.frame(
   x     = c( 1, 1, 1, 2, 2, 2, 3, 3, 3),
   y     = c( 1, 2, 3, 1, 2, 3, 1, 2, 3),
@@ -7,10 +10,7 @@ d <- data.frame(
 )
 
 test_that("gghighlight_point() works", {
-  expect_warning(
-    p <- gghighlight_point(d, aes(x, y), value > 5, label_key = category),
-    "`gghighlight_point()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_point(d, aes(x, y), value > 5, label_key = category)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)
@@ -42,10 +42,7 @@ test_that("gghighlight_point() without label_key works", {
 })
 
 test_that("gghighligt_point() works with numerical predicate", {
-  expect_warning(
-    p <- gghighlight_point(d, aes(x, y), value, max_highlight = 3L, label_key = category),
-    "`gghighlight_point()` is deprecated", fixed = TRUE
-  )
+  p <- gghighlight_point(d, aes(x, y), value, max_highlight = 3L, label_key = category)
   d_built <- ggplot2::ggplot_build(p)
 
   expect_equal(length(d_built$data), 3L)

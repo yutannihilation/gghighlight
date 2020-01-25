@@ -78,7 +78,7 @@ test_that("bleach_layer() works", {
 
 test_that("bleach_layer() works for NULL default aes", {
   skip_if_not_installed("sf")
-  
+
   expect_equal_layer(
     bleach_layer(geom_sf(aes(fill = type), d)[[1]],
                  list(data = setNames(d[3], c("fill")),
@@ -95,9 +95,9 @@ test_that("bleach_layer() works for NULL default aes", {
 
 })
 
-test_that("bleach_layer(use_facet_vars = TRUE) adds the original data", {
+test_that("bleach_layer(calculate_per_facet = TRUE) adds the original data", {
   # If colour is specified, colour is used as the group key.
-  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, list(), use_facet_vars = TRUE),
+  expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info, list(), calculate_per_facet = TRUE),
                      geom_line(aes_bleached, dplyr::bind_cols(d_bleached, d), colour = grey07))
 
 })
