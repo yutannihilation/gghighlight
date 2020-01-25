@@ -26,7 +26,7 @@
 #' @param keep_scales
 #'   If `TRUE`, keep the original data with [ggplot2::geom_blank()] so that the
 #'   highlighted plot has the same scale with the data.
-#' @param use_facet_vars
+#' @param calculate_per_facet
 #'   (Experimental) If `TRUE`, include the facet variables to calculate the
 #'   grouping; in other words, highlighting is done on each facet individually.
 #' @param unhighlighted_colour
@@ -65,7 +65,7 @@ gghighlight <- function(...,
                         label_key = NULL,
                         label_params = list(fill = "white"),
                         keep_scales = FALSE,
-                        use_facet_vars = FALSE,
+                        calculate_per_facet = FALSE,
                         unhighlighted_colour = NULL) {
   predicates <- enquos(...)
   label_key <- enquo(label_key)
@@ -96,7 +96,7 @@ gghighlight <- function(...,
       label_key = label_key,
       label_params = label_params,
       keep_scales = keep_scales,
-      use_facet_vars = use_facet_vars
+      calculate_per_facet = calculate_per_facet
     ),
     class = "gg_highlighter"
   )
@@ -139,7 +139,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
   layers_cloned <- layers_cloned[idx_layers]
 
-  facet_vars <- if (object$use_facet_vars) get_facet_vars(plot$facet) else NULL
+  facet_vars <- if (object$calculate_per_facet) get_facet_vars(plot$facet) else NULL
   group_infos <- purrr::map(
     layers_cloned,
     ~ calculate_group_info(.$data, .$mapping, extra_vars = facet_vars)
@@ -156,7 +156,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     group_infos,
     bleach_layer,
     unhighlighted_params = object$unhighlighted_params,
-    use_facet_vars = object$use_facet_vars
+    calculate_per_facet = object$calculate_per_facet
   )
 
   # Sieve the upper layer.
@@ -308,7 +308,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   )
 }
 
-bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars = FALSE) {
+bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_facet = FALSE) {
   # `colour` and `fill` are special in that they needs to be specified even when
   # it is not included in unhighlighted_params. But, if the default_aes is NA,
   # respect it (e.g. geom_bar()'s default colour is NA).
@@ -351,7 +351,7 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, use_facet_vars
   # FIXME:
   # Contradictorily to the comment above, we need the original data to let the
   # layer be facetted. Probably, we can make here more efficient...
-  if (use_facet_vars) {
+  if (calculate_per_facet) {
     layer$data <- dplyr::bind_cols(bleached_data, layer$data)
   } else {
     layer$data <- bleached_data

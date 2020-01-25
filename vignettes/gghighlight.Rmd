@@ -240,12 +240,12 @@ p + gghighlight(cyl == 6)
 p + gghighlight(cyl == 6, keep_scales = TRUE) + ggtitle("keep_scale = TRUE")
 ```
 
-### `use_facet_vars`
+### `calculate_per_facet`
 
-If you want to highlight each facet individually, set `use_facet_vars` to `TRUE`.
+If you want to highlight each facet individually, set `calculate_per_facet` to `TRUE`.
 Note that `gghighlight()` affects the plot *before* `gghighlight()`. If you add `facet_*()` after adding `gghighlight()`, this option doesn't work.
 
-```{r use_facet_vars, fig.show='hold'}
+```{r calculate_per_facet, fig.show='hold'}
 d <- data.frame(
   idx =   c(1, 2, 3, 4, 1, 2, 3, 4),
   value = c(10, 11, 12, 13, 4, 8, 16, 32),
@@ -262,6 +262,6 @@ p +
   gghighlight(max(value) > 10)
 
 p +
-  gghighlight(max(value) > 10, use_facet_vars = TRUE) +
-  ggtitle("use_facet_vars = TRUE")
+  gghighlight(max(value) > 10, calculate_per_facet = TRUE) +
+  ggtitle("calculate_per_facet = TRUE")
 ```

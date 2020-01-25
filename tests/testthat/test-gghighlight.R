@@ -224,7 +224,7 @@ test_that("gghighlight() works with facets", {
   prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
   names(d_bleached) <- paste0(prefix, c(1:3, "group"))
   d_bleached <- dplyr::bind_cols(d_bleached, d)
-  
+
   aes_bleached <- aes_string(x = paste0(prefix, 1),
                              y = paste0(prefix, 2),
                              colour = paste0(prefix, 3),
@@ -238,7 +238,7 @@ test_that("gghighlight() works with facets", {
   p1 <- ggplot(d, aes(idx, value, colour = cat1)) +
     geom_point() +
     facet_wrap(vars(cat2)) +
-    gghighlight(max(value) > 10, use_group_by = TRUE, use_direct_label = FALSE, use_facet_vars = TRUE)
+    gghighlight(max(value) > 10, use_group_by = TRUE, use_direct_label = FALSE, calculate_per_facet = TRUE)
 
   expect_equal_layers(p1$layers, list(l_bleached, l_sieved))
 
@@ -246,7 +246,7 @@ test_that("gghighlight() works with facets", {
   p2 <- ggplot(d, aes(idx, value, colour = cat1)) +
     geom_point() +
     facet_wrap(vars(cat2)) +
-    gghighlight(value > 10, use_group_by = FALSE, use_direct_label = FALSE, use_facet_vars = TRUE)
+    gghighlight(value > 10, use_group_by = FALSE, use_direct_label = FALSE, calculate_per_facet = TRUE)
 
   l_sieved2 <- geom_point(aes(idx, value, colour = cat1), d[d$value > 10, ])
   expect_equal_layers(p2$layers, list(l_bleached, l_sieved2))
