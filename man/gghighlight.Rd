@@ -14,7 +14,7 @@ gghighlight(
   label_key = NULL,
   label_params = list(fill = "white"),
   keep_scales = FALSE,
-  use_facet_vars = FALSE,
+  calculate_per_facet = FALSE,
   unhighlighted_colour = NULL
 )
 }
@@ -38,7 +38,7 @@ gghighlight(
 \item{keep_scales}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
 highlighted plot has the same scale with the data.}
 
-\item{use_facet_vars}{(Experimental) If \code{TRUE}, include the facet variables to calculate the
+\item{calculate_per_facet}{(Experimental) If \code{TRUE}, include the facet variables to calculate the
 grouping; in other words, highlighting is done on each facet individually.}
 
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
