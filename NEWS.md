@@ -1,5 +1,9 @@
 # gghighlight (development version)
 
+## Breaking changes
+
+* `gghighlight_point()` and `gghighlight_line()` are removed (#132).
+
 # gghighlight 0.2.0
 
 ## New features
