@@ -1,4 +1,5 @@
-grey07 <- scales::alpha("grey", 0.7)
+grey07 <- "#BEBEBEB2"
+grey09 <- "#BEBEBEE6"
 
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
@@ -72,8 +73,8 @@ test_that("bleach_layer() works", {
                      geom_col(aes_bleached, d_bleached, fill = "blue", colour = NA, width = 0.5))
 
   expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
-                                  list(colour = scales::alpha("grey", 0.9), fill = grey07, width = 0.5)),
-                     geom_col(aes_bleached, d_bleached, colour = scales::alpha("grey", 0.9), fill = grey07, width = 0.5))
+                                  list(colour = grey09, fill = grey07, width = 0.5)),
+                     geom_col(aes_bleached, d_bleached, colour = grey09, fill = grey07, width = 0.5))
 })
 
 test_that("bleach_layer() works for NULL default aes", {

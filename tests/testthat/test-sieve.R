@@ -1,4 +1,4 @@
-grey07 <- scales::alpha("grey", 0.7)
+grey07 <- "#BEBEBEB2"
 
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
@@ -260,12 +260,12 @@ test_that("sieve_layer() works with list columns", {
 
 test_that("sieve_layer() do not count NA for max_highlights", {
   d4 <- data.frame(x = c(1:3, NA))
-  
+
   params <- list(
     group_info = NULL,
     predicates = list(quo(x))
   )
-  
+
   expect_equal_sieved(
     geom_bar(aes(x = x), d4),
     params = params, max_highlight = 2L,
