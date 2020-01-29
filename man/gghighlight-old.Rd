@@ -6,55 +6,12 @@
 \alias{gghighlight_point}
 \title{Highlight Data With Predicate}
 \usage{
-gghighlight_line(
-  data,
-  mapping,
-  predicate,
-  max_highlight = 5L,
-  unhighlighted_colour = scales::alpha("grey", 0.7),
-  use_group_by = TRUE,
-  use_direct_label = TRUE,
-  label_key = NULL,
-  ...,
-  environment = parent.frame()
-)
+gghighlight_line(...)
 
-gghighlight_point(
-  data,
-  mapping,
-  predicate,
-  max_highlight = 5L,
-  unhighlighted_colour = scales::alpha("grey", 0.7),
-  use_group_by = FALSE,
-  use_direct_label = TRUE,
-  label_key = NULL,
-  ...,
-  environment = parent.frame()
-)
+gghighlight_point()
 }
 \arguments{
-\item{data}{Default dataset to use for plot. If not already a data.frame,
-will be converted to one by \code{\link[ggplot2:fortify]{fortify()}}. If not specified,
-must be supplied in each layer added to the plot.}
-
-\item{mapping}{Default list of aesthetic mappings to use for plot.
-If not specified, must be supplied in each layer added to the plot.}
-
-\item{predicate}{Expression to filter data, which is passed to \code{\link[dplyr:filter]{dplyr::filter()}}.}
-
-\item{max_highlight}{Max number of series to highlight.}
-
-\item{unhighlighted_colour}{Colour for unhighlighted lines/points.}
-
-\item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
-
-\item{use_direct_label}{If \code{TRUE}, add labels directly on the plot instead of using a legend.}
-
-\item{label_key}{Column name for \code{label} aesthetics.}
-
-\item{...}{Arguments passed to the corresponding geometry functions (e.g. \code{geom_line()}).}
-
-\item{environment}{DEPRECATED. Used prior to tidy evaluation.}
+\item{...}{Ignored.}
 }
 \description{
 \Sexpr[results=rd, stage=render]{lifecycle::badge("defunct")}
