@@ -361,8 +361,9 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_
 }
 
 default_unhighlighted_params <- list(
-  colour = scales::alpha("grey", 0.7),
-  fill = scales::alpha("grey", 0.7)
+  # scales::alpha("grey", 0.7)
+  colour = "#BEBEBEB2",
+  fill = "#BEBEBEB2"
 )
 
 get_default_aes_param <- function(aes_param_name, geom, mapping) {

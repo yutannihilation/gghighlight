@@ -18,18 +18,16 @@ Depends:
     R (>= 3.2.0)
 Imports:
     dplyr (> 0.7.0),
-    tibble,
     ggrepel,
-    magrittr,
+    lifecycle,
     purrr,
     rlang,
-    scales,
-    lifecycle
+    tibble
 Suggests: 
-    testthat,
     knitr,
     rmarkdown,
     sf,
+    testthat,
     vdiffr (>= 0.3.0)
 VignetteBuilder: 
     knitr

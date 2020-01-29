@@ -1,4 +1,4 @@
-grey07 <- scales::alpha("grey", 0.7)
+grey07 <- "#BEBEBEB2"
 
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
