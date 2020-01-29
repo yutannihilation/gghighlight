@@ -57,7 +57,7 @@ If not specified, must be supplied in each layer added to the plot.}
 \item{environment}{DEPRECATED. Used prior to tidy evaluation.}
 }
 \description{
-\Sexpr[results=rd, stage=render]{lifecycle::badge("deprecated")}
+\Sexpr[results=rd, stage=render]{lifecycle::badge("defunct")}
 
 \code{gghiglight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
 }
