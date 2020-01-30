@@ -237,7 +237,7 @@ p <- ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
 
 p + gghighlight(cyl == 6)
 
-p + gghighlight(cyl == 6, keep_scales = TRUE) + ggtitle("keep_scale = TRUE")
+p + gghighlight(cyl == 6, keep_scales = TRUE) + ggtitle("keep_scales = TRUE")
 ```
 
 ### `calculate_per_facet`
