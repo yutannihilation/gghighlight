@@ -38,6 +38,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies for sf and vdiffr
+        if: runner.os == 'macOS'
         run: |
           brew install pkg-config
           brew install cairo
