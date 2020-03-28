@@ -14,14 +14,14 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - name: Install sf-dependencies
+        run: brew install pkg-config gdal proj
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
-
-      - name: Install sf-dependencies
-        run: brew install pkg-config gdal
 
       - name: Cache R packages
         uses: actions/cache@v1

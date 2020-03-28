@@ -37,7 +37,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies for sf and vdiffr
-        run: brew install pkg-config cairo gdal
+        run: brew install pkg-config cairo gdal proj
 
       - name: Query dependencies
         run: |
