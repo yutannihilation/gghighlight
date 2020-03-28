@@ -32,8 +32,10 @@ test_that("calculate_group_info() works", {
   # if there is group mapping, use it
   d_expect_group <- d_expect
   d_expect_group$group <- d$type == "a"
-  expect_equal(calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type)),
-               list(data = d_expect_group, id = c(2, 2, 2, 1, 1, 1, 1), key = aes()))
+  res <- calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type))
+  expect_equal(res$data, d_expect_group[, colnames(res$data)])
+  expect_equal(res$id, c(2, 2, 2, 1, 1, 1, 1))
+  expect_equal(res$key, aes())
 })
 
 
