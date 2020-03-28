@@ -15,7 +15,11 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install sf-dependencies
-        run: brew install pkg-config gdal proj
+        run: |
+          brew install pkg-config
+          brew install udunits
+          brew install gdal
+          brew install proj
 
       - name: Query dependencies
         run: |

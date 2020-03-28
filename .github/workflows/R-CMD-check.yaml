@@ -20,6 +20,7 @@ jobs:
         config:
           - {os: windows-latest, r: '3.6'}
           - {os: macOS-latest,   r: '3.6'}
+          - {os: macOS-latest,   r: '3.6', github_packages: ["tidyverse/ggplot2", "tidyverse/dplyr"]}
           - {os: macOS-latest,   r: 'devel'}
           - {os: ubuntu-16.04,   r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
 
@@ -37,7 +38,12 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies for sf and vdiffr
-        run: brew install pkg-config cairo gdal proj
+        run: |
+          brew install pkg-config
+          brew install cairo
+          brew install udunits
+          brew install gdal
+          brew install proj
 
       - name: Query dependencies
         run: |
