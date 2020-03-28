@@ -136,7 +136,8 @@
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
   <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">15</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">flag</span>) <span class="kw">&gt;</span> <span class="fl">0.55</span>)
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<span class="co">#&gt; label_key: type</span>
+<span class="co">#&gt; Warning in max(~idx): no non-missing arguments to max; returning -Inf</span></pre></body></html></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-two-conds-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="customization" class="section level2">
@@ -187,7 +188,7 @@
 <a href="#point" class="anchor"></a>Point</h3>
 <p>As is explained in <a href="https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/">Anatomy of gghighlight</a>, lines and points typically have different semantics (group-wise or not). But, in most cases, you don’t need to be careful about the difference with <code><a href="../reference/gghighlight.html">gghighlight()</a></code> because it automatically picks the right way of calculation.</p>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">10</span>)
-<span class="no">d2</span> <span class="kw">&lt;-</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample.html">sample_n</a></span>(<span class="no">d</span>, <span class="fl">20</span>)
+<span class="no">d2</span> <span class="kw">&lt;-</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span>(<span class="no">d</span>, <span class="fl">20</span>)
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() +
