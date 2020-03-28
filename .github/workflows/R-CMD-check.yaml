@@ -49,14 +49,17 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages('remotes')
+          # Workaround for installing sf
+          remotes::install_github('Rcpp/Rcpp')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
       - name: Install dev version of packages
         if: ${{ matrix.config.use_dev_packages }}
         run: |
-          Rscript -e "remotes::install_github('tidyverse/ggplot2')"
-          Rscript -e "remotes::install_github('tidyverse/dplyr')"
+          remotes::install_github('tidyverse/ggplot2')
+          remotes::install_github('tidyverse/dplyr')
+        shell: Rscript {0}
 
       - name: Cache R packages
         if: runner.os != 'Windows'
