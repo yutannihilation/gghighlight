@@ -74,7 +74,7 @@ jobs:
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('depends.Rds') }}
-          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}
+          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
