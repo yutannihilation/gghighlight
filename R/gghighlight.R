@@ -296,10 +296,11 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   }
 
   # calculate group IDs with extra_data
-  group_ids <- dplyr::group_indices(
+  group_df <- dplyr::group_by(
     dplyr::bind_cols(data_evaluated, extra_data),
     !!!syms(c(group_cols, names(extra_data)))
   )
+  group_ids <- dplyr::group_indices(group_df)
 
   list(
     data = data_evaluated,
