@@ -481,6 +481,11 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   data_predicated <- dplyr::group_by(data_predicated, !!VERY_SECRET_COLUMN_NAME := !!group_ids)
   data_predicated <- dplyr::summarise(data_predicated, !!!predicates)
 
+  group_with_multiple_result <- anyDuplicated(dplyr::pull(data_predicated, !!VERY_SECRET_COLUMN_NAME))
+  if (!identical(group_with_multiple_result, 0L)) {
+    abort("", "gghighlight_invalid_group_predicate_error")
+  }
+
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
