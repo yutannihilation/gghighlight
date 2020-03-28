@@ -47,25 +47,10 @@ jobs:
           brew install gdal
           brew install proj
 
-      - name: Workaround for installing sf
-        if: runner.os == 'macOS'
-        run: |
-          install.packages('remotes')
-          remotes::install_github('RcppCore/Rcpp')
-          install.packages('sf', configure.args = '--with-gdal-config=/usr/local/bin/gdal-config --with-geos-config=/usr/local/bin/geos-config --with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/', configure.vars = 'GDAL_DATA=/usr/local/opt/gdal/share/gdal/')
-        shell: Rscript {0}
-
       - name: Query dependencies
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
-        shell: Rscript {0}
-
-      - name: Install dev version of packages
-        if: ${{ matrix.config.use_dev_packages }}
-        run: |
-          remotes::install_github('tidyverse/ggplot2')
-          remotes::install_github('tidyverse/dplyr')
         shell: Rscript {0}
 
       - name: Cache R packages
@@ -84,6 +69,20 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
+
+      - name: Workaround for installing sf
+        if: runner.os == 'macOS'
+        run: |
+          remotes::install_github('RcppCore/Rcpp')
+          install.packages('sf', configure.args = '--with-gdal-config=/usr/local/bin/gdal-config --with-geos-config=/usr/local/bin/geos-config --with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/', configure.vars = 'GDAL_DATA=/usr/local/opt/gdal/share/gdal/')
+        shell: Rscript {0}
+
+      - name: Install dev version of packages
+        if: ${{ matrix.config.use_dev_packages }}
+        run: |
+          remotes::install_github('tidyverse/ggplot2')
+          remotes::install_github('tidyverse/dplyr')
+        shell: Rscript {0}
 
       - name: Install dependencies
         run: |
