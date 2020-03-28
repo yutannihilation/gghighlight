@@ -50,7 +50,7 @@ jobs:
         run: |
           install.packages('remotes')
           # Workaround for installing sf
-          remotes::install_github('Rcpp/Rcpp')
+          remotes::install_github('RcppCore/Rcpp')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
