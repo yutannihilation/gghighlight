@@ -12,7 +12,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }}, dev: ${{ matrix.config.use_dev_packages }})
 
     strategy:
       fail-fast: false
@@ -21,8 +21,8 @@ jobs:
           - {os: windows-latest, r: '3.6'}
           - {os: macOS-latest,   r: '3.6'}
           - {os: macOS-latest,   r: '3.6', use_dev_packages: true}
+          - {os: macOS-latest,   r: 'devel'}
           - {os: ubuntu-18.04,   r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
-          - {os: ubuntu-18.04,   r: 'devel', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
