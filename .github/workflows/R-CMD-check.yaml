@@ -45,6 +45,7 @@ jobs:
           brew install cairo
           brew install udunits
           brew install gdal
+          brew reinstall proj
 
       - name: Query dependencies
         run: |
