@@ -73,7 +73,7 @@ jobs:
       - name: Workaround for installing sf
         if: runner.os == 'macOS'
         run: |
-          remotes::install_github('RcppCore/Rcpp')
+          remotes::install_cran('Rcpp')
           install.packages('sf', configure.args = '--with-gdal-config=/usr/local/bin/gdal-config --with-geos-config=/usr/local/bin/geos-config --with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/', configure.vars = 'GDAL_DATA=/usr/local/opt/gdal/share/gdal/')
         shell: Rscript {0}
 
