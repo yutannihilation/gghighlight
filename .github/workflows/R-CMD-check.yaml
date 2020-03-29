@@ -12,7 +12,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: "${{ matrix.config.os }} (${{ matrix.config.r }}, dev: ${{ matrix.config.use_dev_packages }})"
+    name: "${{ matrix.config.os }} (R:${{ matrix.config.r }}, dev:${{ matrix.config.use_dev_packages }})"
 
     strategy:
       fail-fast: false
@@ -75,7 +75,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           remotes::install_github('RcppCore/Rcpp')
-          install.packages('sf', configure.args = '--with-gdal-config=/usr/local/bin/gdal-config --with-geos-config=/usr/local/bin/geos-config --with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/', configure.vars = 'GDAL_DATA=/usr/local/opt/gdal/share/gdal/')
+          remotes::install_cran('sf', configure.args = '--with-gdal-config=/usr/local/bin/gdal-config --with-geos-config=/usr/local/bin/geos-config --with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/', configure.vars = 'GDAL_DATA=/usr/local/opt/gdal/share/gdal/')
         shell: Rscript {0}
 
       - name: Install dev version of packages
