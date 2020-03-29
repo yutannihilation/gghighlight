@@ -1,7 +1,7 @@
 Type: Package
 Package: gghighlight
 Title: Highlight Lines and Points in 'ggplot2'
-Version: 0.3.0
+Version: 0.3.0.9000
 Authors@R: 
     person(given = "Hiroaki",
            family = "Yutani",
