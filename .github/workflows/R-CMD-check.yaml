@@ -65,7 +65,7 @@ jobs:
       - name: Install xml2
         if: runner.os == 'macOS' && matrix.config.r == 'devel'
         run: |
-          remotes::install_github('tidyverse/ggplot2')
+          remotes::install_github('r-lib/xml2')
         shell: Rscript {0}
 
       - name: Install system dependencies
