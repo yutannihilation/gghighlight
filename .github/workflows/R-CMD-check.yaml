@@ -46,7 +46,7 @@ jobs:
           brew install cairo
           brew install udunits
           brew install gdal
-          brew reinstall proj@6.3.1
+          brew reinstall proj
 
       - name: Query dependencies
         run: |
@@ -70,13 +70,6 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-
-      - name: Workaround for installing sf
-        if: runner.os == 'macOS'
-        run: |
-          remotes::install_github('RcppCore/Rcpp')
-          remotes::install_cran('sf', configure.args = '--with-proj-include=/usr/local/include/ --with-proj-lib=/usr/local/lib/')
-        shell: Rscript {0}
 
       - name: Install dev version of packages
         if: ${{ matrix.config.use_dev_packages }}
