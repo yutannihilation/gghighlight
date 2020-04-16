@@ -63,7 +63,7 @@ jobs:
           restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
 
       - name: Install xml2
-        if: runner.os == 'macOS' and matrix.config.r == 'devel'
+        if: runner.os == 'macOS' && matrix.config.r == 'devel'
         run: |
           remotes::install_github('tidyverse/ggplot2')
         shell: Rscript {0}
