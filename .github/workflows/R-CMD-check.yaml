@@ -44,6 +44,23 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
+      # - name: Cache brew
+      #   if: runner.os == 'macOS'
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: /usr/local/Cellar/
+      #     key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('depends.Rds') }}
+      #     restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
+
+      - name: Install dependencies for sf and vdiffr
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install --verbose xquartz
+          brew install --verbose pkg-config
+          brew install --verbose cairo
+          brew install --verbose udunits
+          brew install --verbose gdal
+
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@v1
@@ -51,22 +68,6 @@ jobs:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('depends.Rds') }}
           restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
-
-      - name: Install dependencies for sf and vdiffr
-        if: runner.os == 'macOS'
-        run: |
-          brew cask install xquartz
-          VDIFFR_IS_OLD=$(Rscript -e 'if ("vdiffr" %in% old.packages()[,"Package"]) cat("yes")')
-          if [ "${VDIFFR_IS_OLD}" == "yes" ]; then
-            brew install pkg-config
-            brew install cairo
-          fi
-          SF_IS_OLD=$(Rscript -e 'if ("sf" %in% old.packages()[,"Package"]) cat("yes")')
-          if [ "${SF_IS_OLD}" == "yes" ]; then
-            brew install udunits
-            brew install gdal
-            brew install proj
-          fi
 
       - name: Install xml2
         if: runner.os == 'macOS' && matrix.config.r == 'devel'
