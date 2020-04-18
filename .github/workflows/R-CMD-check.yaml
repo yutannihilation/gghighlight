@@ -44,18 +44,6 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
-      - name: Install dependencies for sf and vdiffr
-        if: runner.os == 'macOS'
-        run: |
-          brew cask install xquartz
-          brew install pkg-config cairo
-          # sf dependencies are a bit heavy so install it only when they are needed
-          SF_IS_OLD=$(Rscript -e 'if ("sf" %in% old.packages()[,"Package"]) cat("yes")')
-          if [ "${SF_IS_OLD}" == "yes" ]; then
-            brew install udunits
-            brew install gdal
-          fi
-
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@v1
@@ -64,13 +52,7 @@ jobs:
           key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('depends.Rds') }}
           restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
 
-      - name: Install xml2
-        if: runner.os == 'macOS' && matrix.config.r == 'devel'
-        run: |
-          remotes::install_github('r-lib/xml2')
-        shell: Rscript {0}
-
-      - name: Install system dependencies
+      - name: Install system dependencies on Linux
         if: runner.os == 'Linux'
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
@@ -78,6 +60,31 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
+
+      - name: Install system dependencies on macOS
+        if: runner.os == 'macOS'
+        run: |
+          # XQuartz is needed by vdiffr
+          brew cask install xquartz
+
+          # To install vdiffr, these three libraries/tools are needed in addition to XQuartz
+          # - freetype (already installed, needed by systemfonts)
+          # - cairo (not installed, needed by gdtools)
+          # - pkg-config (not installed, needed to set proper build settings)
+          brew install pkg-config cairo
+
+          # Since sf dependencies are a bit heavy, install them only when they are needed
+          SF_IS_OLD=$(Rscript -e 'if ("sf" %in% old.packages()[,"Package"]) cat("yes")')
+          if [ "${SF_IS_OLD}" == "yes" ]; then
+            brew install udunits gdal
+          fi
+
+      # Remove this when https://github.com/r-lib/xml2/issues/296 is fixed on CRAN
+      - name: Install xml2
+        if: runner.os == 'macOS' && matrix.config.r == 'devel'
+        run: |
+          remotes::install_github('r-lib/xml2')
+        shell: Rscript {0}
 
       - name: Install dev version of packages
         if: ${{ matrix.config.use_dev_packages }}
