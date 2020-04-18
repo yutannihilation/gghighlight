@@ -44,22 +44,17 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
-      # - name: Cache brew
-      #   if: runner.os == 'macOS'
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: /usr/local/Cellar/
-      #     key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('depends.Rds') }}
-      #     restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-${{ matrix.config.use_dev_packages }}-
-
       - name: Install dependencies for sf and vdiffr
         if: runner.os == 'macOS'
         run: |
-          brew cask install --verbose xquartz
-          brew install --verbose pkg-config
-          brew install --verbose cairo
-          brew install --verbose udunits
-          brew install --verbose gdal
+          brew cask install xquartz
+          brew install pkg-config cairo
+          # sf dependencies are a bit heavy so install it only when they are needed
+          SF_IS_OLD=$(Rscript -e 'if ("sf" %in% old.packages()[,"Package"]) cat("yes")')
+          if [ "${SF_IS_OLD}" == "yes" ]; then
+            brew install udunits
+            brew install gdal
+          fi
 
       - name: Cache R packages
         if: runner.os != 'Windows'
