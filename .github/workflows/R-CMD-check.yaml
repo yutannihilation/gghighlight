@@ -55,9 +55,9 @@ jobs:
       - name: Install dependencies for sf and vdiffr
         if: runner.os == 'macOS'
         run: |
+          brew cask install xquartz
           VDIFFR_IS_OLD=$(Rscript -e 'if ("vdiffr" %in% old.packages()[,"Package"]) cat("yes")')
           if [ "${VDIFFR_IS_OLD}" == "yes" ]; then
-            brew cask install xquartz
             brew install pkg-config
             brew install cairo
           fi
