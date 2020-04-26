@@ -1,7 +1,7 @@
 pandoc: 2.7.3
 pkgdown: 1.5.1.9000
-pkgdown_sha: 3b43ddb0cdc0c6227e57917908657d48f862bbb5
+pkgdown_sha: c181e5c9ac09b28974a97f5e32deddc36690fcf2
 articles:
   gghighlight: gghighlight.html
-last_built: 2020-04-23T22:12Z
+last_built: 2020-04-26T06:37Z
 
