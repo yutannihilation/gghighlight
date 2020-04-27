@@ -61,7 +61,6 @@ jobs:
         run: |
           # Use cran:libgit2 PPA to avoid conflicts of libcurl4-gnutls-dev
           sudo add-apt-repository ppa:cran/libgit2
-          sudo apt-get update
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
