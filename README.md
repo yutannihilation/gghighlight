@@ -5,11 +5,9 @@
 
 <!-- badges: start -->
 
-[![Travis-CI Build
-Status](https://api.travis-ci.com/yutannihilation/gghighlight.svg?branch=master)](https://travis-ci.com/yutannihilation/gghighlight)
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
 [![R build
 status](https://github.com/yutannihilation/gghighlight/workflows/R-CMD-check/badge.svg)](https://github.com/yutannihilation/gghighlight/actions)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
 <!-- badges: end -->
 
 Highlight geoms in ggplot2.
@@ -54,7 +52,7 @@ p
 
 ![](man/figures/README-gghighlight-simple-1.png)<!-- -->
 
-The result is an usual ggplot object, so it is fully customizable. For
+The result is a usual ggplot object, so it is fully customizable. For
 example, it can be used with custom themes and facets.
 
 ``` r
