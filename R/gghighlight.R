@@ -352,11 +352,7 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_
   # FIXME:
   # Contradictorily to the comment above, we need the original data to let the
   # layer be facetted. Probably, we can make here more efficient...
-  if (calculate_per_facet) {
-    layer$data <- dplyr::bind_cols(bleached_data, layer$data)
-  } else {
-    layer$data <- bleached_data
-  }
+  layer$data <- dplyr::bind_cols(bleached_data, layer$data)
 
   layer
 }
