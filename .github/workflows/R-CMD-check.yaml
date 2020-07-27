@@ -42,7 +42,7 @@ jobs:
       - name: Setup Devel R
         if: ${{ matrix.config.use_devel }}
         run: 
-          wget -O - https://github.com/yutannihilation/r-svn/releases/download/tag-bc5b6a87c5be83e641deccab8dff233b7b439012-ubuntu-16.04/R-devel.tar.xz | sudo tar -v -x -J --strip-components=2 -f - -C /usr/local/
+          wget -O - https://github.com/yutannihilation/r-svn/releases/download/tag-bc5b6a87c5be83e641deccab8dff233b7b439012-ubuntu-18.04/R-devel.tar.xz | sudo tar -v -x -J --strip-components=2 -f - -C /usr/local/
         
       - uses: r-lib/actions/setup-pandoc@master
 
