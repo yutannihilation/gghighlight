@@ -25,6 +25,7 @@ jobs:
           - {os: macOS-latest,   r: 'release', use_dev_packages: true}
           - {os: macOS-latest,   r: 'devel'}
           - {os: ubuntu-18.04,   r: 'release', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
+          - {os: ubuntu-18.04,   r: 'release', use_devel: true}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -38,6 +39,11 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Setup Devel R
+        if: ${{ matrix.config.use_devel }}
+        run: 
+          wget -O - https://github.com/yutannihilation/r-svn/releases/download/tag-bc5b6a87c5be83e641deccab8dff233b7b439012-ubuntu-16.04/R-devel.tar.xz | sudo tar -x -J --strip-components=2 -f - -C /usr/local/
+        
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Query dependencies
