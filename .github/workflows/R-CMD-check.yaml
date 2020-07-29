@@ -23,7 +23,7 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: macOS-latest,   r: 'release'}
           - {os: macOS-latest,   r: 'release', use_dev_packages: true}
-          - {os: macOS-latest,   r: 'devel'}
+          - {os: ubuntu-18.04,   r: 'devel'}
           - {os: ubuntu-18.04,   r: 'release', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
     env:
@@ -84,17 +84,8 @@ jobs:
           # XQuartz is needed by vdiffr
           brew cask install xquartz
 
-          # To install vdiffr, these three libraries/tools are needed in addition to XQuartz
-          # - freetype (already installed, needed by systemfonts)
-          # - cairo (not installed, needed by gdtools)
-          # - pkg-config (not installed, needed to set proper build settings)
-          brew install pkg-config cairo
-
-          # Since sf dependencies are a bit heavy, install them only when they are needed
-          SF_NEEDS_UPDATED=$(Rscript -e 'if (!"sf" %in% installed.packages()[,"Package"] || "sf" %in% old.packages()[,"Package"]) cat("yes")')
-          if [ "${SF_NEEDS_UPDATED}" == "yes" ]; then
-            brew install udunits gdal
-          fi
+          # Use only binary packages
+          echo 'options(pkgType = "binary")' >> ~/.Rprofile
 
       - name: Install dev version of packages
         if: ${{ matrix.config.use_dev_packages }}
