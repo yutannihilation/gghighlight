@@ -22,7 +22,8 @@ Imports:
     lifecycle,
     purrr,
     rlang,
-    tibble
+    tibble,
+    rotasym
 Suggests: 
     knitr,
     rmarkdown,
