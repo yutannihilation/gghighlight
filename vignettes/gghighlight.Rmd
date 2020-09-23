@@ -182,7 +182,7 @@ ggplot(d, aes(idx, value, colour = type)) +
 * `line`: add labels at the right ends of each highlighted lines.
 * `bar`: (do not add labels)
 
-If you don't want them to be labelled automatically, you can specify `use_direct_labels = FALSE`
+If you don't want them to be labelled automatically, you can specify `use_direct_label = FALSE`
 
 ```{r labels}
 ggplot(d) +
