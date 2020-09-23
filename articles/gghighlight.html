@@ -76,7 +76,7 @@
       <h1 data-toc-skip>Introduction to gghighlight</h1>
                         <h4 class="author">Hiroaki Yutani</h4>
             
-            <h4 class="date">2020-07-29</h4>
+            <h4 class="date">2020-09-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/yutannihilation/gghighlight/blob/master/vignettes/gghighlight.Rmd"><code>vignettes/gghighlight.Rmd</code></a></small>
       <div class="hidden name"><code>gghighlight.Rmd</code></div>
@@ -232,7 +232,7 @@
 <li>
 <code>bar</code>: (do not add labels)</li>
 </ul>
-<p>If you don’t want them to be labelled automatically, you can specify <code>use_direct_labels = FALSE</code></p>
+<p>If you don’t want them to be labelled automatically, you can specify <code>use_direct_label = FALSE</code></p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
   <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span>, <span class="kw">use_direct_label</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
