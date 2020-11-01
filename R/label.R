@@ -89,8 +89,8 @@ generate_label_for_line <- function(layer, label_key, label_params, max_labels) 
     inform("Too many data series, skip labeling")
     return(list())
   }
-  
-  rightmost_points <- dplyr::filter(data, !!x_key == max(!!x_key))
+
+  rightmost_points <- dplyr::slice_max(data, !!x_key)
   # max value can appear multiple times, so ensure only one row per group
   rightmost_points <- dplyr::slice(rightmost_points, 1)
 
@@ -105,7 +105,7 @@ generate_label_for_point <- function(layer, label_key, label_params, max_labels)
     inform("Too many data points, skip labeling")
     return(list())
   }
-  
+
   mapping <- layer$mapping
   mapping$label <- label_key
 
