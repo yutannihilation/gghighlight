@@ -76,7 +76,7 @@
       <h1 data-toc-skip>Introduction to gghighlight</h1>
                         <h4 class="author">Hiroaki Yutani</h4>
             
-            <h4 class="date">2020-09-23</h4>
+            <h4 class="date">2020-11-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/yutannihilation/gghighlight/blob/master/vignettes/gghighlight.Rmd"><code>vignettes/gghighlight.Rmd</code></a></small>
       <div class="hidden name"><code>gghighlight.Rmd</code></div>
@@ -89,32 +89,35 @@
 <h2 class="hasAnchor">
 <a href="#motivation" class="anchor"></a>Motivation</h2>
 <p>Suppose we have a data that has so many series that it is hard to identify them by their colours as the differences are so subtle.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">2</span>)
-<span class="no">d</span> <span class="kw">&lt;-</span> <span class="kw pkg">purrr</span><span class="kw ns">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span>(
-  <span class="no">letters</span>,
-  ~ <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
-      <span class="kw">idx</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">400</span>,
-      <span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">400</span>, -<span class="fl">1</span>, <span class="fl">1</span>)),
-      <span class="kw">type</span> <span class="kw">=</span> <span class="no">.</span>,
-      <span class="kw">flag</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">TRUE</span>, <span class="fl">FALSE</span>), <span class="kw">size</span> <span class="kw">=</span> <span class="fl">400</span>, <span class="kw">replace</span> <span class="kw">=</span> <span class="fl">TRUE</span>),
-      <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>
-    )
-)</pre></body></html></div>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dfr</a></span><span class="op">(</span>
+  <span class="va">letters</span>,
+  <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+      idx <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">400</span>,
+      value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">400</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
+      type <span class="op">=</span> <span class="va">.</span>,
+      flag <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">400</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+      stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span>
+<span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>))</pre></body></html></div>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p><img src="gghighlight_files/figure-html/ggplot2-simple-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>To filter the data to the reasonable number of lines, we can use dplyr’s <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> here.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>, <span class="kw">warn.conflicts</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="no">d_filtered</span> <span class="kw">&lt;-</span> <span class="no">d</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(<span class="no">type</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>()
+<span class="va">d_filtered</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d_filtered</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>))</pre></body></html></div>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d_filtered</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p><img src="gghighlight_files/figure-html/ggplot2-filter-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>But, it seems not so handy. For example, what if we want to change the threshold in predicate (<code>max(value) &gt; 20</code>) and highlight other series as well? It’s a bit tiresome to type all the code above again every time we replace <code>20</code> with some other value.</p>
 <p>Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot loose its context then.</p>
@@ -125,38 +128,41 @@
 <h2 class="hasAnchor">
 <a href="#gghighlight" class="anchor"></a>gghighlight()</h2>
 <p>The main function of gghighlight package is <code><a href="../reference/gghighlight.html">gghighlight()</a></code>. For example, by using this function, we can highlight the lines whose max values are larger than 20 like below:</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">gghighlight</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yutannihilation/gghighlight/">gghighlight</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span>)
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-simple-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can specify as many predicates as you like. For example, the following code highlights the data that satisfies both <code>max(value) &gt; 15</code> and <code>mean(flag) &gt; 0.55</code>.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">15</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">flag</span>) <span class="kw">&gt;</span> <span class="fl">0.55</span>)
-<span class="co">#&gt; label_key: type</span>
-<span class="co">#&gt; Warning in max(~idx): no non-missing arguments to max; returning -Inf</span></pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">15</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">flag</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.55</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-two-conds-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="customization" class="section level2">
 <h2 class="hasAnchor">
 <a href="#customization" class="anchor"></a>Customization</h2>
 <p>As adding <code><a href="../reference/gghighlight.html">gghighlight()</a></code> results in a ggplot object, it is fully customizable just as we usually do with ggplot2 like custom themes.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">19</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span>()
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">19</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-theme-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The plot also can be facetted:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">19</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~ <span class="no">type</span>)
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">19</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">type</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-facet-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>There are also some options to control the way of highlighting. See “Options” section below.</p>
 </div>
@@ -168,31 +174,34 @@
 <h3 class="hasAnchor">
 <a href="#bar" class="anchor"></a>Bar</h3>
 <p><code><a href="../reference/gghighlight.html">gghighlight()</a></code> can highlight bars.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">iris</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">Sepal.Length</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="no">Species</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span>() +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>()
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">iris</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">Sepal.Length</span>, fill <span class="op">=</span> <span class="va">Species</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; label_key: Species</span>
 
-<span class="no">p</span>
+<span class="va">p</span>
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span>
-<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></pre></body></html></div>
+<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></pre></div>
 <p><img src="gghighlight_files/figure-html/bar-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Are you wondering if this is really highlighted? Yes, it is. But, the unhighlighted bars are all overwritten by the highlighted bars. This seems not so useful, until you see the facetted version:</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">p</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~ <span class="no">Species</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">Species</span><span class="op">)</span>
 <span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span>
-<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></pre></body></html></div>
+<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></pre></div>
 <p><img src="gghighlight_files/figure-html/bar-wrap-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="point" class="section level3">
 <h3 class="hasAnchor">
 <a href="#point" class="anchor"></a>Point</h3>
 <p>As is explained in <a href="https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/">Anatomy of gghighlight</a>, lines and points typically have different semantics (group-wise or not). But, in most cases, you don’t need to be careful about the difference with <code><a href="../reference/gghighlight.html">gghighlight()</a></code> because it automatically picks the right way of calculation.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">10</span>)
-<span class="no">d2</span> <span class="kw">&lt;-</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span>(<span class="no">d</span>, <span class="fl">20</span>)
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
+<span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">20</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="no">value</span> <span class="kw">&gt;</span> <span class="fl">0</span>, <span class="kw">label_key</span> <span class="kw">=</span> <span class="no">type</span>)</pre></body></html></div>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span>, label_key <span class="op">=</span> <span class="va">type</span><span class="op">)</span></pre></div>
 <p><img src="gghighlight_files/figure-html/point-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>More precisely, <code><a href="../reference/gghighlight.html">gghighlight()</a></code> takes the following strategy:</p>
 <ol style="list-style-type: decimal">
@@ -212,12 +221,14 @@
 <h2 class="hasAnchor">
 <a href="#non-logical-predicate" class="anchor"></a>Non-logical predicate</h2>
 <p>To construct a predicate expression like bellow, we need to determine a threshold (in this example, <code>20</code>). But it is difficult to choose a nice one before we draw plots.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span></pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span></pre></div>
 <p>So, <code><a href="../reference/gghighlight.html">gghighlight()</a></code> allows predicates that return non-logical (e.g. numeric and character) results. The values are used for sorting data and the top <code>max_highlight</code> of rows/groups are highlighted:</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>), <span class="kw">max_highlight</span> <span class="kw">=</span> <span class="fl">5L</span>)
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, max_highlight <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/numeric-highlight-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="labels" class="section level2">
@@ -233,23 +244,26 @@
 <code>bar</code>: (do not add labels)</li>
 </ul>
 <p>If you don’t want them to be labelled automatically, you can specify <code>use_direct_label = FALSE</code></p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span>, <span class="kw">use_direct_label</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span>, use_direct_label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <p><img src="gghighlight_files/figure-html/labels-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Labels are drawn by <code>geom_label_repel()</code>. If you want to customize the labels, you can pass parameters to it via <code>label_params</code>.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>)) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">20</span>, <span class="kw">label_params</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">10</span>))
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span>, label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/labels2-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can also add labels by yourself. It is easy to add labels on only highlighted data because <code><a href="../reference/gghighlight.html">gghighlight()</a></code> replaces the plot’s data to the filtered one.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">4</span>) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="no">value</span> <span class="kw">&gt;</span> <span class="fl">0</span>, <span class="kw">use_direct_label</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span>, use_direct_label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># the filtered data</span>
-<span class="no">p</span>$<span class="no">data</span>
+<span class="va">p</span><span class="op">$</span><span class="va">data</span>
 <span class="co">#&gt;    idx      value type  flag</span>
 <span class="co">#&gt; 3  380  6.6660069    n FALSE</span>
 <span class="co">#&gt; 4    8  0.3777038    e  TRUE</span>
@@ -263,8 +277,8 @@
 <span class="co">#&gt; 17 360 13.0007351    s FALSE</span>
 <span class="co">#&gt; 20 214  4.1910452    z FALSE</span>
 
-<span class="no">p</span> + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_label</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">label</span> <span class="kw">=</span> <span class="no">type</span>),
-               <span class="kw">hjust</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">vjust</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="st">"purple"</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="st">"white"</span>, <span class="kw">alpha</span><span class="kw">=</span> <span class="fl">0.5</span>)</pre></body></html></div>
+<span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_label</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">type</span><span class="op">)</span>,
+               hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="st">"purple"</span>, colour <span class="op">=</span> <span class="st">"white"</span>, alpha<span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></pre></div>
 <p><img src="gghighlight_files/figure-html/labels3-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="options" class="section level2">
@@ -275,11 +289,12 @@
 <a href="#unhighlighted_params" class="anchor"></a><code>unhighlighted_params</code>
 </h3>
 <p>If you want to change the style of unhighlighted layers, use <code>unhighlighted_params</code>.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">type</span>), <span class="kw">size</span> <span class="kw">=</span> <span class="fl">5</span>) +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">19</span>,
-              <span class="kw">unhighlighted_params</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">size</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/reexports.html">alpha</a></span>(<span class="st">"pink"</span>, <span class="fl">0.4</span>)))
-<span class="co">#&gt; label_key: type</span></pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">19</span>,
+              unhighlighted_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span>, colour <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org//reference/alpha.html">alpha</a></span><span class="op">(</span><span class="st">"pink"</span>, <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; label_key: type</span></pre></div>
 <p><img src="gghighlight_files/figure-html/gghighlight-params-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="keep_scales" class="section level3">
@@ -287,16 +302,17 @@
 <a href="#keep_scales" class="anchor"></a><code>keep_scales</code>
 </h3>
 <p>If you want to keep the original scales, set <code>keep_scales</code> to <code>TRUE</code>.</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">mtcars</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">wt</span>, <span class="no">mpg</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">cyl</span>))) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>()
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">wt</span>, <span class="va">mpg</span>, colour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="no">p</span> + <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="no">cyl</span> <span class="kw">==</span> <span class="fl">6</span>)
+<span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="va">cyl</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Tried to calculate with group_by(), but the calculation failed.</span>
 <span class="co">#&gt; Falling back to ungrouped filter operation...</span>
 
-<span class="no">p</span> + <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="no">cyl</span> <span class="kw">==</span> <span class="fl">6</span>, <span class="kw">keep_scales</span> <span class="kw">=</span> <span class="fl">TRUE</span>) + <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"keep_scales = TRUE"</span>)
+<span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="va">cyl</span> <span class="op">==</span> <span class="fl">6</span>, keep_scales <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"keep_scales = TRUE"</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Tried to calculate with group_by(), but the calculation failed.</span>
-<span class="co">#&gt; Falling back to ungrouped filter operation...</span></pre></body></html></div>
+<span class="co">#&gt; Falling back to ungrouped filter operation...</span></pre></div>
 <p><img src="gghighlight_files/figure-html/keep_scales-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/keep_scales-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="calculate_per_facet" class="section level3">
@@ -304,26 +320,27 @@
 <a href="#calculate_per_facet" class="anchor"></a><code>calculate_per_facet</code>
 </h3>
 <p>If you want to highlight each facet individually, set <code>calculate_per_facet</code> to <code>TRUE</code>. Note that <code><a href="../reference/gghighlight.html">gghighlight()</a></code> affects the plot <em>before</em> <code><a href="../reference/gghighlight.html">gghighlight()</a></code>. If you add <code>facet_*()</code> after adding <code><a href="../reference/gghighlight.html">gghighlight()</a></code>, this option doesn’t work.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
-  <span class="kw">idx</span> <span class="kw">=</span>   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>),
-  <span class="kw">value</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">10</span>, <span class="fl">11</span>, <span class="fl">12</span>, <span class="fl">13</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">16</span>, <span class="fl">32</span>),
-  <span class="kw">cat1</span> <span class="kw">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"a"</span>, <span class="st">"b"</span>), <span class="kw">each</span> <span class="kw">=</span> <span class="fl">4</span>),
-  <span class="kw">cat2</span> <span class="kw">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1-2"</span>, <span class="st">"3-4"</span>), <span class="kw">each</span> <span class="kw">=</span> <span class="fl">2</span>), <span class="fl">2</span>),
-  <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>
-)
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+  idx <span class="op">=</span>   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>,
+  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">11</span>, <span class="fl">12</span>, <span class="fl">13</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">16</span>, <span class="fl">32</span><span class="op">)</span>,
+  cat1 <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,
+  cat2 <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1-2"</span>, <span class="st">"3-4"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,
+  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span>
 
-<span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">d</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">idx</span>, <span class="no">value</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">cat1</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span>(<span class="no">cat2</span>))
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">cat1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">cat2</span><span class="op">)</span><span class="op">)</span>
 
-<span class="no">p</span> +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">10</span>)
+<span class="va">p</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt; label_key: cat1</span>
 
-<span class="no">p</span> +
-  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">value</span>) <span class="kw">&gt;</span> <span class="fl">10</span>, <span class="kw">calculate_per_facet</span> <span class="kw">=</span> <span class="fl">TRUE</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"calculate_per_facet = TRUE"</span>)
-<span class="co">#&gt; label_key: cat1</span></pre></body></html></div>
+<span class="va">p</span> <span class="op">+</span>
+  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">10</span>, calculate_per_facet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"calculate_per_facet = TRUE"</span><span class="op">)</span>
+<span class="co">#&gt; label_key: cat1</span></pre></div>
 <p><img src="gghighlight_files/figure-html/calculate_per_facet-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/calculate_per_facet-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -344,7 +361,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
