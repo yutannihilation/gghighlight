@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Suppose we have a data that has so many series that it is hard to identify them by their colours as the differences are so subtle.
+Suppose we have data that has so many series that it is hard to identify them by their colours as the differences are so subtle.
 
 ```{r data}
 set.seed(2)
@@ -42,7 +42,7 @@ ggplot(d) +
   geom_line(aes(idx, value, colour = type))
 ```
 
-To filter the data to the reasonable number of lines, we can use dplyr's `filter()` here.
+To filter the data to a reasonable number of lines, we can use dplyr's `filter()`.
 
 ```{r ggplot2-filter}
 library(dplyr, warn.conflicts = FALSE)
@@ -59,16 +59,16 @@ ggplot(d_filtered) +
 But, it seems not so handy. For example, what if we want to change the threshold in predicate (`max(value) > 20`) and highlight other series as well?
 It's a bit tiresome to type all the code above again every time we replace `20` with some other value.
 
-Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot loose its context then.
+Besides, considering one of the main purposes of visualization is to get the overview of a data, it may not be good to simply filter out the unmatched data because the plot will lose its context.
 
 Here comes gghighlight package, `dplyr::filter()` equivalent for ggplot2.
 
-(If you are interested in the more details behind the idea of highlighting, please read this post: [Anatomy of gghighlight](https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/).)
+(If you are interested in more details behind the idea of highlighting, please read this post: [Anatomy of gghighlight](https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/).)
 
 ## gghighlight()
 
-The main function of gghighlight package is `gghighlight()`.
-For example, by using this function, we can highlight the lines whose max values are larger than 20 like below:
+The main function of the gghighlight package is `gghighlight()`.
+For example, by using this function, we can highlight the lines whose max values are larger than 20 as seen below:
 
 ```{r gghighlight-simple}
 library(gghighlight)
@@ -98,7 +98,7 @@ ggplot(d) +
   theme_minimal()
 ```
 
-The plot also can be facetted:
+The plot also can be faceted:
 
 ```{r gghighlight-facet}
 ggplot(d) +
@@ -113,7 +113,7 @@ There are also some options to control the way of highlighting. See "Options" se
 
 ## Geoms
 
-`gghighlight()` can highlight almost every geoms. Here are some examples.
+`gghighlight()` can highlight almost every geom. Here are some examples.
 
 ### Bar
 
@@ -129,7 +129,7 @@ p
 
 Are you wondering if this is really highlighted? Yes, it is.
 But, the unhighlighted bars are all overwritten by the highlighted bars.
-This seems not so useful, until you see the facetted version:
+This seems not so useful, until you see the faceted version:
 
 ```{r bar-wrap}
 p + facet_wrap(~ Species)
@@ -137,7 +137,7 @@ p + facet_wrap(~ Species)
 
 ### Point
 
-As is explained in [Anatomy of gghighlight](https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/), lines and points typically have different semantics (group-wise or not). But, in most cases, you don't need to be careful about the difference with `gghighlight()` because it automatically picks the right way of calculation.
+As is explained in [Anatomy of gghighlight](https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/), lines and points typically have different semantics (group-wise or not). But, in most cases, you don't need to be careful about the difference with `gghighlight()` because it automatically picks the right method of calculation.
 
 ```{r point}
 set.seed(10)
@@ -160,13 +160,13 @@ Note that, in this case, `label_key = type` is needed to show labels because `gg
 
 ## Non-logical predicate
 
-To construct a predicate expression like bellow, we need to determine a threshold (in this example, `20`). But it is difficult to choose a nice one before we draw plots.
+To construct a predicate expression like below, we need to determine a threshold (in this example, `20`). But it is difficult to choose a nice one before we draw plots.
 
 ```{r predicate-example, eval=FALSE}
 max(value) > 20
 ```
 
-So, `gghighlight()` allows predicates that return non-logical (e.g. numeric and character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
+So, `gghighlight()` allows predicates that return non-logical (e.g., numeric and character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
 
 ```{r numeric-highlight}
 ggplot(d, aes(idx, value, colour = type)) +
@@ -176,10 +176,10 @@ ggplot(d, aes(idx, value, colour = type)) +
 
 ## Labels
 
-`gghighlight()` adds the direct labels for some geoms. Currently, the following geoms are supported:
+`gghighlight()` adds direct labels for some geoms. Currently, the following geoms are supported:
 
-* `point`: add labels at each highlighted points.
-* `line`: add labels at the right ends of each highlighted lines.
+* `point`: add labels at each highlighted point.
+* `line`: add labels at the right end of each highlighted line.
 * `bar`: (do not add labels)
 
 If you don't want them to be labelled automatically, you can specify `use_direct_label = FALSE`
