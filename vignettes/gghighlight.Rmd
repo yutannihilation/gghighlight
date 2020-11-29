@@ -98,7 +98,7 @@ ggplot(d) +
   theme_minimal()
 ```
 
-The plot also can be faceted:
+The plot also can be facetted:
 
 ```{r gghighlight-facet}
 ggplot(d) +
@@ -129,7 +129,7 @@ p
 
 Are you wondering if this is really highlighted? Yes, it is.
 But, the unhighlighted bars are all overwritten by the highlighted bars.
-This seems not so useful, until you see the faceted version:
+This seems not so useful, until you see the facetted version:
 
 ```{r bar-wrap}
 p + facet_wrap(~ Species)
@@ -166,7 +166,7 @@ To construct a predicate expression like below, we need to determine a threshold
 max(value) > 20
 ```
 
-So, `gghighlight()` allows predicates that return non-logical (e.g., numeric and character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
+So, `gghighlight()` allows predicates that return non-logical (e.g. numeric and character) results. The values are used for sorting data and the top `max_highlight` of rows/groups are highlighted:
 
 ```{r numeric-highlight}
 ggplot(d, aes(idx, value, colour = type)) +
