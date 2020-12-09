@@ -2,6 +2,8 @@
 context("vdiffr")
 
 test_that("gghighlight() highlights correctly", {
+  testthat::skip_if_not_installed("vdiffr")
+
   vdiffr::expect_doppelganger(
     "simple bar chart",
     ggplot(mpg, aes(class, fill = factor(cyl))) +
