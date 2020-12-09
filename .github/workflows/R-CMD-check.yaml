@@ -23,8 +23,8 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: macOS-latest,   r: 'release'}
           - {os: macOS-latest,   r: 'release', use_dev_packages: true}
-          - {os: ubuntu-18.04,   r: 'devel'}
-          - {os: ubuntu-18.04,   r: 'release', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
+          - {os: ubuntu-20.04,   r: 'devel'}
+          - {os: ubuntu-20.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -44,33 +44,27 @@ jobs:
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          cat(version$major, ".", version$minor, file = ".github/version", sep = "")
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
       - name: Cache R packages
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ env.cache-version }}-${{ matrix.config.os }}-r-${{ hashFiles('.github/version') }}-${{ matrix.config.use_dev_packages }}-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ matrix.config.os }}-r-${{ hashFiles('.github/version') }}-${{ matrix.config.use_dev_packages }}-
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install system dependencies on Linux
         if: runner.os == 'Linux'
-        env:
-          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          # Use cran:libgit2 PPA to avoid conflicts of libcurl4-gnutls-dev
-          sudo add-apt-repository ppa:cran/libgit2
-
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo -s eval "$sysreqs"
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
           # Since sf dependencies are a bit heavy, install them only when they are needed
           SF_NEEDS_UPDATED=$(Rscript -e 'if (!"sf" %in% installed.packages()[,"Package"] || "sf" %in% old.packages()[,"Package"]) cat("yes")')
           if [ "${SF_NEEDS_UPDATED}" == "yes" ]; then
-            sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-            sudo apt update
             sudo apt install \
               libudunits2-dev \
               libgdal-dev \
