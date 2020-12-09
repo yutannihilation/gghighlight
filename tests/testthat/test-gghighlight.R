@@ -36,7 +36,9 @@ test_that("gghighlight() does not change the existing layers", {
 
   invisible(p1 + gghighlight(mean(value) > 1))
 
-  expect_equal(p1, p2)
+  expect_equal(p1$data, d)
+  expect_equal(length(p1$layers), 1L)
+  expect_equal(as.list(p1$layers[[1]]), as.list(p2$layers[[1]]))
 })
 
 test_that("gghighlight() works with the plot with one layer, grouped", {

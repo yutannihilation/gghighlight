@@ -20,7 +20,7 @@ expect_equal_sieved <- function(layer, params, ..., expect) {
   params <- purrr::update_list(params, ...)
   params$layer <- layer
   expect_true(do.call(sieve_layer, params))
-  expect_equal(!!layer, !!expect)
+  expect_equal_layer(layer, expect)
 }
 
 test_that("sieve_layer() works with simple ungrouped cases", {
