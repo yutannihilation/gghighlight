@@ -2,6 +2,9 @@
 
 * `gghighlight()` now can add labels on discrete scales (#160).
 
+* `gghighlight()` now accepts `n()` so that you can highlight based on the
+  number of rows within each group (#154).
+
 # gghighlight 0.3.0
 
 ## Breaking changes
