@@ -266,7 +266,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   # detected by checking if all elements are NA or not.
   mapping_wrapped <- purrr::map(mapping, ~ quo(tryCatch(!!., error = function(e) NA)))
   data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
-  data_evaluated <- dplyr::select_if(data_evaluated, ~ !all(is.na(.)))
+  data_evaluated <- dplyr::select(data_evaluated, where(~ !all(is.na(.))))
 
   # Calculate group IDs as ggplot2 does.
   # (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)

@@ -13,3 +13,7 @@ NULL
 #' @importFrom ggplot2 aes
 #' @export
 ggplot2::aes
+
+# TODO: where() is not exported from tidyselect.
+#       Fix this when r-lib/tidyselect#201 is closed.
+utils::globalVariables("where")
