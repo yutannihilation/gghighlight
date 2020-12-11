@@ -515,7 +515,7 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- dplyr::filter(data_filtered, dplyr::across(cols$arrange, ~ !is.na(.)))
+    data_filtered <- dplyr::filter(data_filtered, across(cols$arrange, ~ !is.na(.)))
     data_filtered <- dplyr::arrange(data_filtered, across(all_of(cols$arrange)))
     data_filtered <- utils::tail(data_filtered, max_highlight)
   }
