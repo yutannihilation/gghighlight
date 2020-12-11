@@ -443,8 +443,7 @@ sieve_layer <- function(layer, group_info, predicates,
   error = function(e) {
     # do not warn here, but in ggplot_add.gg_highlighter()
     return(FALSE)
-  }
-  )
+  })
 
   FALSE
 }
@@ -506,7 +505,7 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data
 
   data_predicated <- tibble::rowid_to_column(data_predicated, var = expr_text(VERY_SECRET_COLUMN_NAME))
-  data_predicated <- dplyr::transmute(data_predicated, !!! predicates, !!VERY_SECRET_COLUMN_NAME)
+  data_predicated <- dplyr::transmute(data_predicated, !!!predicates, !!VERY_SECRET_COLUMN_NAME)
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
