@@ -5,8 +5,8 @@ test_that("choose_col_for_filter_and_arrange() works", {
                        p1 = TRUE,
                        lst = list(1, 2))
 
-  expected <- list(filter = syms(c("p1")),
-                   arrange = syms(c("y", "z")))
+  expected <- list(filter = c("p1"),
+                   arrange = c("y", "z"))
   expect_equal(choose_col_for_filter_and_arrange(d1, sym("x")),
                !!expected)
 
@@ -51,7 +51,7 @@ test_that("calculate_ungrouped() and calculate_grouped() don't drop data.frames"
 test_that("get_facet_vars() extract facet specs", {
   p <- ggplot()
   v <- quos(A = a, B = b)
-  
+
   expect_identical(get_facet_vars(p$facet), NULL)
   expect_identical(get_facet_vars((p + facet_wrap(v))$facet), v)
   expect_identical(get_facet_vars((p + facet_grid(v))$facet), v)

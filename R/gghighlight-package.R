@@ -6,7 +6,7 @@
 #' @import rlang
 #' @importFrom ggplot2 %+%
 #' @importFrom ggplot2 ggplot_add
-#' @importFrom dplyr desc
+#' @importFrom dplyr desc across all_of
 #' @docType package
 NULL
 

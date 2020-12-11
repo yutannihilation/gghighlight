@@ -489,11 +489,11 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- dplyr::filter(data_predicated, !!!cols$filter)
+  data_filtered <- dplyr::filter(data_predicated, across(all_of(cols$filter)))
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- dplyr::arrange(data_filtered, !!!cols$arrange)
+    data_filtered <- dplyr::arrange(data_filtered, across(all_of(cols$arrange)))
     data_filtered <- utils::tail(data_filtered, max_highlight)
   }
 
@@ -511,12 +511,12 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- dplyr::filter(data_predicated, !!!cols$filter)
+  data_filtered <- dplyr::filter(data_predicated, across(all_of(cols$filter)))
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- dplyr::filter_at(data_filtered, dplyr::vars(!!!cols$arrange), ~ !is.na(.))
-    data_filtered <- dplyr::arrange(data_filtered, !!!cols$arrange)
+    data_filtered <- dplyr::filter(data_filtered, dplyr::across(cols$arrange, ~ !is.na(.)))
+    data_filtered <- dplyr::arrange(data_filtered, across(all_of(cols$arrange)))
     data_filtered <- utils::tail(data_filtered, max_highlight)
   }
 
@@ -533,9 +533,9 @@ choose_col_for_filter_and_arrange <- function(data, exclude_col) {
   col_idx_lst <- purrr::map_lgl(data, is.list)
   list(
     # Use logical columns for filter()
-    filter = syms(names(data)[col_idx_lgl]),
+    filter = names(data)[col_idx_lgl],
     # Use other columns but lists for arrange() (arrange doesn't support list columns)
-    arrange = syms(names(data)[!col_idx_lgl & !col_idx_lst])
+    arrange = names(data)[!col_idx_lgl & !col_idx_lst]
   )
 }
 

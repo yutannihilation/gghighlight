@@ -33,7 +33,7 @@ gghighlight(
 
 \item{label_key}{Column name for \code{label} aesthetics.}
 
-\item{label_params}{A list of parameters, which is passed to \code{\link[ggrepel:geom_label_repel]{ggrepel::geom_label_repel()}}.}
+\item{label_params}{A list of parameters, which is passed to \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_label_repel()}}.}
 
 \item{keep_scales}{If \code{TRUE}, keep the original data with \code{\link[ggplot2:geom_blank]{ggplot2::geom_blank()}} so that the
 highlighted plot has the same scale with the data.}
