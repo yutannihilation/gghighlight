@@ -4,6 +4,7 @@
 \name{reexports}
 \alias{reexports}
 \alias{aes}
+\alias{n}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -11,6 +12,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
+  \item{dplyr}{\code{\link[dplyr:context]{n}}}
+
   \item{ggplot2}{\code{\link[ggplot2]{aes}}}
 }}
 

@@ -6,7 +6,7 @@
 #' @import rlang
 #' @importFrom ggplot2 %+%
 #' @importFrom ggplot2 ggplot_add
-#' @importFrom dplyr desc across all_of n
+#' @importFrom dplyr desc across all_of
 #' @docType package
 NULL
 
@@ -17,3 +17,7 @@ ggplot2::aes
 # TODO: where() is not exported from tidyselect.
 #       Fix this when r-lib/tidyselect#201 is closed.
 utils::globalVariables("where")
+
+#' @importFrom dplyr n
+#' @export
+dplyr::n
