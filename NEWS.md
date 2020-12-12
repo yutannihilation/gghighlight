@@ -1,3 +1,5 @@
+# gghighlight (development version)
+
 # gghighlight 0.3.1
 
 * `gghighlight()` now can add labels on discrete scales (#160).
