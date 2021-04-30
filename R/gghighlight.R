@@ -59,7 +59,7 @@
 gghighlight <- function(...,
                         n = NULL,
                         max_highlight = 5L,
-                        unhighlighted_params = list(),
+                        unhighlighted_params = list(colour = "#BEBEBEB2", fill = "#BEBEBEB2"),
                         use_group_by = NULL,
                         use_direct_label = NULL,
                         label_key = NULL,
@@ -74,7 +74,7 @@ gghighlight <- function(...,
   check_bad_label_key(label_key)
 
   # if fill is not specified, use colour for fill, or vice versa
-  unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
+  #unhighlighted_params <- normalize_unhighlighted_params(unhighlighted_params)
 
   if (!is.null(unhighlighted_colour)) {
     lifecycle::deprecate_warn(
@@ -314,8 +314,8 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_
   # it is not included in unhighlighted_params. But, if the default_aes is NA,
   # respect it (e.g. geom_bar()'s default colour is NA).
   # Note that this depends on the mapping, so this needs to be done before modifying the mapping.
-  unhighlighted_params$colour <- unhighlighted_params$colour %||% get_default_aes_param("colour", layer$geom, layer$mapping)
-  unhighlighted_params$fill <- unhighlighted_params$fill %||% get_default_aes_param("fill", layer$geom, layer$mapping)
+  #unhighlighted_params$colour <- unhighlighted_params$colour %||% get_default_aes_param("colour", layer$geom, layer$mapping)
+  #unhighlighted_params$fill <- unhighlighted_params$fill %||% get_default_aes_param("fill", layer$geom, layer$mapping)
 
   # c.f. https://github.com/tidyverse/ggplot2/blob/e9d4e5dd599b9f058cbe9230a6517f85f3587567/R/layer.r#L107-L108
   aes_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$aesthetics()]
