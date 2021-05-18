@@ -22,6 +22,7 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-20.04,   r: 'devel'  }
           - {os: ubuntu-20.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          - {os: ubuntu-20.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest", use_dev_ggplot2: true}
           - {os: ubuntu-20.04,   r: 'oldrel',  rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
 
     env:
@@ -59,6 +60,11 @@ jobs:
         run: |
           pak::local_system_requirements(execute = TRUE)
           pak::pkg_system_requirements("rcmdcheck", execute = TRUE)
+        shell: Rscript {0}
+
+      - name: Install dev version of ggplot2
+        if: matrix.config.use_dev_ggplot2
+        run: pak::pkg_install("tidyverse/ggplot2")
         shell: Rscript {0}
 
       - name: Install dependencies
