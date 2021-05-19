@@ -63,7 +63,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install dev version of ggplot2
-        if: matrix.config.ggplot2 == "dev"
+        if: matrix.config.ggplot2 == 'dev'
         run: pak::pkg_install("tidyverse/ggplot2")
         shell: Rscript {0}
 
