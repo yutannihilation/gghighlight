@@ -12,7 +12,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: "${{ matrix.config.os }} (R: ${{ matrix.config.r }}, ggplot2: ${{ matrix.config.ggplot2 }})"
+    name: "${{ matrix.config.os }} (R ${{ matrix.config.r }}, ggplot2: ${{ matrix.config.ggplot2 }})"
 
     strategy:
       fail-fast: false
