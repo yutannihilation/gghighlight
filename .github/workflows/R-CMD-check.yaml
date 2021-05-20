@@ -21,9 +21,9 @@ jobs:
           - {os: macOS-latest,   ggplot2: 'cran', r: 'release'}
           - {os: windows-latest, ggplot2: 'cran', r: 'release'}
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'devel'  }
-          - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'oldrel',  rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'oldrel',  rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
       RSPM: ${{ matrix.config.rspm }}
@@ -52,8 +52,8 @@ jobs:
           path: |
             ${{ env.R_LIBS_USER }}/*
             !${{ env.R_LIBS_USER }}/pak
-          key: ${{ matrix.config.os }}-${{ steps.install-r.outputs.installed-r-version }}-1-${{ hashFiles('.github/r-depends.rds') }}
-          restore-keys: ${{ matrix.config.os }}-${{ steps.install-r.outputs.installed-r-version }}-1-
+          key: ${{ matrix.config.os }}-${{ steps.install-r.outputs.installed-r-version }}-2-${{ hashFiles('.github/r-depends.rds') }}
+          restore-keys: ${{ matrix.config.os }}-${{ steps.install-r.outputs.installed-r-version }}-2-
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
