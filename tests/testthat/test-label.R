@@ -94,15 +94,17 @@ test_that("generate_labelled_layer() geenrates a layer for label.", {
   l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf)
   expect_equal(l_label$position$seed, l_jitter$position$seed)
 
-  # when the seed is NULL, set it and share it. (c.f. tidyverse/ggplot2#2507)
+  # TODO: remove the following tests when gghighlight requires ggplot2 >= v3.3.4.
+  # when the seed is NULL, set it and share it. (c.f. tidyverse/ggplot2#2507, which is already fixed in v3.3.4)
   l_jitter <- geom_point(aes(x, y, colour = type), d, position = "jitter")
-  expect_true(is.null(l_jitter$position$seed))
-  l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf)
-  expect_true(!is.null(l_jitter$position$seed))
-  expect_equal(l_label$position$seed, l_jitter$position$seed)
+  if (is.null(l_jitter$position$seed)) {
+    l_label <- generate_labelled_layer(list(l_jitter), list(g_info), type2_quo, list(fill = "white"), Inf)
+    expect_true(!is.null(l_jitter$position$seed))
+    expect_equal(l_label$position$seed, l_jitter$position$seed)
 
-  # Do not modify the original env
-  expect_true(is.null(ggplot2::PositionJitter$seed))
+    # Do not modify the original env
+    expect_true(is.null(ggplot2::PositionJitter$seed))
+  }
 })
 
 test_that("call_ggrepel_with_params() generates a geom_label_repel()", {
