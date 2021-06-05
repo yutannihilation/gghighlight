@@ -230,11 +230,11 @@ ggplot(d) +
 You can also specify `NULL` to `fill` or `colour` to preserve the original color.
 
 ```{r gghighlight-params-null}
-ggplot(d2, aes(idx, value, colour = flag, fill = value)) +
-  geom_point(size = 6, stroke = 1, shape = 21) +
-  gghighlight(value > 0, use_direct_label = FALSE,
-              # preserve colour
-              unhighlighted_params = list(colour = NULL))
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 19,
+              # preserve colour and modify alpha instead
+              unhighlighted_params = list(colour = NULL, alpha = 0.3))
 ```
 
 ### `keep_scales`
