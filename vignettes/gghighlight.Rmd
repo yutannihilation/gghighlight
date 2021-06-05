@@ -141,7 +141,7 @@ As is explained in [Anatomy of gghighlight](https://yutani.rbind.io/post/2018-06
 
 ```{r point}
 set.seed(10)
-d2 <- dplyr::sample_n(d, 20)
+d2 <- dplyr::slice_sample(d, n = 20)
 
 ggplot(d2, aes(idx, value)) +
   geom_point() +
