@@ -1,4 +1,4 @@
-# gghighlight (development version)
+# gghighlight 0.3.2
 
 * `gghighlight()` now accepts `n()` so that you can highlight based on the
   number of rows within each group (#154).
