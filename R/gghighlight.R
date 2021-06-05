@@ -266,7 +266,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   # So, wrap it with tryCatch() and remove the failed results, which can be
   # detected by checking if all elements are NA or not.
   mapping_wrapped <- purrr::map(mapping, ~ quo(tryCatch(!!., error = function(e) NA)))
-  data_evaluated <- dplyr::transmute(data, !!!mapping_wrapped)
+  data_evaluated <- dplyr::transmute(data, quasi_parallel(!!!mapping_wrapped, ..nrow = n()))
   data_evaluated <- dplyr::select(data_evaluated, where(~ !all(is.na(.))))
 
   # Calculate group IDs as ggplot2 does.
@@ -282,11 +282,11 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   group_keys <- purrr::keep(mapping[group_cols], quo_is_symbol)
 
   # if extra variables (e.g. facet specs) are specified, use them.
-  if (!is.null(extra_vars)) {
+  if (!is.null(extra_vars) && !is_empty(extra_vars)) {
     if (!is_quosures(extra_vars) || !all(have_name(extra_vars))) {
       abort("extra_vars must be a named quosures object.")
     }
-    extra_data <- dplyr::transmute(data, !!!extra_vars)
+    extra_data <- dplyr::transmute(data, quasi_parallel(!!!extra_vars, ..nrow = n()))
   } else {
     extra_data <- NULL
   }
@@ -487,7 +487,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   data_predicated <- data
 
   data_predicated <- dplyr::group_by(data_predicated, !!VERY_SECRET_COLUMN_NAME := !!group_ids)
-  data_predicated <- dplyr::summarise(data_predicated, !!!predicates)
+  data_predicated <- dplyr::summarise(data_predicated, quasi_parallel(!!!predicates, ..nrow = 1L))
 
   group_with_multiple_result <- anyDuplicated(dplyr::pull(data_predicated, !!VERY_SECRET_COLUMN_NAME))
   if (!identical(group_with_multiple_result, 0L)) {
@@ -514,7 +514,11 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data
 
   data_predicated <- tibble::rowid_to_column(data_predicated, var = expr_text(VERY_SECRET_COLUMN_NAME))
-  data_predicated <- dplyr::transmute(data_predicated, !!!predicates, !!VERY_SECRET_COLUMN_NAME)
+  data_predicated <- dplyr::transmute(
+    data_predicated,
+    quasi_parallel(!!!predicates, ..nrow = n()),
+    !!VERY_SECRET_COLUMN_NAME
+  )
 
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
