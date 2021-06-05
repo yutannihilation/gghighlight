@@ -5,6 +5,8 @@
 * `gghighlight()` now preserves `colour` or `fill` when explicit `NULL` is
   specified on `unhighlighted_params` (i.e. `unhighlighted_params = list(colour = NULL)`)
   (#152).
+* Fix a longstanding bug of wrong calculation when the data has the same name of
+  columns as aesthetics, e.g. `x` (#168).
 
 # gghighlight 0.3.1
 
