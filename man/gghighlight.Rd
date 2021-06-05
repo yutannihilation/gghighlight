@@ -25,7 +25,8 @@ gghighlight(
 
 \item{max_highlight}{Max number of series to highlight.}
 
-\item{unhighlighted_params}{Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.}
+\item{unhighlighted_params}{Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms. Specifying
+\code{colour = NULL} or \code{fill = NULL} will preserve the original colour.}
 
 \item{use_group_by}{If \code{TRUE}, use \code{\link[dplyr:group_by]{dplyr::group_by()}} to evaluate \code{predicate}.}
 

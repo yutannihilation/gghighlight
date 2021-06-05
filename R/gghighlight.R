@@ -14,7 +14,8 @@
 #' @param max_highlight
 #'   Max number of series to highlight.
 #' @param unhighlighted_params
-#'   Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms.
+#'   Aesthetics (e.g. colour, fill, and size) for unhighlighted geoms. Specifying
+#'   `colour = NULL` or `fill = NULL` will preserve the original colour.
 #' @param use_group_by
 #'   If `TRUE`, use [dplyr::group_by()] to evaluate `predicate`.
 #' @param use_direct_label
