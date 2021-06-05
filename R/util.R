@@ -16,3 +16,13 @@ get_facet_vars <- function(facet) {
     abort("Unknown facet class")
   )
 }
+
+# Wrap expressions in dplyr::transmute() to prevent from the prior calculated
+# results are referred.
+quasi_parallel <- function(..., ..nrow) {
+  l <- dots_list(..., .named = TRUE)
+  if (is_empty(l)) {
+    return(NULL)
+  }
+  tibble::new_tibble(l, nrow = ..nrow)
+}
