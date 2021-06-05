@@ -75,6 +75,13 @@ test_that("bleach_layer() works", {
   expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
                                   list(colour = grey09, fill = grey07, width = 0.5)),
                      geom_col(aes_bleached, d_bleached, colour = grey09, fill = grey07, width = 0.5))
+
+  # unhighlighted params (#152)
+  aes_bleached_wo_fill <- aes_bleached
+  aes_bleached_wo_fill$fill <- aes(fill = type)$fill
+  expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
+                                  list(colour = grey09, fill = NULL, width = 0.5)),
+                     geom_col(aes_bleached_wo_fill, d_bleached, colour = grey09, width = 0.5))
 })
 
 test_that("bleach_layer() works for NULL default aes", {

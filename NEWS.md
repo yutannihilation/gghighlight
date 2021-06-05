@@ -2,6 +2,9 @@
 
 * `gghighlight()` now accepts `n()` so that you can highlight based on the
   number of rows within each group (#154).
+* `gghighlight()` now preserves `colour` or `fill` when explicit `NULL` is
+  specified on `unhighlighted_params` (i.e. `unhighlighted_params = list(colour = NULL)`)
+  (#152).
 
 # gghighlight 0.3.1
 

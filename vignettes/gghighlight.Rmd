@@ -227,6 +227,16 @@ ggplot(d) +
               unhighlighted_params = list(size = 1, colour = alpha("pink", 0.4)))
 ```
 
+You can also specify `NULL` to `fill` or `colour` to preserve the original color.
+
+```{r gghighlight-params-null}
+ggplot(d) +
+  geom_line(aes(idx, value, colour = type)) +
+  gghighlight(max(value) > 19,
+              # preserve colour and modify alpha instead
+              unhighlighted_params = list(colour = NULL, alpha = 0.3))
+```
+
 ### `keep_scales`
 
 If you want to keep the original scales, set `keep_scales` to `TRUE`.
