@@ -76,7 +76,7 @@
       <h1 data-toc-skip>Introduction to gghighlight</h1>
                         <h4 class="author">Hiroaki Yutani</h4>
             
-            <h4 class="date">2021-05-20</h4>
+            <h4 class="date">2021-06-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/yutannihilation/gghighlight/blob/master/vignettes/gghighlight.Rmd"><code>vignettes/gghighlight.Rmd</code></a></small>
       <div class="hidden name"><code>gghighlight.Rmd</code></div>
@@ -197,7 +197,7 @@
 <p>As is explained in <a href="https://yutani.rbind.io/post/2018-06-03-anatomy-of-gghighlight/">Anatomy of gghighlight</a>, lines and points typically have different semantics (group-wise or not). But, in most cases, you don’t need to be careful about the difference with <code><a href="../reference/gghighlight.html">gghighlight()</a></code> because it automatically picks the right method of calculation.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">20</span><span class="op">)</span>
+<span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span><span class="va">d</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">d2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
