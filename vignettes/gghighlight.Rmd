@@ -84,7 +84,7 @@ For example, the following code highlights the data that satisfies both `max(val
 ```{r gghighlight-two-conds}
 ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 15, mean(flag) > 0.55)
+  gghighlight(max(value) > 15, mean(flag) > 0.5)
 ```
 
 ## Customization
