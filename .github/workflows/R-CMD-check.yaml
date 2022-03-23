@@ -24,7 +24,7 @@ jobs:
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'release'}
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'oldrel-1'}
 
-          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'devel'}
+          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'devel', http-user-agent: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
