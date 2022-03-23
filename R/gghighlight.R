@@ -497,7 +497,7 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- dplyr::filter(data_predicated, across(all_of(cols$filter)))
+  data_filtered <- dplyr::filter(data_predicated, if_all(all_of(cols$filter)))
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
@@ -523,11 +523,11 @@ calculate_ungrouped <- function(data, predicates, max_highlight) {
   cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
 
   # Filter by the logical predicates.
-  data_filtered <- dplyr::filter(data_predicated, across(all_of(cols$filter)))
+  data_filtered <- dplyr::filter(data_predicated, if_all(all_of(cols$filter)))
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- dplyr::filter(data_filtered, across(cols$arrange, ~ !is.na(.)))
+    data_filtered <- dplyr::filter(data_filtered, if_all(cols$arrange, ~ !is.na(.)))
     data_filtered <- dplyr::arrange(data_filtered, across(all_of(cols$arrange)))
     data_filtered <- utils::tail(data_filtered, max_highlight)
   }
