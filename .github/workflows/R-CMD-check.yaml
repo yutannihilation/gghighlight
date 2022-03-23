@@ -48,6 +48,7 @@ jobs:
 
       - name: Install dev version of ggplot2
         if: matrix.config.ggplot2 == 'dev'
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::tidyverse/ggplot2
           needs: check
