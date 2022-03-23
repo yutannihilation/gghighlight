@@ -10,7 +10,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: "${{ matrix.config.os }} (R: ${{ matrix.config.r }}, ggplot2: ${{ matrix.config.ggplot2 }})"
 
     strategy:
       fail-fast: false
@@ -24,7 +24,8 @@ jobs:
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'release'}
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'oldrel-1'}
 
-          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'devel', http-user-agent: 'release'}
+          # TODO: disable for now
+          # - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
