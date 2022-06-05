@@ -21,11 +21,13 @@ d_bleached$ids <- factor(ids)
 prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
-aes_bleached <- aes_string(x = paste0(prefix, 1),
-                           y = paste0(prefix, 2),
-                           colour = paste0(prefix, 3),
-                           fill = NULL,
-                           group = paste0(prefix, "group"))
+aes_bleached <- aes(
+  x      = !!sym(paste0(prefix, "1")),
+  y      = !!sym(paste0(prefix, "2")),
+  colour = !!sym(paste0(prefix, "3")),
+  fill   = NULL,
+  group  = !!sym(paste0(prefix, "group"))
+)
 
 
 # tests -------------------------------------------------------------------
@@ -93,9 +95,9 @@ test_that("bleach_layer() works for NULL default aes", {
                       id = ids,
                       key = aes(fill = type)),
                  list()),
-    geom_sf(aes_string(fill = paste0(prefix, 1),
-                       colour = NULL,
-                       group = paste0(prefix, "group")),
+    geom_sf(aes(fill   = !!sym(paste0(prefix, "1")),
+                colour = NULL,
+                group  = !!sym(paste0(prefix, "group"))),
             setNames(d_bleached[, 3:4], paste0(prefix, c("1", "group"))),
             colour = grey07,
             fill = grey07)[[1]]

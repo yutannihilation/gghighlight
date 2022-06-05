@@ -20,11 +20,13 @@ d_bleached$ids <- factor(ids)
 prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
-aes_bleached <- aes_string(x = paste0(prefix, 1),
-                           y = paste0(prefix, 2),
-                           colour = paste0(prefix, 3),
-                           fill = NULL,
-                           group = paste0(prefix, "group"))
+aes_bleached <- aes(
+  x      = !!sym(paste0(prefix, "1")),
+  y      = !!sym(paste0(prefix, "2")),
+  colour = !!sym(paste0(prefix, "3")),
+  fill   = NULL,
+  group  = !!sym(paste0(prefix, "group"))
+)
 
 
 # tests -------------------------------------------------------------------
@@ -113,11 +115,13 @@ d_bleached$ids <- factor(ids)
 prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
-aes_bleached <- aes_string(x = paste0(prefix, 1),
-                           y = paste0(prefix, 2),
-                           colour = paste0(prefix, 3),
-                           fill = NULL,
-                           group = paste0(prefix, "group"))
+aes_bleached <- aes(
+  x      = !!sym(paste0(prefix, "1")),
+  y      = !!sym(paste0(prefix, "2")),
+  colour = !!sym(paste0(prefix, "3")),
+  fill   = NULL,
+  group  = !!sym(paste0(prefix, "group"))
+)
 
 test_that("gghighlight() works with two layers, grouped", {
   aes_bleached2 <- aes_bleached
@@ -227,11 +231,13 @@ test_that("gghighlight() works with facets", {
   names(d_bleached) <- paste0(prefix, c(1:3, "group"))
   d_bleached <- dplyr::bind_cols(d_bleached, d)
 
-  aes_bleached <- aes_string(x = paste0(prefix, 1),
-                             y = paste0(prefix, 2),
-                             colour = paste0(prefix, 3),
-                             fill = NULL,
-                             group = paste0(prefix, "group"))
+  aes_bleached <- aes(
+    x      = !!sym(paste0(prefix, "1")),
+    y      = !!sym(paste0(prefix, "2")),
+    colour = !!sym(paste0(prefix, "3")),
+    fill   = NULL,
+    group  = !!sym(paste0(prefix, "group"))
+  )
 
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
   l_sieved <- geom_point(aes(idx, value, colour = cat1), d[-(5:6), ])
