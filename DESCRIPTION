@@ -15,7 +15,7 @@ BugReports:
     https://github.com/yutannihilation/gghighlight/issues
 Depends:
     ggplot2 (>= 3.0.0),
-    R (>= 3.2.0)
+    R (>= 3.4.0)
 Imports:
     dplyr (>= 1.0.4),
     ggrepel,
