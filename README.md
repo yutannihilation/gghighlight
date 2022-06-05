@@ -7,7 +7,7 @@
 
 [![R build
 status](https://github.com/yutannihilation/gghighlight/workflows/R-CMD-check/badge.svg)](https://github.com/yutannihilation/gghighlight/actions)
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
 <!-- badges: end -->
 
 Highlight geoms in ggplot2.
@@ -23,6 +23,9 @@ devtools::install_github("yutannihilation/gghighlight")
 ```
 
 ## Example
+
+(For the full version, please refer to [Introduction to
+gghighlight](https://yutannihilation.github.io/gghighlight/articles/gghighlight.html)).
 
 Suppose we have a data that has so many series that it is hard to
 identify them by their colours as the differences are so subtle.

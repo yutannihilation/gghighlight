@@ -10,6 +10,13 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-"
 )
+
+# if ragg is installed, use it.
+if (requireNamespace("ragg", quietly = TRUE)) {
+  knitr::opts_chunk$set(
+    dev = "ragg_png"
+  )
+}
 ```
 
 # gghighlight
@@ -32,6 +39,8 @@ devtools::install_github("yutannihilation/gghighlight")
 ```
 
 ## Example
+
+(For the full version, please refer to [Introduction to gghighlight](https://yutannihilation.github.io/gghighlight/articles/gghighlight.html)).
 
 Suppose we have a data that has so many series that it is hard to identify them by their colours as the differences are so subtle.
 
