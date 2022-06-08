@@ -1,3 +1,5 @@
+# gghighlight (development version)
+
 # gghighlight 0.3.3
 
 * Fix the deprecated use of `dplyr::across()` in `dplyr::filter()` (#177).
