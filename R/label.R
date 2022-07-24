@@ -131,7 +131,12 @@ generate_label_geomtextpath <- function(layer, label_key, label_params, ..., geo
   mapping <- layer$mapping
   mapping$label <- label_key
 
-  inject(geom(mapping, layer$data, !!!label_params))
+  # unlike ggrepel methods, geomtextpath layers will replace the existing layer,
+  # so the new layer needs to inherit the layer's parameters.
+  params <- layer$aes_params %||% list()
+  params[names(label_params)] <- label_params
+
+  inject(geom(mapping, layer$data, !!!params))
 }
 
 generate_label_for_line_text_path <- function(layer, label_key, label_params, ...) {
