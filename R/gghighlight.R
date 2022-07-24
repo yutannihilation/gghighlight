@@ -30,8 +30,18 @@
 #' @param calculate_per_facet
 #'   (Experimental) If `TRUE`, include the facet variables to calculate the
 #'   grouping; in other words, highlighting is done on each facet individually.
+#' @param line_label_type
+#'   (Experimental) Method to add labels (or texts) on the highlighted lines.
+#'   \describe{
+#'     \item{`"ggrepel_label"`}{Use [ggrepel::geom_label_repel()]}
+#'     \item{`"ggrepel_text"`}{Use [ggrepel::geom_text_repel()]}
+#'     \item{`"text_path"`}{Use [geomtextpath::geom_textline()] for lines and [geomtextpath::geom_textpath()] for paths}
+#'     \item{`"label_path"`}{Use [geomtextpath::geom_labelline()] for lines and [geomtextpath::geom_labelpath()] for paths}
+#'     \item{`"sec_axis"`}{Use secondary axis}
+#'   }
 #' @param unhighlighted_colour
 #'   (Deprecated) Colour for unhighlighted geoms.
+#'
 #'
 #' @examples
 #' d <- data.frame(
@@ -67,6 +77,7 @@ gghighlight <- function(...,
                         label_params = list(fill = "white"),
                         keep_scales = FALSE,
                         calculate_per_facet = FALSE,
+                        line_label_type = c("ggrepel_label", "ggrepel_text", "text_path", "label_path", "sec_axis"),
                         unhighlighted_colour = NULL) {
   predicates <- enquos(...)
   label_key <- enquo(label_key)
@@ -86,6 +97,16 @@ gghighlight <- function(...,
     unhighlighted_params$colour <- unhighlighted_colour
   }
 
+  line_label_type <- arg_match(line_label_type)
+  if (line_label_type %in% c("text_path", "label_path")) {
+    check_installed("geomtextpath")
+  }
+
+  # TODO: the default value contains fill, but it's not needed for text
+  if (missing(label_params) && line_label_type %in% c("text_path")) {
+    label_params <- NULL
+  }
+
   structure(
     list(
       predicates = predicates,
@@ -94,6 +115,7 @@ gghighlight <- function(...,
       unhighlighted_params = unhighlighted_params,
       use_group_by = use_group_by,
       use_direct_label = use_direct_label,
+      line_label_type = line_label_type,
       label_key = label_key,
       label_params = label_params,
       keep_scales = keep_scales,
@@ -189,7 +211,6 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   # skip failed layers
   plot$layers[idx_layers][success] <- layers_bleached[success]
-  plot <- plot %+% layers_sieved
 
   # Add dummy layers (geom_blank()) to keep the original scales
   if (object$keep_scales) {
@@ -203,9 +224,9 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   #   - use direct labels, otherwise abort()
   #   - even when the labels would be too many, do add labels
   # 3) use_direct_label is FALSE
-  #   - do not use direct labeys
+  #   - do not use direct layers
   if (is_false(object$use_direct_label)) {
-    return(plot)
+    return(plot %+% layers_sieved)
   }
 
   must_add_labels <- is_true(object$use_direct_label)
@@ -214,18 +235,37 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   layer_labelled <- generate_labelled_layer(
     layers_sieved, group_infos,
     object$label_key, object$label_params,
-    max_labels = max_labels
+    max_labels = max_labels,
+    line_label_type = object$line_label_type
   )
 
   if (is.null(layer_labelled)) {
     if (must_add_labels) {
       abort("No layer can be used for labels")
-    } else {
-      return(plot)
     }
+    return(plot %+% layers_sieved)
   }
 
-  plot %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
+  if (object$line_label_type %in% c("text_path", "label_path")) {
+    # geomtextpath layers replace the existing line/path layers instead of adding
+    # annotation layers.
+    plot %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
+  } else if (object$line_label_type %in% c("sec_axis")) {
+    # In sec_axis's case, layer_labelled is not a layer in actual; a sec axis object.
+    y_scale <- plot$scales$get_scales("y")
+    if (is.null(y_scale)) {
+      plot %+% layers_sieved %+% ggplot2::scale_y_continuous(sec.axis = layer_labelled) %+% ggplot2::guides(colour = "none", fill = "none")
+    } else {
+      if (y_scale$is_discrete()) {
+        abort("line_label_type = `sec_axis` cannot be used for discrete scale")
+      }
+      y_scale$secondary.axis <- layer_labelled
+
+      plot %+% layers_sieved %+% ggplot2::guides(colour = "none", fill = "none")
+    }
+  } else {
+    plot %+% layers_sieved %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
+  }
 }
 
 merge_plot_to_layer <- function(layer, plot_data, plot_mapping) {

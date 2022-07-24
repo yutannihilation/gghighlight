@@ -1,6 +1,6 @@
 # Labels
 
-generate_labelled_layer <- function(layers, group_infos, label_key, label_params, max_labels) {
+generate_labelled_layer <- function(layers, group_infos, label_key, label_params, max_labels, line_label_type) {
   layer_for_label <- choose_layer_for_label(layers, group_infos, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
@@ -9,8 +9,24 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
   layer <- layer_for_label$layer
   label_key <- layer_for_label$label_key
 
+  line_label_method <- switch(line_label_type,
+    "ggrepel_label" = generate_label_for_line_ggrepel_label,
+    "ggrepel_text" = generate_label_for_line_ggrepel_text,
+    "text_path" = generate_label_for_line_text_path,
+    "label_path" = generate_label_for_line_label_path,
+    "sec_axis" = generate_label_for_line_sec_axis
+  )
+
+  path_label_method <- list(line_label_type,
+    "ggrepel_label" = generate_label_for_path_ggrepel_label,
+    "ggrepel_text" = generate_label_for_path_ggrepel_text,
+    "text_path" = generate_label_for_path_text_path,
+    "label_path" = generate_label_for_line_label_path,
+    "sec_axis" = generate_label_for_path_sec_axis
+  )
+
   switch(class(layer$geom)[1],
-    GeomLine = generate_label_for_line(layer, label_key, label_params, max_labels = max_labels),
+    GeomLine = line_label_method(layer, label_key, label_params, max_labels = max_labels),
     GeomPoint = generate_label_for_point(layer, label_key, label_params, max_labels = max_labels),
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
@@ -74,7 +90,10 @@ is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
 
 is_direct_class <- function(x, class) identical(class(x)[1], class)
 
-generate_label_for_line <- function(layer, label_key, label_params, max_labels) {
+
+# Line --------------------------------------------------------------------
+
+generate_label_ggrepel <- function(layer, label_key, label_params, max_labels, ..., geom = NULL) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -97,8 +116,71 @@ generate_label_for_line <- function(layer, label_key, label_params, max_labels) 
   # restore the original group
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
-  call_ggrepel_with_params(mapping, rightmost_points, label_params)
+  inject(geom(mapping, rightmost_points, !!!label_params))
 }
+
+generate_label_for_line_ggrepel_label <- function(layer, label_key, label_params, max_labels, ...) {
+  generate_label_ggrepel(layer, label_key, label_params, max_labels, ..., geom = ggrepel::geom_label_repel)
+}
+
+generate_label_for_line_ggrepel_text <- function(layer, label_key, label_params, max_labels, ...) {
+  generate_label_ggrepel(layer, label_key, label_params, max_labels, ..., geom = ggrepel::geom_text_repel)
+}
+
+generate_label_geomtextpath <- function(layer, label_key, label_params, ..., geom = NULL) {
+  mapping <- layer$mapping
+  mapping$label <- label_key
+
+  inject(geom(mapping, layer$data, !!!label_params))
+}
+
+generate_label_for_line_text_path <- function(layer, label_key, label_params, ...) {
+  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_textline)
+}
+
+generate_label_for_line_label_path <- function(layer, label_key, label_params, ...) {
+  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_labelline)
+}
+
+generate_label_for_line_sec_axis <-  function(layer, label_key, label_params, max_labels, ...) {
+  mapping <- layer$mapping
+
+  x_key <- layer$mapping$x
+  group_key <- layer$mapping$group %||% layer$mapping$colour
+
+  # To restore the original group, extract group keys (I don't know this is really necessary, though...)
+  group_key_orig <- dplyr::groups(layer$data)
+
+  data <- dplyr::group_by(layer$data, !!group_key)
+  if (dplyr::n_groups(data) > max_labels) {
+    inform("Too many data series, skip labeling")
+    return(list())
+  }
+
+  rightmost_points <- dplyr::slice_max(data, !!x_key)
+  # max value can appear multiple times, so ensure only one row per group
+  rightmost_points <- dplyr::slice(rightmost_points, 1)
+
+  # restore the original group
+  rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
+
+  ggplot2::dup_axis(breaks = rightmost_points$value, labels = rightmost_points$type)
+}
+
+generate_label_for_path_ggrepel_label <- generate_label_for_line_ggrepel_label
+generate_label_for_path_ggrepel_text <- generate_label_for_line_ggrepel_text
+
+generate_label_for_path_text_path <- function(layer, label_key, label_params, ...) {
+  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_textpath)
+}
+
+generate_label_for_path_label_path <- function(layer, label_key, label_params, ...) {
+  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_labelpath)
+}
+
+generate_label_for_path_sec_axis <- function(...) todo()
+
+# Point -------------------------------------------------------------------
 
 generate_label_for_point <- function(layer, label_key, label_params, max_labels) {
   if (nrow(layer$data) > max_labels) {
@@ -118,11 +200,5 @@ generate_label_for_point <- function(layer, label_key, label_params, max_labels)
 
   label_params$position <- layer$position
 
-  call_ggrepel_with_params(mapping, layer$data, label_params)
-}
-
-
-call_ggrepel_with_params <- function(mapping, data, params) {
-  ggrepel_quo <- quo(ggrepel::geom_label_repel(mapping, data, !!!params))
-  eval_tidy(ggrepel_quo)
+  inject(ggrepel::geom_label_repel(mapping, layer$data, !!!label_params))
 }

@@ -15,6 +15,8 @@ gghighlight(
   label_params = list(fill = "white"),
   keep_scales = FALSE,
   calculate_per_facet = FALSE,
+  line_label_type = c("ggrepel_label", "ggrepel_text", "text_path", "label_path",
+    "sec_axis"),
   unhighlighted_colour = NULL
 )
 }
@@ -41,6 +43,15 @@ highlighted plot has the same scale with the data.}
 
 \item{calculate_per_facet}{(Experimental) If \code{TRUE}, include the facet variables to calculate the
 grouping; in other words, highlighting is done on each facet individually.}
+
+\item{line_label_type}{(Experimental) Method to add labels (or texts) on the highlighted lines.
+\describe{
+\item{\code{"ggrepel_label"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_label_repel()}}}
+\item{\code{"ggrepel_text"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}}}
+\item{\code{"text_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textpath()}} for paths}
+\item{\code{"label_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelpath()}} for paths}
+\item{\code{"sec_axis"}}{Use secondary axis}
+}}
 
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}
 }
