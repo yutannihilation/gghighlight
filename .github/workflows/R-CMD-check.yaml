@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [main, master]
+    branches: main
   pull_request:
-    branches: [main, master]
+    branches: main
 
 name: R-CMD-check
 
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-pandoc@v3
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -48,7 +48,8 @@ jobs:
           needs: check
 
       - name: Install dev version of ggplot2
-        if: matrix.config.ggplot2 == 'dev'
+        # TODO: uncomment this when the next version of ggplot2 is released
+        # if: matrix.config.ggplot2 == 'dev'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: tidyverse/ggplot2

@@ -14,7 +14,7 @@ URL: https://yutannihilation.github.io/gghighlight/, https://github.com/yutannih
 BugReports: 
     https://github.com/yutannihilation/gghighlight/issues
 Depends:
-    ggplot2 (>= 3.0.0),
+    ggplot2 (>= 3.3.6),
     R (>= 3.4.0)
 Imports:
     dplyr (>= 1.0.4),

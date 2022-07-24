@@ -52,9 +52,9 @@
 #'
 #' # Specify the styles for unhighlighted layer
 #' ggplot(d, aes(idx, value, colour = category)) +
-#'   geom_line(size = 5) +
+#'   geom_line(linewidth = 5) +
 #'   gghighlight(max(value) > 10,
-#'     unhighlighted_params = list(size = 1)
+#'     unhighlighted_params = list(linewidth = 1)
 #'   )
 #' @export
 gghighlight <- function(...,

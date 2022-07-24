@@ -62,8 +62,8 @@ test_that("bleach_layer() works", {
 
   # unhighlighted_params can be more detailed
   expect_equal_layer(bleach_layer(geom_line(aes(colour = type), d), g_info,
-                                  list(colour = "blue", size = 3)),
-                     geom_line(aes_bleached, d_bleached, colour = "blue", size = 3))
+                                  list(colour = "blue", linewidth = 3)),
+                     geom_line(aes_bleached, d_bleached, colour = "blue", linewidth = 3))
 
   expect_equal_layer(bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info,
                                   list(colour = "blue", width = 0.5)),
