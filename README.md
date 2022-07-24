@@ -65,6 +65,7 @@ p + theme_minimal()
 ![](man/figures/README-gghighlight-theme-facets-1.png)<!-- -->
 
 ``` r
+
 p + theme_minimal() + facet_wrap(~ type)
 ```
 
