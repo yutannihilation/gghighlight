@@ -146,6 +146,7 @@ generate_label_for_line_sec_axis <-  function(layer, label_key, label_params, ma
   mapping <- layer$mapping
 
   x_key <- layer$mapping$x
+  y_key <- layer$mapping$y
   group_key <- layer$mapping$group %||% layer$mapping$colour
 
   # To restore the original group, extract group keys (I don't know this is really necessary, though...)
@@ -164,7 +165,11 @@ generate_label_for_line_sec_axis <-  function(layer, label_key, label_params, ma
   # restore the original group
   rightmost_points <- dplyr::group_by(rightmost_points, !!!group_key_orig)
 
-  ggplot2::dup_axis(breaks = rightmost_points$value, labels = rightmost_points$type)
+  ggplot2::dup_axis(
+    name = NULL,
+    breaks = dplyr::pull(rightmost_points, !!y_key),
+    labels = dplyr::pull(rightmost_points, !!group_key)
+  )
 }
 
 generate_label_for_path_ggrepel_label <- generate_label_for_line_ggrepel_label

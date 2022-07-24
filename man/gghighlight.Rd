@@ -46,11 +46,11 @@ grouping; in other words, highlighting is done on each facet individually.}
 
 \item{line_label_type}{(Experimental) Method to add labels (or texts) on the highlighted lines.
 \describe{
-\item{\code{"ggrepel_label"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_label_repel()}}}
-\item{\code{"ggrepel_text"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}}}
-\item{\code{"text_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textpath()}} for paths}
-\item{\code{"label_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelpath()}} for paths}
-\item{\code{"sec_axis"}}{Use secondary axis}
+\item{\code{"ggrepel_label"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_label_repel()}}.}
+\item{\code{"ggrepel_text"}}{Use \code{\link[ggrepel:geom_text_repel]{ggrepel::geom_text_repel()}}.}
+\item{\code{"text_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_textpath()}} for paths.}
+\item{\code{"label_path"}}{Use \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelline()}} for lines and \code{\link[geomtextpath:geom_textpath]{geomtextpath::geom_labelpath()}} for paths.}
+\item{\code{"sec_axis"}}{Use secondary axis. Please refer to \href{https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2}{Simon Jackson's blog post} for the trick.}
 }}
 
 \item{unhighlighted_colour}{(Deprecated) Colour for unhighlighted geoms.}

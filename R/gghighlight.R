@@ -33,15 +33,14 @@
 #' @param line_label_type
 #'   (Experimental) Method to add labels (or texts) on the highlighted lines.
 #'   \describe{
-#'     \item{`"ggrepel_label"`}{Use [ggrepel::geom_label_repel()]}
-#'     \item{`"ggrepel_text"`}{Use [ggrepel::geom_text_repel()]}
-#'     \item{`"text_path"`}{Use [geomtextpath::geom_textline()] for lines and [geomtextpath::geom_textpath()] for paths}
-#'     \item{`"label_path"`}{Use [geomtextpath::geom_labelline()] for lines and [geomtextpath::geom_labelpath()] for paths}
-#'     \item{`"sec_axis"`}{Use secondary axis}
+#'     \item{`"ggrepel_label"`}{Use [ggrepel::geom_label_repel()].}
+#'     \item{`"ggrepel_text"`}{Use [ggrepel::geom_text_repel()].}
+#'     \item{`"text_path"`}{Use [geomtextpath::geom_textline()] for lines and [geomtextpath::geom_textpath()] for paths.}
+#'     \item{`"label_path"`}{Use [geomtextpath::geom_labelline()] for lines and [geomtextpath::geom_labelpath()] for paths.}
+#'     \item{`"sec_axis"`}{Use secondary axis. Please refer to [Simon Jackson's blog post](https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2) for the trick.}
 #'   }
 #' @param unhighlighted_colour
 #'   (Deprecated) Colour for unhighlighted geoms.
-#'
 #'
 #' @examples
 #' d <- data.frame(
@@ -103,7 +102,7 @@ gghighlight <- function(...,
   }
 
   # TODO: the default value contains fill, but it's not needed for text
-  if (missing(label_params) && line_label_type %in% c("text_path")) {
+  if (missing(label_params) && line_label_type %in% c("ggrepel_text", "text_path")) {
     label_params <- NULL
   }
 
@@ -254,15 +253,27 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     # In sec_axis's case, layer_labelled is not a layer in actual; a sec axis object.
     y_scale <- plot$scales$get_scales("y")
     if (is.null(y_scale)) {
-      plot %+% layers_sieved %+% ggplot2::scale_y_continuous(sec.axis = layer_labelled) %+% ggplot2::guides(colour = "none", fill = "none")
+      plot <- plot %+% ggplot2::scale_y_continuous(sec.axis = layer_labelled)
     } else {
       if (y_scale$is_discrete()) {
         abort("line_label_type = `sec_axis` cannot be used for discrete scale")
       }
       y_scale$secondary.axis <- layer_labelled
-
-      plot %+% layers_sieved %+% ggplot2::guides(colour = "none", fill = "none")
     }
+
+    # do not expand the right side of the X axis
+    x_scale <- plot$scales$get_scales("x")
+    expand_noright <- ggplot2::expansion(mult = c(0.05, 0))
+    if (is.null(x_scale)) {
+      plot <- plot %+% ggplot2::scale_x_continuous(expand = expand_noright)
+    } else {
+      if (!identical(x_scale$expand, ggplot2::waiver())) {
+        warn("The `expand` parameter of `scale_x_*()` is ignored and overwritten")
+      }
+      x_scale$expand <- expand_noright
+    }
+
+    plot %+% layers_sieved %+% ggplot2::guides(colour = "none", fill = "none")
   } else {
     plot %+% layers_sieved %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
   }
