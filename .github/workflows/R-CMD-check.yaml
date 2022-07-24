@@ -47,13 +47,13 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install dev version of ggplot2
-        # TODO: uncomment this when the next version of ggplot2 is released
-        # if: matrix.config.ggplot2 == 'dev'
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: tidyverse/ggplot2
-          needs: check
+      # TODO: uncomment this when the next version of ggplot2 is released
+      # - name: Install dev version of ggplot2
+      #   if: matrix.config.ggplot2 == 'dev'
+      #   uses: r-lib/actions/setup-r-dependencies@v2
+      #   with:
+      #     extra-packages: tidyverse/ggplot2
+      #     needs: check
 
       - uses: r-lib/actions/check-r-package@v2
         with:
