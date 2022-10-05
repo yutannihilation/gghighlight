@@ -49,7 +49,7 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
   } else if (quo_is_null(label_key)) {
     # If label_key is not specified, some key might be usable for label.
     group_keys <- purrr::map(group_infos, "key")
-    idx <- !purrr::map_lgl(group_keys, is.null)
+    idx <- !purrr::map_lgl(group_keys, is_empty)
     layers <- layers[idx]
     # group keys may be multiple, but use the first one for convenience.
     label_keys <- purrr::map(group_keys[idx], 1L)
