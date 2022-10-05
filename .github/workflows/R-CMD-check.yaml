@@ -24,8 +24,7 @@ jobs:
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'release'}
           - {os: ubuntu-20.04,   ggplot2: 'cran', r: 'oldrel-1'}
 
-          # TODO: enable this
-          # - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'release'}
+          - {os: ubuntu-20.04,   ggplot2: 'dev',  r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -48,12 +47,12 @@ jobs:
           needs: check
 
       # TODO: uncomment this when the next version of ggplot2 is released
-      # - name: Install dev version of ggplot2
-      #   if: matrix.config.ggplot2 == 'dev'
-      #   uses: r-lib/actions/setup-r-dependencies@v2
-      #   with:
-      #     extra-packages: tidyverse/ggplot2
-      #     needs: check
+      - name: Install dev version of ggplot2
+        if: matrix.config.ggplot2 == 'dev'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: tidyverse/ggplot2, tidyverse/purrr
+          needs: check
 
       - uses: r-lib/actions/check-r-package@v2
         with:
