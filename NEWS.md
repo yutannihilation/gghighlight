@@ -1,5 +1,13 @@
 # gghighlight (development version)
 
+* Fix compatibility with purrr 1.0.0 and ggplot2 3.4.0.
+
+* The new option `line_label_type` provides different labeling methods using
+  [the geomtextpath package](https://cran.r-project.org/package=geomtextpath)
+  and [the second axis](https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2).
+  Please refer to the "`line_label_type`" section of the vignette "Introduction
+  to gghighlight" for the details (#185).
+
 # gghighlight 0.3.3
 
 * Fix the deprecated use of `dplyr::across()` in `dplyr::filter()` (#177).
