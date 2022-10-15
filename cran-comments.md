@@ -1,11 +1,13 @@
 ## Test environments
 * local Windows install: release
-* GitHub Actions CI: 4.1, release and devel
-* win-builder: devel
+* GitHub Actions CI: 4.2, release and devel
+* win-builder: - (not available)
 
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
 
-* This is a maintenance release to address the following minor things.
-  * Remove the use of deprecated function `filter_if()` in the dplyr package.
+* The main purpose of this release is for maintaining the compatibility with
+  upcoming new releases of the purrr package and the ggplot2 package.
+* This release also contains one experimental feature addition.
+* The reverse dependencies are confirmed to work fine with this version.
