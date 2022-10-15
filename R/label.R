@@ -21,7 +21,7 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
     "ggrepel_label" = generate_label_for_path_ggrepel_label,
     "ggrepel_text" = generate_label_for_path_ggrepel_text,
     "text_path" = generate_label_for_path_text_path,
-    "label_path" = generate_label_for_line_label_path,
+    "label_path" = generate_label_for_path_label_path,
     "sec_axis" = generate_label_for_path_sec_axis
   )
 
@@ -188,7 +188,8 @@ generate_label_for_path_label_path <- function(layer, label_key, label_params, .
   generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_labelpath)
 }
 
-generate_label_for_path_sec_axis <- function(...) todo()
+# This might not work very well
+generate_label_for_path_sec_axis <- generate_label_for_line_sec_axis
 
 # Point -------------------------------------------------------------------
 
