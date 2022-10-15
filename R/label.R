@@ -24,16 +24,16 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
   if (quo_is_call(label_key)) {
     # if label_key is a call we can't check if the necessary variables exist in
     # the data. Just pray that the proper layer will be choosed... :pray:
-    label_keys <- purrr::rerun(length(layers), label_key)
+    label_keys <- purrr::map(seq_along(layers), ~ label_key)
   } else if (quo_is_symbol(label_key)) {
     # If label_key is a symbol, some layer must have the key in their data.
     label_key_text <- quo_text(label_key)
     layers <- purrr::keep(layers, ~ label_key_text %in% names(.$data))
-    label_keys <- purrr::rerun(length(layers), label_key)
+    label_keys <- purrr::map(seq_along(layers), ~ label_key)
   } else if (quo_is_null(label_key)) {
     # If label_key is not specified, some key might be usable for label.
     group_keys <- purrr::map(group_infos, "key")
-    idx <- !purrr::map_lgl(group_keys, is.null)
+    idx <- !purrr::map_lgl(group_keys, is_empty)
     layers <- layers[idx]
     # group keys may be multiple, but use the first one for convenience.
     label_keys <- purrr::map(group_keys[idx], 1L)

@@ -17,7 +17,7 @@ ids <- c(1, 1, 1, 2, 2, 3, 3)
 # tests -------------------------------------------------------------------
 
 expect_equal_sieved <- function(layer, params, ..., expect) {
-  params <- purrr::update_list(params, ...)
+  params <- purrr::list_modify(params, ...)
   params$layer <- layer
   expect_true(do.call(sieve_layer, params))
   expect_equal_layer(layer, expect)
