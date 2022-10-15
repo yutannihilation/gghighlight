@@ -249,8 +249,8 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span>, label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; label_key: type</span></span>
-<span><span class="co">#&gt; Warning in ggrepel::geom_label_repel(mapping, data, linewidth = 10):</span></span>
-<span><span class="co">#&gt; Ignoring unknown parameters: `linewidth`</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in geom(mapping, rightmost_points, linewidth = 10): Ignoring</span></span>
+<span><span class="co">#&gt; unknown parameters: `linewidth`</span></span></code></pre></div>
 <p><img src="gghighlight_files/figure-html/labels2-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can also add labels by yourself. It is easy to add labels on only highlighted data because <code><a href="../reference/gghighlight.html">gghighlight()</a></code> replaces the plot’s data to the filtered one.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -347,6 +347,50 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"calculate_per_facet = TRUE"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; label_key: cat1</span></span></code></pre></div>
 <p><img src="gghighlight_files/figure-html/calculate_per_facet-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/calculate_per_facet-2.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="line_label_type-experimental">
+<code>line_label_type</code> (experimental)<a class="anchor" aria-label="anchor" href="#line_label_type-experimental"></a>
+</h3>
+<p>By default, gghighlight uses <a href="https://cran.r-project.org/package=ggrepel" class="external-link">the ggrepel package</a> for labeling lines. You can change the method by <code>line_label_type</code> argument. The options are:</p>
+<ul>
+<li>
+<code>"ggrepel_label"</code> (default): Use <code><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html" class="external-link">ggrepel::geom_label_repel()</a></code>.</li>
+<li>
+<code>"ggrepel_text"</code>: Use <code><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html" class="external-link">ggrepel::geom_text_repel()</a></code>.</li>
+<li>
+<code>"text_path"</code>: Use <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_textline()</a></code> for lines and <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_textpath()</a></code> for paths.</li>
+<li>
+<code>"label_path"</code>: Use <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_labelline()</a></code> for lines and <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_labelpath()</a></code> for paths.</li>
+<li>
+<code>"sec_axis"</code>: Use secondary axis. Please refer to <a href="https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2" class="external-link">Simon Jackson’s blog post</a> for the trick.</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, colour <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3</span>, line_label_type <span class="op">=</span> <span class="st">"label_path"</span>, label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'line_label_type = "label_path"'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; label_key: id</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3</span>, line_label_type <span class="op">=</span> <span class="st">"sec_axis"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'line_label_type = "sec_axis"'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; label_key: id</span></span></code></pre></div>
+<p><img src="gghighlight_files/figure-html/line_label_type-1.png" width="576" style="display: block; margin: auto;"><img src="gghighlight_files/figure-html/line_label_type-2.png" width="576" style="display: block; margin: auto;"></p>
+<p>Note that, while this looks good for this example, there are some limitations:</p>
+<ul>
+<li>Unlike ggrepel, there’s no mechanism to avoid overlapping. You’ll probably want to choose <code>ggrepel_label</code> or <code>ggrepel_text</code> when the data has many series.</li>
+<li>Since <code>"sec_axis"</code> is a very different approach than the other, some <code>label_params</code> are ignored. For example, if you want to change the text size of the labels, you need to specify it via <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> instead of <code>label_params</code>.</li>
+</ul>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

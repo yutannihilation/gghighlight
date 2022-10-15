@@ -68,6 +68,8 @@ gghiglight() highlights (almost) any geoms according to the given predicates."><
 <span>  label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>,</span>
 <span>  keep_scales <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  calculate_per_facet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  line_label_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggrepel_label"</span>, <span class="st">"ggrepel_text"</span>, <span class="st">"text_path"</span>, <span class="st">"label_path"</span>,</span>
+<span>    <span class="st">"sec_axis"</span><span class="op">)</span>,</span>
 <span>  unhighlighted_colour <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -115,6 +117,26 @@ highlighted plot has the same scale with the data.</p></dd>
 <dt>calculate_per_facet</dt>
 <dd><p>(Experimental) If <code>TRUE</code>, include the facet variables to calculate the
 grouping; in other words, highlighting is done on each facet individually.</p></dd>
+
+
+<dt>line_label_type</dt>
+<dd><p>(Experimental) Method to add labels (or texts) on the highlighted lines.</p><dl><dt><code>"ggrepel_label"</code></dt>
+<dd><p>Use <code><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html" class="external-link">ggrepel::geom_label_repel()</a></code>.</p></dd>
+
+<dt><code>"ggrepel_text"</code></dt>
+<dd><p>Use <code><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html" class="external-link">ggrepel::geom_text_repel()</a></code>.</p></dd>
+
+<dt><code>"text_path"</code></dt>
+<dd><p>Use <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_textline()</a></code> for lines and <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_textpath()</a></code> for paths.</p></dd>
+
+<dt><code>"label_path"</code></dt>
+<dd><p>Use <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_labelline()</a></code> for lines and <code><a href="https://allancameron.github.io/geomtextpath/reference/geom_textpath.html" class="external-link">geomtextpath::geom_labelpath()</a></code> for paths.</p></dd>
+
+<dt><code>"sec_axis"</code></dt>
+<dd><p>Use secondary axis. Please refer to <a href="https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2" class="external-link">Simon Jackson's blog post</a> for the trick.</p></dd>
+
+
+</dl></dd>
 
 
 <dt>unhighlighted_colour</dt>
