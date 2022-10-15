@@ -275,3 +275,43 @@ p +
   gghighlight(max(value) > 10, calculate_per_facet = TRUE) +
   ggtitle("calculate_per_facet = TRUE")
 ```
+
+### `line_label_type` (experimental)
+
+By default, gghighlight uses [the ggrepel package](https://cran.r-project.org/package=ggrepel) for labeling lines. You can change the method by `line_label_type` argument. The options are:
+
+* `"ggrepel_label"` (default): Use `ggrepel::geom_label_repel()`.
+* `"ggrepel_text"`: Use `ggrepel::geom_text_repel()`.
+* `"text_path"`: Use `geomtextpath::geom_textline()` for lines and `geomtextpath::geom_textpath()` for paths.
+* `"label_path"`: Use `geomtextpath::geom_labelline()` for lines and `geomtextpath::geom_labelpath()` for paths.
+* `"sec_axis"`: Use secondary axis. Please refer to [Simon Jackson's blog post](https://drsimonj.svbtle.com/label-line-ends-in-time-series-with-ggplot2) for the trick.
+
+
+```{r line_label_type, fig.show='hold'}
+d <- data.frame(
+  x = rep(1:3, times = 3),
+  y = c(1:3, 2, 4, 2, 0, 1, 1),
+  id = rep(c("a", "b", "c"), each = 3)
+)
+
+p <- ggplot(d) +
+  geom_line(aes(x, y, colour = id))
+
+p +
+  gghighlight(max(y) >= 3, line_label_type = "label_path", label_params = list(size = 10)) +
+  ggtitle('line_label_type = "label_path"')
+
+p +
+  gghighlight(max(y) >= 3, line_label_type = "sec_axis") +
+  ggtitle('line_label_type = "sec_axis"') +
+  theme(axis.text.y.right = element_text(size = 20))
+```
+
+Note that, while this looks good for this example, there are some limitations:
+
+* Unlike ggrepel, there's no mechanism to avoid overlapping. You'll probably
+  want to choose `ggrepel_label` or `ggrepel_text` when the data has many series.
+* Since `"sec_axis"` is a very different approach than the other, some
+  `label_params` are ignored. For example, if you want to change the text size of
+  the labels, you need to specify it via `ggplot2::theme()` instead of
+  `label_params`.
