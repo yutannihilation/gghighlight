@@ -1,3 +1,5 @@
+# gghighlight (development version)
+
 # gghighlight 0.4.0
 
 * Fix compatibility with purrr 1.0.0 and ggplot2 3.4.0.
