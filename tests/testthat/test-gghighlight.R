@@ -63,7 +63,7 @@ test_that("gghighlight() works with the plot with one layer, grouped", {
     p_highlighted <- p + gghighlight(mean(value) > 1, use_direct_label = FALSE)
     expect_equal(p_highlighted$data, d_sieved)
     expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved))
-    if (utils::packageVersion("ggplot2") <= "3.4.2") {
+    if (utils::packageVersion("ggplot2") < "3.5.0") {
       expect_equal(p_highlighted$guides, NULL)
     } else {
       expect_equal(p_highlighted$guides$guides, NULL)
@@ -82,7 +82,7 @@ test_that("gghighlight() works with the plot with one layer, grouped", {
     p_highlighted <- p + gghighlight(mean(value) > 1, use_direct_label = TRUE)
     expect_equal(p_highlighted$data, d_sieved)
     expect_equal_layers(p_highlighted$layers, list(l_bleached, l_sieved, l_label))
-    if (utils::packageVersion("ggplot2") <= "3.4.2") {
+    if (utils::packageVersion("ggplot2") < "3.5.0") {
       expect_equal(p_highlighted$guides, list(colour = "none", fill = "none"))
     } else {
       expect_equal(p_highlighted$guides$guides, list(colour = "none", fill = "none"))
