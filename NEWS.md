@@ -1,4 +1,6 @@
-# gghighlight (development version)
+# gghighlight 0.4.1
+
+* This is a maintenance release to update test expectations for the upcoming version of ggplot2.
 
 # gghighlight 0.4.0
 
