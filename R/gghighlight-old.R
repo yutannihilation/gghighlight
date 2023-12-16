@@ -1,7 +1,7 @@
 #' Highlight Data With Predicate
 #'
 #' @description
-#' \Sexpr[results=rd, stage=render]{lifecycle::badge("defunct")}
+#' `r lifecycle::badge("defunct")`
 #'
 #' `gghiglight_line()` and `gghighlight_point()` are deprecated. Please use [gghighlight()] instead.
 #'

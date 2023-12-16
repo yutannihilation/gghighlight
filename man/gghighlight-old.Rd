@@ -14,7 +14,7 @@ gghighlight_point()
 \item{...}{Ignored.}
 }
 \description{
-\Sexpr[results=rd, stage=render]{lifecycle::badge("defunct")}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#defunct}{\figure{lifecycle-defunct.svg}{options: alt='[Defunct]'}}}{\strong{[Defunct]}}
 
 \code{gghiglight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
 }

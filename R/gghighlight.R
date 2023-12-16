@@ -1,7 +1,6 @@
 #' Highlight Data With Predicate
 #'
 #' @description
-#' \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
 #'
 #' `gghiglight()` highlights (almost) any geoms according to the given predicates.
 #'
