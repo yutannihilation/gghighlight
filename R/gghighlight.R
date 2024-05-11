@@ -442,7 +442,8 @@ get_default_aes_param <- function(aes_param_name, geom, mapping) {
 
   # if the geom has default value and is NA, use NA
   if (aes_param_name %in% names(non_null_default_aes) &&
-    is.na(non_null_default_aes[[aes_param_name]])) {
+    # is.na() cannot handle non primitive objects (e.g. a quosure)
+    rlang::is_na(non_null_default_aes[[aes_param_name]])) {
     return(NA)
   }
 

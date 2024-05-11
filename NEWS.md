@@ -1,5 +1,8 @@
 # gghighlight (development version)
 
+* Fix a bug about handling Geoms that have some non-primitive value as a default
+  for an aesthetic (#195).
+
 # gghighlight 0.4.1
 
 * This is a maintenance release to update test expectations for the upcoming version of ggplot2.
