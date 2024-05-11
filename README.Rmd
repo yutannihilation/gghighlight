@@ -22,7 +22,7 @@ if (requireNamespace("ragg", quietly = TRUE)) {
 # gghighlight
 
 <!-- badges: start -->
-[![R build status](https://github.com/yutannihilation/gghighlight/workflows/R-CMD-check/badge.svg)](https://github.com/yutannihilation/gghighlight/actions)
+[![R build status](https://github.com/yutannihilation/gghighlight/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yutannihilation/gghighlight/actions/workflows/R-CMD-check.yaml)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/gghighlight)](https://cran.r-project.org/package=gghighlight)
 <!-- badges: end -->
 
