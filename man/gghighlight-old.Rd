@@ -16,6 +16,6 @@ gghighlight_point()
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#defunct}{\figure{lifecycle-defunct.svg}{options: alt='[Defunct]'}}}{\strong{[Defunct]}}
 
-\code{gghiglight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
+\code{gghighlight_line()} and \code{gghighlight_point()} are deprecated. Please use \code{\link[=gghighlight]{gghighlight()}} instead.
 }
 \keyword{internal}

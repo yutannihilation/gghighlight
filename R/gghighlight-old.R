@@ -3,7 +3,7 @@
 #' @description
 #' `r lifecycle::badge("defunct")`
 #'
-#' `gghiglight_line()` and `gghighlight_point()` are deprecated. Please use [gghighlight()] instead.
+#' `gghighlight_line()` and `gghighlight_point()` are deprecated. Please use [gghighlight()] instead.
 #'
 #' @name gghighlight-old
 #'

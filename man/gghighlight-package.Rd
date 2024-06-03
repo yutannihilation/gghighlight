@@ -7,3 +7,16 @@
 \description{
 Make it easier to explore data with highlights.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://yutannihilation.github.io/gghighlight/}
+  \item \url{https://github.com/yutannihilation/gghighlight/}
+  \item Report bugs at \url{https://github.com/yutannihilation/gghighlight/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Hiroaki Yutani \email{yutani.ini@gmail.com} (\href{https://orcid.org/0000-0002-3385-7233}{ORCID})
+
+}

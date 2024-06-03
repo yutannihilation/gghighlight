@@ -2,7 +2,7 @@
 #'
 #' @description
 #'
-#' `gghiglight()` highlights (almost) any geoms according to the given predicates.
+#' `gghighlight()` highlights (almost) any geoms according to the given predicates.
 #'
 #' @name gghighlight
 #'
