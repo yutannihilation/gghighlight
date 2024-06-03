@@ -3,6 +3,8 @@ expect_equal_layer <- function(x, y) {
   x$constructor <- NULL
   y$constructor <- NULL
 
+  x$aes_params <- x$aes_params[sort(names(x$aes_params))]
+  y$aes_params <- y$aes_params[sort(names(y$aes_params))]
   x$mapping <- x$mapping[sort(names(x$mapping))]
   y$mapping <- y$mapping[sort(names(y$mapping))]
   x$data <- tibble::as_tibble(x$data[, sort(colnames(x$data))])
