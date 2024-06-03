@@ -7,8 +7,7 @@
 #' @importFrom ggplot2 %+%
 #' @importFrom ggplot2 ggplot_add
 #' @importFrom dplyr desc across if_all all_of
-#' @docType package
-NULL
+"_PACKAGE"
 
 #' @importFrom ggplot2 aes
 #' @export
