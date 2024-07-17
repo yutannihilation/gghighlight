@@ -26,3 +26,18 @@ quasi_parallel <- function(..., ..nrow) {
   }
   tibble::new_tibble(l, nrow = ..nrow)
 }
+
+# A simpler version of ggplot2:::make_labels().
+# The difference is that this doesn't strip after_stat() or ..
+make_label <- function(x) {
+  if (is.null(x) || is.atomic(x)) {
+    return(aesthetic)
+  }
+  if (is_quosure(x) && quo_is_symbol(x)) {
+    name <- as_string(quo_get_expr(x))
+  } else {
+    name <- quo_text(x)
+    name <- gsub("\n.*$", "...", name)
+  }
+  name
+}

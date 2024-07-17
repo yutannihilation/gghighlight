@@ -11,6 +11,9 @@ test_that("calculate_group_info() works", {
   )
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
+  attr(d_expect[[1L]], "label") <- "x"
+  attr(d_expect[[2L]], "label") <- "y"
+  attr(d_expect[[3L]], "label") <- "type"
   ids <- c(1, 1, 1, 2, 2, 3, 3)
 
   expect_equal(calculate_group_info(d, aes(x, y, colour = type)),
@@ -21,6 +24,7 @@ test_that("calculate_group_info() works", {
   # if some aes is the call, caluculated result is used. But it's not used for group keys.
   d_expect_factor <- d_expect
   d_expect_factor$colour <- factor(d_expect_factor$colour)
+  attr(d_expect_factor$colour, "label") <- "factor(type)"
   expect_equal(calculate_group_info(d, aes(x, y, colour = factor(type))),
                list(data = d_expect_factor, id = ids, key = aes()))
 
@@ -32,6 +36,7 @@ test_that("calculate_group_info() works", {
   # if there is group mapping, use it
   d_expect_group <- d_expect
   d_expect_group$group <- d$type == "a"
+  attr(d_expect_group$group, "label") <- '(type == "a")'
   res <- calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type))
   expect_equal(res$data, d_expect_group[, colnames(res$data)])
   expect_equal(res$id, c(2, 2, 2, 1, 1, 1, 1))
@@ -53,6 +58,9 @@ test_that("calculate_group_info() works with facets", {
   )
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
+  attr(d_expect[[1L]], "label") <- "idx"
+  attr(d_expect[[2L]], "label") <- "value"
+  attr(d_expect[[3L]], "label") <- "cat1"
   ids <- c(1, 1, 2, 2, 3, 3, 4, 4)
 
   expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos(cat2 = cat2)),

@@ -319,6 +319,12 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   data_evaluated <- dplyr::transmute(data, quasi_parallel(!!!mapping_wrapped, ..nrow = n()))
   data_evaluated <- dplyr::select(data_evaluated, where(~ !all(is.na(.))))
 
+  # As of ggplot2 3.6.0? (TBD), the plot-level mappings is no longer used for the default labels.
+  # We need to use the label attribute of each columns instead. cf. https://github.com/tidyverse/ggplot2/pull/5879
+  for (nm in colnames(data_evaluated)) {
+    attr(data_evaluated[[nm]], "label") <- make_label(mapping[[nm]])
+  }
+
   # Calculate group IDs as ggplot2 does.
   # (c.f. https://github.com/tidyverse/ggplot2/blob/8778b48b37d8b7e41c0f4f213031fb47810e70aa/R/grouping.r#L11-L28)
   if ("group" %in% names(data_evaluated)) {
