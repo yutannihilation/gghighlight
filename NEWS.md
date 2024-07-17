@@ -3,6 +3,8 @@
 * Fix a bug about handling Geoms that have some non-primitive value as a default
   for an aesthetic (#195).
 
+* Fix an incompatibility about axis title with the upcoming release of ggplot2 (#200).
+
 # gghighlight 0.4.1
 
 * This is a maintenance release to update test expectations for the upcoming version of ggplot2.

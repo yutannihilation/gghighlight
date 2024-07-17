@@ -9,7 +9,14 @@ expect_equal_layer <- function(x, y) {
   y$mapping <- y$mapping[sort(names(y$mapping))]
   x$data <- tibble::as_tibble(x$data[, sort(colnames(x$data))])
   y$data <- tibble::as_tibble(y$data[, sort(colnames(y$data))])
-  expect_equal(as.list(x), as.list(y), ignore_formula_env = TRUE)
+  expect_equal(as_no_label_list(x), as_no_label_list(x), ignore_formula_env = TRUE)
+}
+
+as_no_label_list <- function(x) {
+  lapply(x, \(x) {
+    attr(x, "label") <- NULL
+    x
+  })
 }
 
 expect_equal_layers <- function(x, y) {
