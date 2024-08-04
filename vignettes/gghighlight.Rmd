@@ -196,7 +196,7 @@ If you want to customize the labels, you can pass parameters to it via `label_pa
 ```{r labels2}
 ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
-  gghighlight(max(value) > 20, label_params = list(linewidth = 10))
+  gghighlight(max(value) > 20, label_params = list(size = 10))
 ```
 
 You can also add labels by yourself.
