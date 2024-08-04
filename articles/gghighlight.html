@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Hiroaki
 Yutani</h4>
             
-            <h4 data-toc-skip class="date">2024-07-17</h4>
+            <h4 data-toc-skip class="date">2024-08-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/yutannihilation/gghighlight/blob/main/vignettes/gghighlight.Rmd" class="external-link"><code>vignettes/gghighlight.Rmd</code></a></small>
       <div class="d-none name"><code>gghighlight.Rmd</code></div>
@@ -275,10 +275,8 @@ customize the labels, you can pass parameters to it via
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">idx</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span>, label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; label_key: type</span></span>
-<span><span class="co">#&gt; Warning in geom(mapping, rightmost_points, linewidth = 10): Ignoring</span></span>
-<span><span class="co">#&gt; unknown parameters: `linewidth`</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/gghighlight.html">gghighlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">20</span>, label_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; label_key: type</span></span></code></pre></div>
 <p><img src="gghighlight_files/figure-html/labels2-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>You can also add labels by yourself. It is easy to add labels on only
 highlighted data because <code><a href="../reference/gghighlight.html">gghighlight()</a></code> replaces the plot’s
