@@ -43,6 +43,25 @@ test_that("gghighlight() does not change the existing layers", {
   expect_equal(as.list(p1$layers[[1]]), as.list(p2$layers[[1]]))
 })
 
+test_that("gghighlight() renames layer name on ggplot2", {
+
+  skip_if_not(
+    utils::packageVersion("ggplot2") > "3.5.1",
+    "A layer got the name param after version 3.5.1"
+  )
+
+  p <- ggplot(d, aes(x, y, colour = type)) + geom_line(name = "foo") + gghighlight()
+
+  expect_equal(
+    names(p$layers),
+    c(
+      "foo",          # First layer uses the same name
+      "foo__sieved",  # Additional layer has a suffix to avoid duplicated name
+      "geom"          # Layers for label uses the default name.
+    )
+  )
+})
+
 test_that("gghighlight() works with the plot with one layer, grouped", {
   d_sieved <- d[d$type != "a", ]
 

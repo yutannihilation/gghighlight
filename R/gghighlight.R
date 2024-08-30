@@ -167,9 +167,11 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   )
 
   # Clone layers again seperately (layers_cloned will be used later for keeping
-  # the original scale)
+  # the original scale). Note that, layers_bleached doesn't need a suffix for 
+  # the layer name because this is used for replacing the original layers in
+  # place.
   layers_bleached <- purrr::map(layers_cloned, clone_layer)
-  layers_sieved <- purrr::map(layers_cloned, clone_layer)
+  layers_sieved <- purrr::map(layers_cloned, clone_layer, layer_name_suffix = "__sieved")
 
   # Bleach the lower layer.
   purrr::walk2(
@@ -302,8 +304,14 @@ merge_mapping <- function(layer, plot_mapping) {
   mapping
 }
 
-clone_layer <- function(layer) {
+clone_layer <- function(layer, layer_name_suffix = NULL) {
   new_layer <- env_clone(layer)
+
+  # Use a unique name
+  if (!is.null(new_layer$name) && !is.null(layer_name_suffix)) {
+    new_layer$name <- paste0(new_layer$name, layer_name_suffix)
+  }
+
   class(new_layer) <- class(layer)
   new_layer
 }
