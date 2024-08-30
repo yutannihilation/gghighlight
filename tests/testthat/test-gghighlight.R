@@ -44,6 +44,12 @@ test_that("gghighlight() does not change the existing layers", {
 })
 
 test_that("gghighlight() renames layer name on ggplot2", {
+
+  skip_if_not(
+    utils::packageVersion("ggplot2") > "3.5.1",
+    "A layer got the name param after version 3.5.1"
+  )
+
   p <- ggplot(d, aes(x, y, colour = type)) + geom_line(name = "foo") + gghighlight()
 
   expect_equal(
