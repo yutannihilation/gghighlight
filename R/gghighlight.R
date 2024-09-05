@@ -445,7 +445,7 @@ default_unhighlighted_colour <- function(theme = list()) {
   paper <- grDevices::col2rgb(geom$paper %||% "white")
   # 0.745098 = col2rgb("grey") / col2rgb("white")
   new <- (0.254902 * paper + 0.745098 * ink)[,1]
-  grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 179, maxColorValue = 255)
+  grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 76, maxColorValue = 255)
 }
 
 get_default_aes_param <- function(aes_param_name, geom, mapping, unhighlighted_colour) {
