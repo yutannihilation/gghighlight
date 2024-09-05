@@ -202,13 +202,6 @@ generate_label_for_point <- function(layer, label_key, label_params, max_labels)
   mapping <- layer$mapping
   mapping$label <- label_key
 
-  if (inherits(layer$position, "PositionJitter") && is.null(layer$position$seed)) {
-    # FIXME when this is fixed on upstream: https://github.com/tidyverse/ggplot2/issues/2507
-    position <- clone_position(layer$position)
-    position$seed <- sample.int(.Machine$integer.max, 1L)
-    layer$position <- position
-  }
-
   label_params$position <- layer$position
 
   inject(ggrepel::geom_label_repel(mapping, layer$data, !!!label_params))
