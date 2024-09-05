@@ -5,6 +5,8 @@
 
 * Fix an incompatibility about axis title with the upcoming release of ggplot2 (#200).
 
+* Support ink and paper (#209).
+
 # gghighlight 0.4.1
 
 * This is a maintenance release to update test expectations for the upcoming version of ggplot2.
