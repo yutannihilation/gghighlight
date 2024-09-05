@@ -316,8 +316,6 @@ clone_layer <- function(layer, layer_name_suffix = NULL) {
   new_layer
 }
 
-clone_position <- clone_layer
-
 calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   mapping <- purrr::compact(mapping)
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
