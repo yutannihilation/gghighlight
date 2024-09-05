@@ -441,13 +441,13 @@ default_unhighlighted_colour <- function(theme = list()) {
   }
 
   # ink is greyed, while paper doesn't
-  ink <- grDevices::col2rgb(scales::muted(geom$ink, c = 0) %||% "black")
+  ink <- grDevices::col2rgb(scales::col2hcl(geom$ink, c = 0) %||% "black")
   paper <- grDevices::col2rgb(geom$paper %||% "white")
 
   # cf. ggplot2:::col_mix
   # 0.745098 = col2rgb("grey") / col2rgb("white")
-  new <- (0.254902 * paper + 0.745098 * ink)[,1]
-  grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 178.5, maxColorValue = 255)
+  new <- (0.254902 * ink + 0.745098 * paper)[,1] / 255
+  grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 0.698)
 }
 
 get_default_aes_param <- function(aes_param_name, geom, mapping, unhighlighted_colour) {
