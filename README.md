@@ -49,9 +49,6 @@ p <- ggplot(d) +
   geom_line(aes(idx, value, colour = type)) +
   gghighlight(max(value) > 20)
 #> label_key: type
-```
-
-``` r
 
 p
 ```

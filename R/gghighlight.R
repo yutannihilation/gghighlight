@@ -178,6 +178,7 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
     layers_bleached,
     group_infos,
     bleach_layer,
+    unhighlighted_colour = default_unhighlighted_colour(plot$theme),
     unhighlighted_params = object$unhighlighted_params,
     calculate_per_facet = object$calculate_per_facet
   )
@@ -372,7 +373,7 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   )
 }
 
-bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_facet = FALSE) {
+bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_colour = default_unhighlighted_colour(), calculate_per_facet = FALSE) {
   # `colour` and `fill` are special in that they needs to be specified even when
   # it is not included in unhighlighted_params. But, if the default_aes is NA,
   # respect it (e.g. geom_bar()'s default colour is NA).
@@ -384,7 +385,7 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_
         next
       }
       # if the aesthetic name is not specified, fill it with the default
-      unhighlighted_params[[nm]] <- get_default_aes_param(nm, layer$geom, layer$mapping)
+      unhighlighted_params[[nm]] <- get_default_aes_param(nm, layer$geom, layer$mapping, unhighlighted_colour)
     }
 
     # FIXME: Is this necessary while aes_params will override these mappings?
@@ -432,24 +433,32 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, calculate_per_
   layer
 }
 
-default_unhighlighted_params <- list(
-  # scales::alpha("grey", 0.7)
-  colour = "#BEBEBEB2",
-  fill = "#BEBEBEB2"
-)
 
-get_default_aes_param <- function(aes_param_name, geom, mapping) {
-  # no default is available
-  if (!aes_param_name %in% names(default_unhighlighted_params)) {
+default_unhighlighted_colour <- function(theme = list()) {
+  geom <- theme$geom
+  if (utils::packageVersion("ggplot2") <= "3.5.1" || is.null(geom)) {
+    return("#BEBEBEB2")
+  }
+
+  # cf. ggplot2:::col_mix
+  ink <- grDevices::col2rgb(geom$ink %||% "black")
+  paper <- grDevices::col2rgb(geom$paper %||% "white")
+  # 0.745098 = col2rgb("grey") / col2rgb("white")
+  new <- (0.254902 * paper + 0.745098 * ink)[,1]
+  grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 76, maxColorValue = 255)
+}
+
+get_default_aes_param <- function(aes_param_name, geom, mapping, unhighlighted_colour) {
+  # bleach only colour and fill
+  if (!aes_param_name %in% c("colour", "fill")) {
     return(NULL)
   }
 
   # if it is specified in mapping, it needs to be overriden
   if (aes_param_name %in% names(mapping)) {
-    return(default_unhighlighted_params[[aes_param_name]])
+    unhighlighted_colour
   }
 
-  # remove NULL default_aes (#85)
   non_null_default_aes <- purrr::compact(geom$default_aes)
 
   # if the geom has default value and is NA, use NA
@@ -459,8 +468,7 @@ get_default_aes_param <- function(aes_param_name, geom, mapping) {
     return(NA)
   }
 
-  # otherwise, use the default grey
-  default_unhighlighted_params[[aes_param_name]]
+  unhighlighted_colour
 }
 
 sieve_layer <- function(layer, group_info, predicates,
