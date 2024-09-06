@@ -435,13 +435,24 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_
 
 
 default_unhighlighted_colour <- function(theme = list()) {
-  # ink is greyed, while paper doesn't
-  ink <- grDevices::col2rgb(scales::col2hcl(theme$geom$ink %||% "black", c = 0))
-  paper <- grDevices::col2rgb(theme$geom$paper %||% "white")
+  ink <- theme$geom$ink %||% "black"
+  paper <- theme$geom$paper %||% "white"
+
+  ink_bleached <- scales::col2hcl(ink, c = 0)
+  paper_bleached <- scales::col2hcl(paper, c = 0)
+
+  # TODO: flip the color based on the relationship of ink and paper. Can this 
+  #       heuristic removed? I think there should be some theory for this...
+  if (ink_bleached < paper_bleached) {
+    ratio <- 0.254902
+  } else {
+    # 0.745098 = col2rgb("grey") / col2rgb("white")
+    ratio <- 0.745098
+  }
 
   # cf. ggplot2:::col_mix
-  # 0.745098 = col2rgb("grey") / col2rgb("white")
-  new <- (0.254902 * ink + 0.745098 * paper)[,1] / 255
+  # ink is greyed, while paper doesn't
+  new <- (ratio * grDevices::col2rgb(ink_bleached) + (1 - ratio) * grDevices::col2rgb(paper))[,1] / 255
   grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 0.698)
 }
 
