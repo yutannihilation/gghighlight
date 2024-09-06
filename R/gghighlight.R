@@ -441,7 +441,7 @@ default_unhighlighted_colour <- function(theme = list()) {
 
   # cf. ggplot2:::col_mix
   # 0.745098 = col2rgb("grey") / col2rgb("white")
-  new <- (0.254902 * paper + 0.745098 * ink)[,1] / 255
+  new <- (0.254902 * ink + 0.745098 * paper)[,1] / 255
   grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 0.698)
 }
 
