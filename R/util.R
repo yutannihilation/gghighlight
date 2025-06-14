@@ -9,7 +9,8 @@
 }
 
 get_facet_vars <- function(facet) {
-  switch(class(facet)[1],
+  switch(
+    class(facet)[1],
     "FacetGrid" = as_quosures(c(facet$params$rows, facet$params$cols)),
     "FacetWrap" = as_quosures(facet$params$facets),
     "FacetNull" = NULL,
@@ -31,7 +32,7 @@ quasi_parallel <- function(..., ..nrow) {
 # The difference is that this doesn't strip after_stat() or ..
 make_label <- function(x) {
   if (is.null(x) || is.atomic(x)) {
-    return(aesthetic)
+    return(x)
   }
   if (is_quosure(x) && quo_is_symbol(x)) {
     name <- as_string(quo_get_expr(x))

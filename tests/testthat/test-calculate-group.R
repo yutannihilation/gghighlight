@@ -1,4 +1,5 @@
 test_that("calculate_group_info() works", {
+  # fmt: skip
   d <- tibble::tribble(
     ~x, ~y, ~type, ~value,
      1,  2,   "a",      0,
@@ -16,28 +17,39 @@ test_that("calculate_group_info() works", {
   attr(d_expect[[3L]], "label") <- "type"
   ids <- c(1, 1, 1, 2, 2, 3, 3)
 
-  expect_equal(calculate_group_info(d, aes(x, y, colour = type)),
-               list(data = d_expect, id = ids, key = aes(colour = type)))
+  expect_equal(
+    calculate_group_info(d, aes(x, y, colour = type)),
+    list(data = d_expect, id = ids, key = aes(colour = type))
+  )
   # if there's no discrete key, return NULL
-  expect_equal(calculate_group_info(d, aes(x, y, colour = x)),
-               NULL)
+  expect_equal(calculate_group_info(d, aes(x, y, colour = x)), NULL)
   # if some aes is the call, caluculated result is used. But it's not used for group keys.
   d_expect_factor <- d_expect
   d_expect_factor$colour <- factor(d_expect_factor$colour)
   attr(d_expect_factor$colour, "label") <- "factor(type)"
-  expect_equal(calculate_group_info(d, aes(x, y, colour = factor(type))),
-               list(data = d_expect_factor, id = ids, key = aes()))
+  expect_equal(
+    calculate_group_info(d, aes(x, y, colour = factor(type))),
+    list(data = d_expect_factor, id = ids, key = aes())
+  )
 
   # if aes contains expressions that cannot be evaluated outside ggplot2 (e.g. after_stat(count)),
   # just ignore it.
-  expect_equal(calculate_group_info(d, aes(x, y, colour = type, fill = after_stat(count), alpha = ..count..)),
-               list(data = d_expect, id = ids, key = aes(colour = type)))
+  expect_equal(
+    calculate_group_info(
+      d,
+      aes(x, y, colour = type, fill = after_stat(count), alpha = ..count..)
+    ),
+    list(data = d_expect, id = ids, key = aes(colour = type))
+  )
 
   # if there is group mapping, use it
   d_expect_group <- d_expect
   d_expect_group$group <- d$type == "a"
   attr(d_expect_group$group, "label") <- '(type == "a")'
-  res <- calculate_group_info(d, aes(x, y, group = (type == "a"), colour = type))
+  res <- calculate_group_info(
+    d,
+    aes(x, y, group = (type == "a"), colour = type)
+  )
   expect_equal(res$data, d_expect_group[, colnames(res$data)])
   expect_equal(res$id, c(2, 2, 2, 1, 1, 1, 1))
   expect_equal(res$key, aes())
@@ -45,6 +57,7 @@ test_that("calculate_group_info() works", {
 
 
 test_that("calculate_group_info() works with facets", {
+  # fmt: skip
   d <- tibble::tribble(
     ~idx, ~value, ~cat1, ~cat2,
        1,     10,   "a", "1-2",
@@ -63,16 +76,32 @@ test_that("calculate_group_info() works with facets", {
   attr(d_expect[[3L]], "label") <- "cat1"
   ids <- c(1, 1, 2, 2, 3, 3, 4, 4)
 
-  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos(cat2 = cat2)),
-               list(data = d_expect, id = ids, key = aes(colour = cat1)))
+  expect_equal(
+    calculate_group_info(
+      d,
+      aes(idx, value, colour = cat1),
+      extra_vars = quos(cat2 = cat2)
+    ),
+    list(data = d_expect, id = ids, key = aes(colour = cat1))
+  )
 
   # Even if there's no discrete key, return a group info if there's an extra_vars
-  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos(cat2 = cat2)),
-               list(data = d_expect[, c("x", "y")], id = ids[c(1:4, 1:4)], key = aes()))
+  expect_equal(
+    calculate_group_info(d, aes(idx, value), extra_vars = quos(cat2 = cat2)),
+    list(data = d_expect[, c("x", "y")], id = ids[c(1:4, 1:4)], key = aes())
+  )
 
   # If extra_vars is empty, it doesn't affect on grouping
-  expect_equal(calculate_group_info(d, aes(idx, value), extra_vars = quos()),
-               NULL)
-  expect_equal(calculate_group_info(d, aes(idx, value, colour = cat1), extra_vars = quos()),
-               list(data = d_expect, id = rep(1:2, each = 4), key = aes(colour = cat1)))
+  expect_equal(
+    calculate_group_info(d, aes(idx, value), extra_vars = quos()),
+    NULL
+  )
+  expect_equal(
+    calculate_group_info(
+      d,
+      aes(idx, value, colour = cat1),
+      extra_vars = quos()
+    ),
+    list(data = d_expect, id = rep(1:2, each = 4), key = aes(colour = cat1))
+  )
 })

@@ -4,7 +4,6 @@
 #'
 #' @name gghighlight-package
 #' @import rlang
-#' @importFrom ggplot2 %+%
 #' @importFrom ggplot2 ggplot_add
 #' @importFrom dplyr desc across if_all all_of
 "_PACKAGE"
@@ -20,3 +19,12 @@ utils::globalVariables("where")
 #' @importFrom dplyr n
 #' @export
 dplyr::n
+
+# TODO: remove this and replace all %+% with + when I remove support for ggplot2 v3
+`%+%` <- function(e1, e2) {
+  if (utils::packageVersion("ggplot2") > "3.5.2.9000") {
+    e1 + e2
+  } else {
+    ggplot2::`%+%`(e1, e2)
+  }
+}

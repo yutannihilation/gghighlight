@@ -1,11 +1,13 @@
 # gghighlight (development version)
 
+* Support ggplot2 v4.0.
+  * Fix an incompatibility about axis title with the upcoming release of ggplot2 (#200).
+  * Support ink and paper (#209).
+
 * Fix a bug about handling Geoms that have some non-primitive value as a default
   for an aesthetic (#195).
 
-* Fix an incompatibility about axis title with the upcoming release of ggplot2 (#200).
-
-* Support ink and paper (#209).
+* `gghighlight_point()` and `gghighlight_line()` are removed.
 
 # gghighlight 0.4.1
 

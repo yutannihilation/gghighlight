@@ -1,3 +1,4 @@
+# fmt: skip
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
    1,  2,   "a",      0,
@@ -11,21 +12,22 @@ d <- tibble::tribble(
 
 # test others -------------------------------------------------------------
 
-
 test_that("merge_mapping() works", {
   # If both are NULL, return an empty mapping (#84)
   expect_equal(merge_mapping(geom_bar(), NULL), aes())
   # If one is NULL, return the other one as is.
-  expect_equal(merge_mapping(geom_bar(aes(x = a)), NULL),
-               aes(x = a))
-  expect_equal(merge_mapping(geom_bar(), aes(x = a)),
-               aes(x = a))
+  expect_equal(merge_mapping(geom_bar(aes(x = a)), NULL), aes(x = a))
+  expect_equal(merge_mapping(geom_bar(), aes(x = a)), aes(x = a))
   # If both are not NULL, layer_mapping is used.
-  expect_equal(merge_mapping(geom_bar(aes(x = x, colour = b)), aes(colour = a, fill = c)),
-               aes(x = x, colour = b, fill = c))
+  expect_equal(
+    merge_mapping(geom_bar(aes(x = x, colour = b)), aes(colour = a, fill = c)),
+    aes(x = x, colour = b, fill = c)
+  )
   # If the layer doesn't have fill aes, it is omitted.
-  expect_equal(merge_mapping(geom_line(aes(x = x, colour = b)), aes(colour = a, fill = c)),
-               aes(x = x, colour = b))
+  expect_equal(
+    merge_mapping(geom_line(aes(x = x, colour = b)), aes(colour = a, fill = c)),
+    aes(x = x, colour = b)
+  )
 
   # Aesthetics that are required by stat also stays in mapping (Note that the orders are different)
   m <- merge_mapping(geom_boxplot(aes(x, y, colour = b)), NULL)
@@ -35,5 +37,5 @@ test_that("merge_mapping() works", {
 test_that("merge_data() works", {
   # if oneare NULL, return the other one as is
   expect_equal(merge_data(geom_bar(data = d), waiver()), d)
-  expect_equal(merge_data(geom_bar(), d),                d)
+  expect_equal(merge_data(geom_bar(), d), d)
 })

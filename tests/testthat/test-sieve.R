@@ -1,5 +1,6 @@
 grey07 <- "#BEBEBEB2"
 
+# fmt: skip
 d <- tibble::tribble(
   ~x, ~y, ~type, ~value,
   1,  2,   "a",      0,
@@ -39,7 +40,8 @@ test_that("sieve_layer() works with simple ungrouped cases", {
   # Large number of max_highlights doesn't affect the result.
   expect_equal_sieved(
     geom_bar(aes(x = x), d),
-    params = params, max_highlight = 100L,
+    params = params,
+    max_highlight = 100L,
     expect = geom_bar(aes(x = x), d[d$value > 1, ])
   )
 
@@ -47,7 +49,8 @@ test_that("sieve_layer() works with simple ungrouped cases", {
   # the result is not sliced down to the number.
   expect_equal_sieved(
     geom_bar(aes(x = x), d),
-    params = params, max_highlight = 2L,
+    params = params,
+    max_highlight = 2L,
     expect = geom_bar(aes(x = x), d[d$value > 1, ])
   )
 
@@ -77,7 +80,8 @@ test_that("sieve_layer() works with simple grouped cases", {
   # Large number of max_highlights doesn't affect the result.
   expect_equal_sieved(
     geom_bar(aes(colour = type), d),
-    params = params, max_highlight = 100L,
+    params = params,
+    max_highlight = 100L,
     expect = geom_bar(aes(colour = type), d[d$type != "a", ])
   )
 
@@ -85,7 +89,8 @@ test_that("sieve_layer() works with simple grouped cases", {
   # the result is not sliced down to the number.
   expect_equal_sieved(
     geom_bar(aes(colour = type), d),
-    params = params, max_highlight = 1L,
+    params = params,
+    max_highlight = 1L,
     expect = geom_bar(aes(colour = type), d[d$type != "a", ])
   )
 
@@ -156,7 +161,11 @@ test_that("sieve_layer() can handle predicates that contains the group key (c.f.
 })
 
 test_that("sieve_layer() returns false if all calculation is failed", {
-  expect_false(sieve_layer(geom_bar(aes(x = x), d), NULL, list(quo(no_such_column > 1))))
+  expect_false(sieve_layer(
+    geom_bar(aes(x = x), d),
+    NULL,
+    list(quo(no_such_column > 1))
+  ))
 })
 
 test_that("sieve_layer() works with zero predicate", {
@@ -170,6 +179,7 @@ test_that("sieve_layer() works with zero predicate", {
 })
 
 test_that("sieve_layer() works with more than two predicates", {
+  # fmt: skip
   d2 <- tibble::tribble(
     ~type, ~val1, ~val2,
       "a",     1,     0,
@@ -184,9 +194,9 @@ test_that("sieve_layer() works with more than two predicates", {
       "e",    12,    30
   )
   pred_grouped <- quos(
-    mean(val1) > 2,      # logical to filter out "a"
+    mean(val1) > 2, # logical to filter out "a"
     any(val2 %% 2 == 0), # logical to filter out "d"
-    sum(val2)            # numerical
+    sum(val2) # numerical
   )
 
   d2_ <- setNames(d2[1], c("colour"))
@@ -211,11 +221,12 @@ test_that("sieve_layer() works with more than two predicates", {
     params = params,
     predicates = pred_grouped,
     max_highlight = 2L,
-    expect = geom_line(aes(colour = type), d2[c(3,4,9,10), ])
+    expect = geom_line(aes(colour = type), d2[c(3, 4, 9, 10), ])
   )
 })
 
 test_that("sieve_layer() works with list columns", {
+  # fmt: skip
   d3 <- tibble::tibble(
     x = 1:4,
     v = 1:4,
@@ -246,9 +257,11 @@ test_that("sieve_layer() works with list columns", {
   expect_true(
     sieve_layer(
       sl,
-      group_info = list(data = setNames(d3[3], c("colour")),
-                        id = c(1, 1, 2, 2),
-                        key = aes(colour = z)),
+      group_info = list(
+        data = setNames(d3[3], c("colour")),
+        id = c(1, 1, 2, 2),
+        key = aes(colour = z)
+      ),
       predicates = quos(p1 = list(l), p2 = sum(v)),
       max_highlight = 1L,
       use_group_by = TRUE
@@ -268,7 +281,8 @@ test_that("sieve_layer() do not count NA for max_highlights", {
 
   expect_equal_sieved(
     geom_bar(aes(x = x), d4),
-    params = params, max_highlight = 2L,
+    params = params,
+    max_highlight = 2L,
     expect = geom_bar(aes(x = x), d4[2:3, , drop = FALSE])
   )
 })
