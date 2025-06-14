@@ -1,1 +1,1 @@
-This is a maintenance release to update test expectations for the upcoming version of ggplot2.
+The main purpose of this release is to avoid failures with the upcoming version of ggplot2.
