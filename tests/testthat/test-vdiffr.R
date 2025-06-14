@@ -1,6 +1,11 @@
 test_that("gghighlight() highlights correctly", {
   testthat::skip_if_not_installed("vdiffr")
 
+  # no visual difference, but the SVG texts are incompatible after v4
+  skip_if_not(
+    utils::packageVersion("ggplot2") > "3.5.2.9000",
+  )
+
   vdiffr::expect_doppelganger(
     "simple bar chart",
     ggplot(mpg, aes(class, fill = factor(cyl))) +
