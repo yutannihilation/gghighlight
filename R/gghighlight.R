@@ -136,7 +136,7 @@ gghighlight <- function(
 VERY_SECRET_COLUMN_NAME <- sym("highlight..........")
 
 #' @export
-ggplot_add.gg_highlighter <- function(object, plot, object_name) {
+ggplot_add.gg_highlighter <- function(object, plot, ...) {
   if (length(plot$layers) == 0) {
     plot$data <- sieve_data(
       plot$data,
