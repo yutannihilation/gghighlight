@@ -42,3 +42,43 @@ make_label <- function(x) {
   }
   name
 }
+
+# return TRUE if
+#   - x is NA
+#   - x is quo(from_theme(foo %|% NA))
+is_na_aes <- function(x) {
+  if (is_na(x)) {
+    return(TRUE)
+  }
+
+  # if X is not NA, inspect inside the quosure
+
+  if (!is_quosure(x)) {
+    return(FALSE)
+  }
+
+  x <- quo_squash(x)
+  if (is_na(x)) {
+    return(TRUE)
+  }
+
+  if (!is_call(x) || call_name(x) != "from_theme") {
+    return(FALSE)
+  }
+
+  args <- call_args(x)
+
+  if (
+    length(args) == 1L && !is_call(args[[1]]) || call_name(args[[1]]) != "%||%"
+  ) {
+    return(FALSE)
+  }
+
+  args_inner <- call_args(args[[1]])
+
+  if (length(args_inner) != 2L) {
+    return(FALSE)
+  }
+
+  is_na(args_inner[[2]])
+}

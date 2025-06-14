@@ -47,10 +47,10 @@ test_that("bleach_layer() works", {
     geom_line(aes(colour = NULL, fill = NULL), d, colour = grey07)
   )
 
-  # If the geom accepts fill, it is sets to grey even when it is not included in the mapping.
+  # If the geom accepts fill, it is set to grey even when it is not included in the mapping.
   expect_equal_layer(
     bleach_layer(geom_col(aes(colour = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = grey07, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
   )
 
   # If the default of colour of the geom is NA and mapping doesn't specify it, params will be NA.
@@ -62,7 +62,7 @@ test_that("bleach_layer() works", {
   # If colour and fill is specified at the same time, fill is used as the group key.
   expect_equal_layer(
     bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = grey07, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
   )
 
   # If mapping doesn't have colour or fill, group or x aes can be used as group key.
