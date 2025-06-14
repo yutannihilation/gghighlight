@@ -1,6 +1,13 @@
 # Labels
 
-generate_labelled_layer <- function(layers, group_infos, label_key, label_params, max_labels, line_label_type) {
+generate_labelled_layer <- function(
+  layers,
+  group_infos,
+  label_key,
+  label_params,
+  max_labels,
+  line_label_type
+) {
   layer_for_label <- choose_layer_for_label(layers, group_infos, label_key)
   if (is.null(layer_for_label)) {
     return(NULL)
@@ -9,7 +16,8 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
   layer <- layer_for_label$layer
   label_key <- layer_for_label$label_key
 
-  line_label_method <- switch(line_label_type,
+  line_label_method <- switch(
+    line_label_type,
     "ggrepel_label" = generate_label_for_line_ggrepel_label,
     "ggrepel_text" = generate_label_for_line_ggrepel_text,
     "text_path" = generate_label_for_line_text_path,
@@ -17,7 +25,8 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
     "sec_axis" = generate_label_for_line_sec_axis
   )
 
-  path_label_method <- list(line_label_type,
+  path_label_method <- list(
+    line_label_type,
     "ggrepel_label" = generate_label_for_path_ggrepel_label,
     "ggrepel_text" = generate_label_for_path_ggrepel_text,
     "text_path" = generate_label_for_path_text_path,
@@ -25,9 +34,20 @@ generate_labelled_layer <- function(layers, group_infos, label_key, label_params
     "sec_axis" = generate_label_for_path_sec_axis
   )
 
-  switch(class(layer$geom)[1],
-    GeomLine = line_label_method(layer, label_key, label_params, max_labels = max_labels),
-    GeomPoint = generate_label_for_point(layer, label_key, label_params, max_labels = max_labels),
+  switch(
+    class(layer$geom)[1],
+    GeomLine = line_label_method(
+      layer,
+      label_key,
+      label_params,
+      max_labels = max_labels
+    ),
+    GeomPoint = generate_label_for_point(
+      layer,
+      label_key,
+      label_params,
+      max_labels = max_labels
+    ),
     # TODO: To distinguish NULL, return list() to hide guides here.
     #       But, can we use more explicit representation?
     GeomBar = list(),
@@ -40,12 +60,12 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
   if (quo_is_call(label_key)) {
     # if label_key is a call we can't check if the necessary variables exist in
     # the data. Just pray that the proper layer will be choosed... :pray:
-    label_keys <- purrr::map(seq_along(layers), ~ label_key)
+    label_keys <- purrr::map(seq_along(layers), ~label_key)
   } else if (quo_is_symbol(label_key)) {
     # If label_key is a symbol, some layer must have the key in their data.
     label_key_text <- quo_text(label_key)
     layers <- purrr::keep(layers, ~ label_key_text %in% names(.$data))
-    label_keys <- purrr::map(seq_along(layers), ~ label_key)
+    label_keys <- purrr::map(seq_along(layers), ~label_key)
   } else if (quo_is_null(label_key)) {
     # If label_key is not specified, some key might be usable for label.
     group_keys <- purrr::map(group_infos, "key")
@@ -69,7 +89,9 @@ choose_layer_for_label <- function(layers, group_infos, label_key) {
     idx <- purrr::map_lgl(layers, fun)
     if (any(idx)) {
       label_key <- label_keys[idx][[1]]
-      if (show_label_key) message("label_key: ", quo_text(label_key))
+      if (show_label_key) {
+        message("label_key: ", quo_text(label_key))
+      }
       return(list(layer = layers[idx][[1]], label_key = label_key))
     }
   }
@@ -83,7 +105,8 @@ is_identity_line <- function(x) {
 }
 
 is_identity_point <- function(x) {
-  is_direct_class(x$stat, "StatIdentity") && is_direct_class(x$geom, "GeomPoint")
+  is_direct_class(x$stat, "StatIdentity") &&
+    is_direct_class(x$geom, "GeomPoint")
 }
 
 is_bar <- function(x) is_direct_class(x$geom, "GeomBar")
@@ -93,7 +116,14 @@ is_direct_class <- function(x, class) identical(class(x)[1], class)
 
 # Line --------------------------------------------------------------------
 
-generate_label_ggrepel <- function(layer, label_key, label_params, max_labels, ..., geom = NULL) {
+generate_label_ggrepel <- function(
+  layer,
+  label_key,
+  label_params,
+  max_labels,
+  ...,
+  geom = NULL
+) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -119,15 +149,47 @@ generate_label_ggrepel <- function(layer, label_key, label_params, max_labels, .
   inject(geom(mapping, rightmost_points, !!!label_params))
 }
 
-generate_label_for_line_ggrepel_label <- function(layer, label_key, label_params, max_labels, ...) {
-  generate_label_ggrepel(layer, label_key, label_params, max_labels, ..., geom = ggrepel::geom_label_repel)
+generate_label_for_line_ggrepel_label <- function(
+  layer,
+  label_key,
+  label_params,
+  max_labels,
+  ...
+) {
+  generate_label_ggrepel(
+    layer,
+    label_key,
+    label_params,
+    max_labels,
+    ...,
+    geom = ggrepel::geom_label_repel
+  )
 }
 
-generate_label_for_line_ggrepel_text <- function(layer, label_key, label_params, max_labels, ...) {
-  generate_label_ggrepel(layer, label_key, label_params, max_labels, ..., geom = ggrepel::geom_text_repel)
+generate_label_for_line_ggrepel_text <- function(
+  layer,
+  label_key,
+  label_params,
+  max_labels,
+  ...
+) {
+  generate_label_ggrepel(
+    layer,
+    label_key,
+    label_params,
+    max_labels,
+    ...,
+    geom = ggrepel::geom_text_repel
+  )
 }
 
-generate_label_geomtextpath <- function(layer, label_key, label_params, ..., geom = NULL) {
+generate_label_geomtextpath <- function(
+  layer,
+  label_key,
+  label_params,
+  ...,
+  geom = NULL
+) {
   mapping <- layer$mapping
   mapping$label <- label_key
 
@@ -139,15 +201,43 @@ generate_label_geomtextpath <- function(layer, label_key, label_params, ..., geo
   inject(geom(mapping, layer$data, !!!params))
 }
 
-generate_label_for_line_text_path <- function(layer, label_key, label_params, ...) {
-  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_textline)
+generate_label_for_line_text_path <- function(
+  layer,
+  label_key,
+  label_params,
+  ...
+) {
+  generate_label_geomtextpath(
+    layer,
+    label_key,
+    label_params,
+    ...,
+    geom = geomtextpath::geom_textline
+  )
 }
 
-generate_label_for_line_label_path <- function(layer, label_key, label_params, ...) {
-  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_labelline)
+generate_label_for_line_label_path <- function(
+  layer,
+  label_key,
+  label_params,
+  ...
+) {
+  generate_label_geomtextpath(
+    layer,
+    label_key,
+    label_params,
+    ...,
+    geom = geomtextpath::geom_labelline
+  )
 }
 
-generate_label_for_line_sec_axis <-  function(layer, label_key, label_params, max_labels, ...) {
+generate_label_for_line_sec_axis <- function(
+  layer,
+  label_key,
+  label_params,
+  max_labels,
+  ...
+) {
   mapping <- layer$mapping
 
   x_key <- layer$mapping$x
@@ -180,12 +270,34 @@ generate_label_for_line_sec_axis <-  function(layer, label_key, label_params, ma
 generate_label_for_path_ggrepel_label <- generate_label_for_line_ggrepel_label
 generate_label_for_path_ggrepel_text <- generate_label_for_line_ggrepel_text
 
-generate_label_for_path_text_path <- function(layer, label_key, label_params, ...) {
-  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_textpath)
+generate_label_for_path_text_path <- function(
+  layer,
+  label_key,
+  label_params,
+  ...
+) {
+  generate_label_geomtextpath(
+    layer,
+    label_key,
+    label_params,
+    ...,
+    geom = geomtextpath::geom_textpath
+  )
 }
 
-generate_label_for_path_label_path <- function(layer, label_key, label_params, ...) {
-  generate_label_geomtextpath(layer, label_key, label_params, ..., geom = geomtextpath::geom_labelpath)
+generate_label_for_path_label_path <- function(
+  layer,
+  label_key,
+  label_params,
+  ...
+) {
+  generate_label_geomtextpath(
+    layer,
+    label_key,
+    label_params,
+    ...,
+    geom = geomtextpath::geom_labelpath
+  )
 }
 
 # This might not work very well
@@ -193,7 +305,12 @@ generate_label_for_path_sec_axis <- generate_label_for_line_sec_axis
 
 # Point -------------------------------------------------------------------
 
-generate_label_for_point <- function(layer, label_key, label_params, max_labels) {
+generate_label_for_point <- function(
+  layer,
+  label_key,
+  label_params,
+  max_labels
+) {
   if (nrow(layer$data) > max_labels) {
     inform("Too many data points, skip labeling")
     return(list())

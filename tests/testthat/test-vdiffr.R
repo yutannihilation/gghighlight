@@ -24,12 +24,16 @@ test_that("gghighlight() highlights correctly", {
   )
 
   set.seed(99)
-  value <- unlist(lapply(c(1, 10, 20), function(x) cumsum(runif(100, min = -x, max = x))))
-  d_line <- data.frame(index = rep(1:100, times = 3),
-                       value = value,
-                       value01 = value / rep(c(1, 10, 20), each = 100),
-                       group = rep(c("a", "b", "c"), each = 100),
-                       stringsAsFactors = FALSE)
+  value <- unlist(lapply(c(1, 10, 20), function(x) {
+    cumsum(runif(100, min = -x, max = x))
+  }))
+  d_line <- data.frame(
+    index = rep(1:100, times = 3),
+    value = value,
+    value01 = value / rep(c(1, 10, 20), each = 100),
+    group = rep(c("a", "b", "c"), each = 100),
+    stringsAsFactors = FALSE
+  )
 
   vdiffr::expect_doppelganger(
     "simple line chart",

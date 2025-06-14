@@ -65,18 +65,26 @@
 #'     unhighlighted_params = list(linewidth = 1)
 #'   )
 #' @export
-gghighlight <- function(...,
-                        n = NULL,
-                        max_highlight = 5L,
-                        unhighlighted_params = list(),
-                        use_group_by = NULL,
-                        use_direct_label = NULL,
-                        label_key = NULL,
-                        label_params = list(fill = "white"),
-                        keep_scales = FALSE,
-                        calculate_per_facet = FALSE,
-                        line_label_type = c("ggrepel_label", "ggrepel_text", "text_path", "label_path", "sec_axis"),
-                        unhighlighted_colour = NULL) {
+gghighlight <- function(
+  ...,
+  n = NULL,
+  max_highlight = 5L,
+  unhighlighted_params = list(),
+  use_group_by = NULL,
+  use_direct_label = NULL,
+  label_key = NULL,
+  label_params = list(fill = "white"),
+  keep_scales = FALSE,
+  calculate_per_facet = FALSE,
+  line_label_type = c(
+    "ggrepel_label",
+    "ggrepel_text",
+    "text_path",
+    "label_path",
+    "sec_axis"
+  ),
+  unhighlighted_colour = NULL
+) {
   predicates <- enquos(...)
   label_key <- enquo(label_key)
 
@@ -101,7 +109,9 @@ gghighlight <- function(...,
   }
 
   # TODO: the default value contains fill, but it's not needed for text
-  if (missing(label_params) && line_label_type %in% c("ggrepel_text", "text_path")) {
+  if (
+    missing(label_params) && line_label_type %in% c("ggrepel_text", "text_path")
+  ) {
     label_params <- NULL
   }
 
@@ -128,8 +138,12 @@ VERY_SECRET_COLUMN_NAME <- sym("highlight..........")
 #' @export
 ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   if (length(plot$layers) == 0) {
-    plot$data <- sieve_data(plot$data, plot$mapping, object$predicates,
-      max_highlight = object$max_highlight, use_group_by = object$use_group_by
+    plot$data <- sieve_data(
+      plot$data,
+      plot$mapping,
+      object$predicates,
+      max_highlight = object$max_highlight,
+      use_group_by = object$use_group_by
     )
     return(plot)
   }
@@ -152,26 +166,37 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   layers_cloned <- purrr::map(plot$layers, clone_layer)
 
   # Data and group IDs are used commonly both in the bleaching and sieving process
-  purrr::walk(layers_cloned, merge_plot_to_layer,
-    plot_data = plot$data, plot_mapping = plot$mapping
+  purrr::walk(
+    layers_cloned,
+    merge_plot_to_layer,
+    plot_data = plot$data,
+    plot_mapping = plot$mapping
   )
 
   # Assign back layers that are not get bleached or sieved
   plot$layers[!idx_layers] <- layers_cloned[!idx_layers]
   layers_cloned <- layers_cloned[idx_layers]
 
-  facet_vars <- if (object$calculate_per_facet) get_facet_vars(plot$facet) else NULL
+  facet_vars <- if (object$calculate_per_facet) {
+    get_facet_vars(plot$facet)
+  } else {
+    NULL
+  }
   group_infos <- purrr::map(
     layers_cloned,
     ~ calculate_group_info(.$data, .$mapping, extra_vars = facet_vars)
   )
 
   # Clone layers again seperately (layers_cloned will be used later for keeping
-  # the original scale). Note that, layers_bleached doesn't need a suffix for 
+  # the original scale). Note that, layers_bleached doesn't need a suffix for
   # the layer name because this is used for replacing the original layers in
   # place.
   layers_bleached <- purrr::map(layers_cloned, clone_layer)
-  layers_sieved <- purrr::map(layers_cloned, clone_layer, layer_name_suffix = "__sieved")
+  layers_sieved <- purrr::map(
+    layers_cloned,
+    clone_layer,
+    layer_name_suffix = "__sieved"
+  )
 
   # Bleach the lower layer.
   purrr::walk2(
@@ -215,7 +240,8 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
 
   # Add dummy layers (geom_blank()) to keep the original scales
   if (object$keep_scales) {
-    plot <- plot %+% purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
+    plot <- plot %+%
+      purrr::map(layers_cloned, ~ ggplot2::geom_blank(.$mapping, .$data))
   }
 
   # 1) use_direct_label is NULL
@@ -231,11 +257,17 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
   }
 
   must_add_labels <- is_true(object$use_direct_label)
-  max_labels <- ifelse(must_add_labels, Inf, getOption("gghighlight_max_labels", 20))
+  max_labels <- ifelse(
+    must_add_labels,
+    Inf,
+    getOption("gghighlight_max_labels", 20)
+  )
 
   layer_labelled <- generate_labelled_layer(
-    layers_sieved, group_infos,
-    object$label_key, object$label_params,
+    layers_sieved,
+    group_infos,
+    object$label_key,
+    object$label_params,
     max_labels = max_labels,
     line_label_type = object$line_label_type
   )
@@ -270,14 +302,19 @@ ggplot_add.gg_highlighter <- function(object, plot, object_name) {
       plot <- plot %+% ggplot2::scale_x_continuous(expand = expand_noright)
     } else {
       if (!identical(x_scale$expand, ggplot2::waiver())) {
-        warn("The `expand` parameter of `scale_x_*()` is ignored and overwritten")
+        warn(
+          "The `expand` parameter of `scale_x_*()` is ignored and overwritten"
+        )
       }
       x_scale$expand <- expand_noright
     }
 
     plot %+% layers_sieved %+% ggplot2::guides(colour = "none", fill = "none")
   } else {
-    plot %+% layers_sieved %+% layer_labelled %+% ggplot2::guides(colour = "none", fill = "none")
+    plot %+%
+      layers_sieved %+%
+      layer_labelled %+%
+      ggplot2::guides(colour = "none", fill = "none")
   }
 }
 
@@ -296,7 +333,10 @@ merge_data <- function(layer, plot_data) {
 
 merge_mapping <- function(layer, plot_mapping) {
   # Merge the layer's mapping with the plot's mapping
-  mapping <- utils::modifyList(plot_mapping %||% aes(), layer$mapping %||% aes())
+  mapping <- utils::modifyList(
+    plot_mapping %||% aes(),
+    layer$mapping %||% aes()
+  )
   # Filter out unused variables (e.g. fill aes for line geom)
   layer_aes <- base::union(layer$geom$aesthetics(), layer$stat$aesthetics())
   aes_names <- base::intersect(layer_aes, names(mapping))
@@ -322,8 +362,14 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   # the calculation may be possible only in the ggplot2 context (e.g. stat()).
   # So, wrap it with tryCatch() and remove the failed results, which can be
   # detected by checking if all elements are NA or not.
-  mapping_wrapped <- purrr::map(mapping, ~ quo(tryCatch(!!., error = function(e) NA)))
-  data_evaluated <- dplyr::transmute(data, quasi_parallel(!!!mapping_wrapped, ..nrow = n()))
+  mapping_wrapped <- purrr::map(
+    mapping,
+    ~ quo(tryCatch(!!., error = function(e) NA))
+  )
+  data_evaluated <- dplyr::transmute(
+    data,
+    quasi_parallel(!!!mapping_wrapped, ..nrow = n())
+  )
   data_evaluated <- dplyr::select(data_evaluated, where(~ !all(is.na(.))))
 
   # As of ggplot2 3.6.0? (TBD), the plot-level mappings is no longer used for the default labels.
@@ -337,7 +383,10 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   if ("group" %in% names(data_evaluated)) {
     group_cols <- "group"
   } else {
-    idx_discrete <- purrr::map_lgl(data_evaluated, ~ is.factor(.) || is.character(.) || is.logical(.))
+    idx_discrete <- purrr::map_lgl(
+      data_evaluated,
+      ~ is.factor(.) || is.character(.) || is.logical(.)
+    )
     group_cols <- names(which(idx_discrete))
   }
 
@@ -349,7 +398,10 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
     if (!is_quosures(extra_vars) || !all(have_name(extra_vars))) {
       abort("extra_vars must be a named quosures object.")
     }
-    extra_data <- dplyr::transmute(data, quasi_parallel(!!!extra_vars, ..nrow = n()))
+    extra_data <- dplyr::transmute(
+      data,
+      quasi_parallel(!!!extra_vars, ..nrow = n())
+    )
   } else {
     extra_data <- NULL
   }
@@ -373,7 +425,13 @@ calculate_group_info <- function(data, mapping, extra_vars = NULL) {
   )
 }
 
-bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_colour = default_unhighlighted_colour(), calculate_per_facet = FALSE) {
+bleach_layer <- function(
+  layer,
+  group_info,
+  unhighlighted_params,
+  unhighlighted_colour = default_unhighlighted_colour(),
+  calculate_per_facet = FALSE
+) {
   # `colour` and `fill` are special in that they needs to be specified even when
   # it is not included in unhighlighted_params. But, if the default_aes is NA,
   # respect it (e.g. geom_bar()'s default colour is NA).
@@ -385,7 +443,12 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_
         next
       }
       # if the aesthetic name is not specified, fill it with the default
-      unhighlighted_params[[nm]] <- get_default_aes_param(nm, layer$geom, layer$mapping, unhighlighted_colour)
+      unhighlighted_params[[nm]] <- get_default_aes_param(
+        nm,
+        layer$geom,
+        layer$mapping,
+        unhighlighted_colour
+      )
     }
 
     # FIXME: Is this necessary while aes_params will override these mappings?
@@ -394,11 +457,18 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_
   }
 
   # c.f. https://github.com/tidyverse/ggplot2/blob/e9d4e5dd599b9f058cbe9230a6517f85f3587567/R/layer.r#L107-L108
-  aes_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$aesthetics()]
-  geom_params_bleached <- unhighlighted_params[names(unhighlighted_params) %in% layer$geom$parameters(TRUE)]
+  aes_params_bleached <- unhighlighted_params[
+    names(unhighlighted_params) %in% layer$geom$aesthetics()
+  ]
+  geom_params_bleached <- unhighlighted_params[
+    names(unhighlighted_params) %in% layer$geom$parameters(TRUE)
+  ]
 
   layer$aes_params <- utils::modifyList(layer$aes_params, aes_params_bleached)
-  layer$geom_params <- utils::modifyList(layer$geom_params, geom_params_bleached)
+  layer$geom_params <- utils::modifyList(
+    layer$geom_params,
+    geom_params_bleached
+  )
 
   # FIXME: can this be removed?
   if (is.null(group_info$key)) {
@@ -414,8 +484,14 @@ bleach_layer <- function(layer, group_info, unhighlighted_params, unhighlighted_
   mapping_names <- names(bleached_data)
   secret_names <- paste0(secret_prefix, seq_along(mapping_names))
   secret_quos <- quos(!!!syms(secret_names))
-  bleached_data <- dplyr::rename(bleached_data, !!!stats::setNames(mapping_names, secret_names))
-  layer$mapping <- utils::modifyList(layer$mapping, stats::setNames(secret_quos, mapping_names))
+  bleached_data <- dplyr::rename(
+    bleached_data,
+    !!!stats::setNames(mapping_names, secret_names)
+  )
+  layer$mapping <- utils::modifyList(
+    layer$mapping,
+    stats::setNames(secret_quos, mapping_names)
+  )
 
   secret_name_group <- paste0(secret_prefix, "group")
   bleached_data[secret_name_group] <- factor(group_info$id)
@@ -441,7 +517,7 @@ default_unhighlighted_colour <- function(theme = list()) {
   ink_bleached <- scales::col2hcl(ink, c = 0)
   paper_bleached <- scales::col2hcl(paper, c = 0)
 
-  # TODO: flip the color based on the relationship of ink and paper. Can this 
+  # TODO: flip the color based on the relationship of ink and paper. Can this
   #       heuristic removed? I think there should be some theory for this...
   if (ink_bleached < paper_bleached) {
     ratio <- 0.254902
@@ -452,11 +528,19 @@ default_unhighlighted_colour <- function(theme = list()) {
 
   # cf. ggplot2:::col_mix
   # ink is greyed, while paper doesn't
-  new <- (ratio * grDevices::col2rgb(ink_bleached) + (1 - ratio) * grDevices::col2rgb(paper))[,1] / 255
+  new <- (ratio *
+    grDevices::col2rgb(ink_bleached) +
+    (1 - ratio) * grDevices::col2rgb(paper))[, 1] /
+    255
   grDevices::rgb(new["red"], new["green"], new["blue"], alpha = 0.698)
 }
 
-get_default_aes_param <- function(aes_param_name, geom, mapping, unhighlighted_colour) {
+get_default_aes_param <- function(
+  aes_param_name,
+  geom,
+  mapping,
+  unhighlighted_colour
+) {
   # bleach only colour and fill
   if (!aes_param_name %in% c("colour", "fill")) {
     return(NULL)
@@ -470,20 +554,29 @@ get_default_aes_param <- function(aes_param_name, geom, mapping, unhighlighted_c
   non_null_default_aes <- purrr::compact(geom$default_aes)
 
   # if the geom has default value and is NA, use NA
-  if (aes_param_name %in% names(non_null_default_aes) &&
-    # is.na() cannot handle non primitive objects (e.g. a quosure)
-    rlang::is_na(non_null_default_aes[[aes_param_name]])) {
+  if (
+    aes_param_name %in%
+      names(non_null_default_aes) &&
+      # is.na() cannot handle non primitive objects (e.g. a quosure)
+      rlang::is_na(non_null_default_aes[[aes_param_name]])
+  ) {
     return(NA)
   }
 
   unhighlighted_colour
 }
 
-sieve_layer <- function(layer, group_info, predicates,
-                        max_highlight = 5L,
-                        use_group_by = NULL) {
+sieve_layer <- function(
+  layer,
+  group_info,
+  predicates,
+  max_highlight = 5L,
+  use_group_by = NULL
+) {
   # If there are no predicates, do nothing.
-  if (length(predicates) == 0) return(TRUE)
+  if (length(predicates) == 0) {
+    return(TRUE)
+  }
 
   # If use_group_by is NULL, infer it from whether group_key is NULL or not.
   use_group_by <- use_group_by %||% !is.null(group_info$id)
@@ -508,37 +601,51 @@ sieve_layer <- function(layer, group_info, predicates,
 
   # If use_group_by is TRUE, try to calculate grouped
   if (use_group_by) {
-    tryCatch({
-      layer$data <- calculate_grouped(layer$data, predicates, max_highlight, group_info$id)
-      # if this succeeds, return TRUE
-      return(TRUE)
-    },
-    error = function(e) {
-      msg <- paste0(
-        "Tried to calculate with group_by(), but the calculation failed.\n",
-        "Falling back to ungrouped filter operation..."
-      )
-      warn(msg)
-    }
+    tryCatch(
+      {
+        layer$data <- calculate_grouped(
+          layer$data,
+          predicates,
+          max_highlight,
+          group_info$id
+        )
+        # if this succeeds, return TRUE
+        return(TRUE)
+      },
+      error = function(e) {
+        msg <- paste0(
+          "Tried to calculate with group_by(), but the calculation failed.\n",
+          "Falling back to ungrouped filter operation..."
+        )
+        warn(msg)
+      }
     )
   }
 
   # the grouped calculation failed or skipped, try ungrouped one.
-  tryCatch({
-    layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
-    return(TRUE)
-  },
-  error = function(e) {
-    # do not warn here, but in ggplot_add.gg_highlighter()
-    return(FALSE)
-  })
+  tryCatch(
+    {
+      layer$data <- calculate_ungrouped(layer$data, predicates, max_highlight)
+      return(TRUE)
+    },
+    error = function(e) {
+      # do not warn here, but in ggplot_add.gg_highlighter()
+      return(FALSE)
+    }
+  )
 
   FALSE
 }
 
 # TODO: integrate with sieve_layer
-sieve_data <- function(data, mapping, predicates, group_info = NULL,
-                       max_highlight = 5L, use_group_by = TRUE) {
+sieve_data <- function(
+  data,
+  mapping,
+  predicates,
+  group_info = NULL,
+  max_highlight = 5L,
+  use_group_by = TRUE
+) {
   if (is.null(group_info)) {
     group_info <- calculate_group_info(data, mapping)
   }
@@ -547,16 +654,23 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
   use_group_by <- use_group_by %||% !is.null(group_info$id)
 
   if (use_group_by) {
-    tryCatch({
-      return(calculate_grouped(data, predicates, max_highlight, group_info$id))
-    },
-    error = function(e) {
-      msg <- paste0(
-        "Tried to calculate with group_by(), but the calculation failed.\n",
-        "Falling back to ungrouped filter operation..."
-      )
-      warn(msg)
-    })
+    tryCatch(
+      {
+        return(calculate_grouped(
+          data,
+          predicates,
+          max_highlight,
+          group_info$id
+        ))
+      },
+      error = function(e) {
+        msg <- paste0(
+          "Tried to calculate with group_by(), but the calculation failed.\n",
+          "Falling back to ungrouped filter operation..."
+        )
+        warn(msg)
+      }
+    )
   }
 
   return(calculate_ungrouped(data, predicates, max_highlight))
@@ -565,15 +679,27 @@ sieve_data <- function(data, mapping, predicates, group_info = NULL,
 calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
   data_predicated <- data
 
-  data_predicated <- dplyr::group_by(data_predicated, !!VERY_SECRET_COLUMN_NAME := !!group_ids)
-  data_predicated <- dplyr::summarise(data_predicated, quasi_parallel(!!!predicates, ..nrow = 1L))
+  data_predicated <- dplyr::group_by(
+    data_predicated,
+    !!VERY_SECRET_COLUMN_NAME := !!group_ids
+  )
+  data_predicated <- dplyr::summarise(
+    data_predicated,
+    quasi_parallel(!!!predicates, ..nrow = 1L)
+  )
 
-  group_with_multiple_result <- anyDuplicated(dplyr::pull(data_predicated, !!VERY_SECRET_COLUMN_NAME))
+  group_with_multiple_result <- anyDuplicated(dplyr::pull(
+    data_predicated,
+    !!VERY_SECRET_COLUMN_NAME
+  ))
   if (!identical(group_with_multiple_result, 0L)) {
     abort("", "gghighlight_invalid_group_predicate_error")
   }
 
-  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
+  cols <- choose_col_for_filter_and_arrange(
+    data_predicated,
+    VERY_SECRET_COLUMN_NAME
+  )
 
   # Filter by the logical predicates.
   data_filtered <- dplyr::filter(data_predicated, if_all(all_of(cols$filter)))
@@ -592,21 +718,30 @@ calculate_grouped <- function(data, predicates, max_highlight, group_ids) {
 calculate_ungrouped <- function(data, predicates, max_highlight) {
   data_predicated <- data
 
-  data_predicated <- tibble::rowid_to_column(data_predicated, var = expr_text(VERY_SECRET_COLUMN_NAME))
+  data_predicated <- tibble::rowid_to_column(
+    data_predicated,
+    var = expr_text(VERY_SECRET_COLUMN_NAME)
+  )
   data_predicated <- dplyr::transmute(
     data_predicated,
     quasi_parallel(!!!predicates, ..nrow = n()),
     !!VERY_SECRET_COLUMN_NAME
   )
 
-  cols <- choose_col_for_filter_and_arrange(data_predicated, VERY_SECRET_COLUMN_NAME)
+  cols <- choose_col_for_filter_and_arrange(
+    data_predicated,
+    VERY_SECRET_COLUMN_NAME
+  )
 
   # Filter by the logical predicates.
   data_filtered <- dplyr::filter(data_predicated, if_all(all_of(cols$filter)))
 
   # Arrange by the other predicates and slice rows down to max_highlights.
   if (length(cols$arrange) > 0) {
-    data_filtered <- dplyr::filter(data_filtered, if_all(cols$arrange, ~ !is.na(.)))
+    data_filtered <- dplyr::filter(
+      data_filtered,
+      if_all(cols$arrange, ~ !is.na(.))
+    )
     data_filtered <- dplyr::arrange(data_filtered, across(all_of(cols$arrange)))
     data_filtered <- utils::tail(data_filtered, max_highlight)
   }
