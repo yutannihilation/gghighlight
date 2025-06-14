@@ -1,38 +1,15 @@
 grey07 <- "#BEBEBEB2"
 
+# fmt: skip
 d <- tibble::tribble(
-  ~x,
-  ~y,
-  ~type,
-  ~value,
-  1,
-  2,
-  "a",
-  0,
-  2,
-  3,
-  "a",
-  1,
-  3,
-  4,
-  "a",
-  0,
-  1,
-  3,
-  "b",
-  1,
-  2,
-  2,
-  "b",
-  5,
-  1,
-  4,
-  "c",
-  10,
-  3,
-  3,
-  "c",
-  10
+  ~x, ~y, ~type, ~value,
+  1,  2,   "a",      0,
+  2,  3,   "a",      1,
+  3,  4,   "a",      0,
+  1,  3,   "b",      1,
+  2,  2,   "b",      5,
+  1,  4,   "c",     10,
+  3,  3,   "c",     10
 )
 
 d_ <- setNames(d[1:3], c("x", "y", "colour"))
@@ -202,40 +179,19 @@ test_that("sieve_layer() works with zero predicate", {
 })
 
 test_that("sieve_layer() works with more than two predicates", {
+  # fmt: skip
   d2 <- tibble::tribble(
-    ~type,
-    ~val1,
-    ~val2,
-    "a",
-    1,
-    0,
-    "a",
-    2,
-    2,
-    "b",
-    4,
-    2,
-    "b",
-    5,
-    2,
-    "c",
-    10,
-    0,
-    "c",
-    10,
-    2,
-    "d",
-    10,
-    1,
-    "d",
-    10,
-    3,
-    "e",
-    11,
-    10,
-    "e",
-    12,
-    30
+    ~type, ~val1, ~val2,
+      "a",     1,     0,
+      "a",     2,     2,
+      "b",     4,     2,
+      "b",     5,     2,
+      "c",    10,     0,
+      "c",    10,     2,
+      "d",    10,     1,
+      "d",    10,     3,
+      "e",    11,    10,
+      "e",    12,    30
   )
   pred_grouped <- quos(
     mean(val1) > 2, # logical to filter out "a"
@@ -270,6 +226,7 @@ test_that("sieve_layer() works with more than two predicates", {
 })
 
 test_that("sieve_layer() works with list columns", {
+  # fmt: skip
   d3 <- tibble::tibble(
     x = 1:4,
     v = 1:4,

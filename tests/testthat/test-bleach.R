@@ -1,39 +1,16 @@
 grey07 <- "#BEBEBEB2"
 grey09 <- "#BEBEBEE6"
 
+# fmt: skip
 d <- tibble::tribble(
-  ~x,
-  ~y,
-  ~type,
-  ~value,
-  1,
-  2,
-  "a",
-  0,
-  2,
-  3,
-  "a",
-  1,
-  3,
-  4,
-  "a",
-  0,
-  1,
-  3,
-  "b",
-  1,
-  2,
-  2,
-  "b",
-  5,
-  1,
-  4,
-  "c",
-  10,
-  3,
-  3,
-  "c",
-  10
+  ~x, ~y, ~type, ~value,
+   1,  2,   "a",      0,
+   2,  3,   "a",      1,
+   3,  4,   "a",      0,
+   1,  3,   "b",      1,
+   2,  2,   "b",      5,
+   1,  4,   "c",     10,
+   3,  3,   "c",     10
 )
 
 d_expect <- setNames(d[1:3], c("x", "y", "colour"))
@@ -45,12 +22,13 @@ d_bleached$ids <- factor(ids)
 prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
+# fmt: skip
 aes_bleached <- aes(
-  x = !!sym(paste0(prefix, "1")),
-  y = !!sym(paste0(prefix, "2")),
+  x      = !!sym(paste0(prefix, "1")),
+  y      = !!sym(paste0(prefix, "2")),
   colour = !!sym(paste0(prefix, "3")),
-  fill = NULL,
-  group = !!sym(paste0(prefix, "group"))
+  fill   = NULL,
+  group  = !!sym(paste0(prefix, "group"))
 )
 
 
