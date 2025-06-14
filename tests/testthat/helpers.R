@@ -3,6 +3,9 @@ expect_equal_layer <- function(x, y) {
   x$constructor <- NULL
   y$constructor <- NULL
 
+  x$computed_mapping <- NULL
+  y$computed_mapping <- NULL
+
   x$aes_params <- x$aes_params[sort(names(x$aes_params))]
   y$aes_params <- y$aes_params[sort(names(y$aes_params))]
   x$mapping <- x$mapping[sort(names(x$mapping))]
@@ -17,10 +20,19 @@ expect_equal_layer <- function(x, y) {
 }
 
 as_no_label_list <- function(x) {
-  lapply(x, \(x) {
+  x <- lapply(x, \(x) {
     attr(x, "label") <- NULL
     x
   })
+
+  if (!is.null(x$data)) {
+    x$data <- lapply(x$data, \(x) {
+      attr(x, "label") <- NULL
+      x
+    })
+  }
+
+  x
 }
 
 expect_equal_layers <- function(x, y) {

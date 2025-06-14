@@ -184,7 +184,7 @@ test_that("gghighlight() works with two layers, grouped", {
     d_bleached2,
     shape = "circle filled",
     colour = grey07,
-    fill = grey07
+    fill = NA
   )
   l_sieved_2 <- geom_point(
     aes(x, y, colour = type, fill = type),
