@@ -34,8 +34,6 @@ Suggests:
     vdiffr (>= 0.3.0)
 VignetteBuilder: 
     knitr
-RdMacros: 
-    lifecycle
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
