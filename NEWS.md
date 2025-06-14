@@ -1,4 +1,4 @@
-# gghighlight (development version)
+# gghighlight 0.5.0
 
 * Support ggplot2 v4.0.
   * Fix an incompatibility about axis title with the upcoming release of ggplot2 (#200).
