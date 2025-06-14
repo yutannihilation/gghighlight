@@ -11,7 +11,7 @@ expect_equal_layer <- function(x, y) {
   y$data <- tibble::as_tibble(y$data[, sort(colnames(y$data))])
   expect_equal(
     as_no_label_list(x),
-    as_no_label_list(x),
+    as_no_label_list(y),
     ignore_formula_env = TRUE
   )
 }
