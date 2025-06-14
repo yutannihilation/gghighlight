@@ -11,7 +11,7 @@ Make it easier to explore data with highlights.
 Useful links:
 \itemize{
   \item \url{https://yutannihilation.github.io/gghighlight/}
-  \item \url{https://github.com/yutannihilation/gghighlight/}
+  \item \url{https://github.com/yutannihilation/gghighlight}
   \item Report bugs at \url{https://github.com/yutannihilation/gghighlight/issues}
 }
 

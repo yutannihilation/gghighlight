@@ -10,7 +10,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-3385-7233"))
 Description: Make it easier to explore data with highlights.
 License: MIT + file LICENSE
-URL: https://yutannihilation.github.io/gghighlight/, https://github.com/yutannihilation/gghighlight/
+URL: https://yutannihilation.github.io/gghighlight/, https://github.com/yutannihilation/gghighlight
 BugReports: 
     https://github.com/yutannihilation/gghighlight/issues
 Depends:
