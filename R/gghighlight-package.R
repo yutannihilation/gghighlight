@@ -25,6 +25,6 @@ dplyr::n
   if (utils::packageVersion("ggplot2") > "3.5.2.9000") {
     ggplot2::add_gg(e1, e2)
   } else {
-    ggplot2::`%::%`(e1, e2)
+    ggplot2::`%+%`(e1, e2)
   }
 }
