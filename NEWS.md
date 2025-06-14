@@ -7,6 +7,8 @@
 * Fix a bug about handling Geoms that have some non-primitive value as a default
   for an aesthetic (#195).
 
+* Treat `from_theme(foo %||% NA)` as `NA` (#216).
+
 * `gghighlight_point()` and `gghighlight_line()` are removed.
 
 # gghighlight 0.4.1
