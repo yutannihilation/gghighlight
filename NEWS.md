@@ -7,6 +7,8 @@
 
 * Support ink and paper (#209).
 
+* `gghighlight_point()` and `gghighlight_line()` are removed.
+
 # gghighlight 0.4.1
 
 * This is a maintenance release to update test expectations for the upcoming version of ggplot2.
