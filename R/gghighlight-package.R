@@ -20,11 +20,11 @@ utils::globalVariables("where")
 #' @export
 dplyr::n
 
-# TODO: remove this when I remove support for ggplot2 v3
+# TODO: remove this and replace all %+% with + when I remove support for ggplot2 v3
 `%+%` <- function(e1, e2) {
   if (utils::packageVersion("ggplot2") > "3.5.2.9000") {
     ggplot2::add_gg(e1, e2)
   } else {
-    ggplot2::`%+%`(e1, e2)
+    e1 + e2
   }
 }
