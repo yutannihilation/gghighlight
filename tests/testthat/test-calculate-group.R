@@ -1,37 +1,14 @@
 test_that("calculate_group_info() works", {
+  # fmt: skip
   d <- tibble::tribble(
-    ~x,
-    ~y,
-    ~type,
-    ~value,
-    1,
-    2,
-    "a",
-    0,
-    2,
-    3,
-    "a",
-    1,
-    3,
-    4,
-    "a",
-    0,
-    1,
-    3,
-    "b",
-    1,
-    2,
-    2,
-    "b",
-    5,
-    1,
-    4,
-    "c",
-    10,
-    3,
-    3,
-    "c",
-    10
+    ~x, ~y, ~type, ~value,
+     1,  2,   "a",      0,
+     2,  3,   "a",      1,
+     3,  4,   "a",      0,
+     1,  3,   "b",      1,
+     2,  2,   "b",      5,
+     1,  4,   "c",     10,
+     3,  3,   "c",     10
   )
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
@@ -80,43 +57,17 @@ test_that("calculate_group_info() works", {
 
 
 test_that("calculate_group_info() works with facets", {
+  # fmt: skip
   d <- tibble::tribble(
-    ~idx,
-    ~value,
-    ~cat1,
-    ~cat2,
-    1,
-    10,
-    "a",
-    "1-2",
-    2,
-    11,
-    "a",
-    "1-2",
-    3,
-    12,
-    "a",
-    "3-4",
-    4,
-    13,
-    "a",
-    "3-4",
-    1,
-    4,
-    "b",
-    "1-2",
-    2,
-    8,
-    "b",
-    "1-2",
-    3,
-    16,
-    "b",
-    "3-4",
-    4,
-    32,
-    "b",
-    "3-4"
+    ~idx, ~value, ~cat1, ~cat2,
+       1,     10,   "a", "1-2",
+       2,     11,   "a", "1-2",
+       3,     12,   "a", "3-4",
+       4,     13,   "a", "3-4",
+       1,      4,   "b", "1-2",
+       2,      8,   "b", "1-2",
+       3,     16,   "b", "3-4",
+       4,     32,   "b", "3-4"
   )
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
