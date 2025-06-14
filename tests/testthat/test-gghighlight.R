@@ -1,38 +1,15 @@
 grey07 <- "#BEBEBEB2"
 
+# fmt: skip
 d <- tibble::tribble(
-  ~x,
-  ~y,
-  ~type,
-  ~value,
-  1,
-  2,
-  "a",
-  0,
-  2,
-  3,
-  "a",
-  1,
-  3,
-  4,
-  "a",
-  0,
-  1,
-  3,
-  "b",
-  1,
-  2,
-  2,
-  "b",
-  5,
-  1,
-  4,
-  "c",
-  10,
-  3,
-  3,
-  "c",
-  10
+  ~x, ~y, ~type, ~value,
+   1,  2,   "a",      0,
+   2,  3,   "a",      1,
+   3,  4,   "a",      0,
+   1,  3,   "b",      1,
+   2,  2,   "b",      5,
+   1,  4,   "c",     10,
+   3,  3,   "c",     10
 )
 
 d_expect <- setNames(d[1:3], c("x", "y", "colour"))
@@ -44,12 +21,13 @@ d_bleached$ids <- factor(ids)
 prefix <- expr_text(VERY_SECRET_COLUMN_NAME)
 names(d_bleached) <- paste0(prefix, c(1:3, "group"))
 
+# fmt: skip
 aes_bleached <- aes(
-  x = !!sym(paste0(prefix, "1")),
-  y = !!sym(paste0(prefix, "2")),
+  x      = !!sym(paste0(prefix, "1")),
+  y      = !!sym(paste0(prefix, "2")),
   colour = !!sym(paste0(prefix, "3")),
-  fill = NULL,
-  group = !!sym(paste0(prefix, "group"))
+  fill   = NULL,
+  group  = !!sym(paste0(prefix, "group"))
 )
 
 
@@ -68,8 +46,7 @@ test_that("gghighlight() does not change the existing layers", {
 
 test_that("gghighlight() renames layer name on ggplot2", {
   skip_if_not(
-    utils::packageVersion("ggplot2") > "3.5.1",
-    "A layer got the name param after version 3.5.1"
+    utils::packageVersion("ggplot2") > "3.5.2.9000",
   )
 
   p <- ggplot(d, aes(x, y, colour = type)) +
@@ -340,43 +317,17 @@ test_that("gghighlight() works with annotations", {
 })
 
 test_that("gghighlight() works with facets", {
+  # fmt: skip
   d <- tibble::tribble(
-    ~idx,
-    ~value,
-    ~cat1,
-    ~cat2,
-    1,
-    10,
-    "a",
-    "1-2",
-    2,
-    11,
-    "a",
-    "1-2",
-    3,
-    12,
-    "a",
-    "3-4",
-    4,
-    13,
-    "a",
-    "3-4",
-    1,
-    4,
-    "b",
-    "1-2",
-    2,
-    8,
-    "b",
-    "1-2",
-    3,
-    16,
-    "b",
-    "3-4",
-    4,
-    32,
-    "b",
-    "3-4"
+    ~idx, ~value, ~cat1, ~cat2,
+       1,     10,   "a", "1-2",
+       2,     11,   "a", "1-2",
+       3,     12,   "a", "3-4",
+       4,     13,   "a", "3-4",
+       1,      4,   "b", "1-2",
+       2,      8,   "b", "1-2",
+       3,     16,   "b", "3-4",
+       4,     32,   "b", "3-4"
   )
 
   d_expect <- setNames(d[1:3], c("x", "y", "colour"))
@@ -389,12 +340,13 @@ test_that("gghighlight() works with facets", {
   names(d_bleached) <- paste0(prefix, c(1:3, "group"))
   d_bleached <- dplyr::bind_cols(d_bleached, d)
 
+  # fmt: skip
   aes_bleached <- aes(
-    x = !!sym(paste0(prefix, "1")),
-    y = !!sym(paste0(prefix, "2")),
+    x      = !!sym(paste0(prefix, "1")),
+    y      = !!sym(paste0(prefix, "2")),
     colour = !!sym(paste0(prefix, "3")),
-    fill = NULL,
-    group = !!sym(paste0(prefix, "group"))
+    fill   = NULL,
+    group  = !!sym(paste0(prefix, "group"))
   )
 
   l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
