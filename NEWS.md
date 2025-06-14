@@ -1,3 +1,5 @@
+# gghighlight (development version)
+
 # gghighlight 0.5.0
 
 * Support ggplot2 v4.0.
