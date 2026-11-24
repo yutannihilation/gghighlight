@@ -1,4 +1,5 @@
 grey07 <- "#BEBEBEB2"
+point_fill <- if (is_quosure(GeomPoint$default_aes$fill)) grey07 else NA
 
 # fmt: skip
 d <- tibble::tribble(
@@ -129,8 +130,7 @@ test_that("gghighlight() works with the plot without layers, grouped", {
 })
 
 test_that("gghighlight() works with the plot with one layer, ungrouped", {
-  # Note that the default_aes of fill of point is NA
-  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = point_fill)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
 
   p1 <- ggplot(d, aes(x, y, colour = type)) +
@@ -184,7 +184,7 @@ test_that("gghighlight() works with two layers, grouped", {
     d_bleached2,
     shape = "circle filled",
     colour = grey07,
-    fill = NA
+    fill = point_fill
   )
   l_sieved_2 <- geom_point(
     aes(x, y, colour = type, fill = type),
@@ -232,7 +232,7 @@ test_that("gghighlight() works with two layers, ungrouped", {
     shape = "circle open",
     size = 5,
     colour = grey07,
-    fill = NA
+    fill = point_fill
   )
   l_sieved_1 <- geom_point(
     aes(x, y, colour = type),
@@ -244,7 +244,7 @@ test_that("gghighlight() works with two layers, ungrouped", {
     aes_bleached,
     d_bleached,
     colour = grey07,
-    fill = NA
+    fill = point_fill
   )
   l_sieved_2 <- geom_point(aes(x, y, colour = type), d_sieved)
 
@@ -288,7 +288,7 @@ test_that("gghighlight() works with two layers, ungrouped", {
 })
 
 test_that("gghighlight() works with annotations", {
-  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = point_fill)
   l_sieved <- geom_point(aes(x, y, colour = type), d[d$value > 1, ])
   l_annotate <- annotate("text", x = 1, y = 1, label = "foo")
 
@@ -349,7 +349,7 @@ test_that("gghighlight() works with facets", {
     group  = !!sym(paste0(prefix, "group"))
   )
 
-  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = NA)
+  l_bleached <- geom_point(aes_bleached, d_bleached, colour = grey07, fill = point_fill)
   l_sieved <- geom_point(aes(idx, value, colour = cat1), d[-(5:6), ])
 
   # grouped
@@ -378,4 +378,17 @@ test_that("gghighlight() works with facets", {
 
   l_sieved2 <- geom_point(aes(idx, value, colour = cat1), d[d$value > 10, ])
   expect_equal_layers(p2$layers, list(l_bleached, l_sieved2))
+})
+
+test_that("theme-defined bar outlines are bleached on unhighlighted bars", {
+  skip_if_not_installed("ggplot2", "4.0.0")
+
+  p <- ggplot(d, aes(x, value)) +
+    geom_col() +
+    theme(geom = element_geom(colour = "#EE11EE")) +
+    gghighlight(value > 1, use_group_by = FALSE)
+
+  layers <- ggplot_build(p)$data
+  expect_identical(unique(layers[[1]]$colour), grey07)
+  expect_identical(unique(layers[[2]]$colour), "#EE11EE")
 })

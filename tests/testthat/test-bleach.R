@@ -1,5 +1,6 @@
 grey07 <- "#BEBEBEB2"
 grey09 <- "#BEBEBEE6"
+bar_colour <- if (is_quosure(GeomCol$default_aes$colour)) grey07 else NA
 
 # fmt: skip
 d <- tibble::tribble(
@@ -50,30 +51,30 @@ test_that("bleach_layer() works", {
   # If the geom accepts fill, it is set to grey even when it is not included in the mapping.
   expect_equal_layer(
     bleach_layer(geom_col(aes(colour = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = bar_colour, fill = grey07)
   )
 
-  # If the default of colour of the geom is NA and mapping doesn't specify it, params will be NA.
+  # An unmapped colour follows the same bleaching rule as a mapped colour.
   expect_equal_layer(
     bleach_layer(geom_col(aes(fill = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = bar_colour, fill = grey07)
   )
 
   # If colour and fill is specified at the same time, fill is used as the group key.
   expect_equal_layer(
     bleach_layer(geom_col(aes(colour = type, fill = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = bar_colour, fill = grey07)
   )
 
   # If mapping doesn't have colour or fill, group or x aes can be used as group key.
   # c.f. https://github.com/yutannihilation/gghighlight/pull/17#issuecomment-390486101.
   expect_equal_layer(
     bleach_layer(geom_col(aes(group = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = bar_colour, fill = grey07)
   )
   expect_equal_layer(
     bleach_layer(geom_col(aes(x = type), d), g_info, list()),
-    geom_col(aes_bleached, d_bleached, colour = NA, fill = grey07)
+    geom_col(aes_bleached, d_bleached, colour = bar_colour, fill = grey07)
   )
 
   # unhighlighted_params can be more detailed
@@ -108,7 +109,7 @@ test_that("bleach_layer() works", {
       list(fill = "blue", width = 0.5)
     ),
     # TODO: the order of fill and colour matters here...
-    geom_col(aes_bleached, d_bleached, fill = "blue", colour = NA, width = 0.5)
+    geom_col(aes_bleached, d_bleached, fill = "blue", colour = bar_colour, width = 0.5)
   )
 
   expect_equal_layer(

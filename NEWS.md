@@ -1,5 +1,7 @@
 # gghighlight (development version)
 
+* Apply bleaching to theme-defined aesthetics that use an NA fallback (#217).
+
 # gghighlight 0.5.0
 
 * Support ggplot2 v4.0.

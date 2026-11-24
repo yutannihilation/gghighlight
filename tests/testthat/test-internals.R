@@ -75,8 +75,8 @@ test_that("get_facet_vars() extract facet specs", {
 test_that("is_na_aes() works", {
   expect_true(is_na_aes(NA))
   expect_true(is_na_aes(quo(NA)))
-  expect_true(is_na_aes(quo(from_theme(foo %||% NA))))
-  expect_true(is_na_aes(quo(from_theme(foo %||% NA_character_))))
+  expect_false(is_na_aes(quo(from_theme(foo %||% NA))))
+  expect_false(is_na_aes(quo(from_theme(foo %||% NA_character_))))
 
   expect_false(is_na_aes(quo(foo)))
   expect_false(is_na_aes(quo(from_theme(foo))))
