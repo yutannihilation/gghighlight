@@ -557,9 +557,6 @@ get_default_aes_param <- function(
   if (
     aes_param_name %in%
       names(non_null_default_aes) &&
-      # check if
-      #   - x is NA
-      #   - x is quo(from_theme(foo %|% NA))
       is_na_aes(non_null_default_aes[[aes_param_name]])
   ) {
     return(NA)
